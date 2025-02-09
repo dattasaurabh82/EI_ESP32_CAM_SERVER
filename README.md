@@ -43,7 +43,7 @@ const char* password = "YOUR_PWD";
 #endif // CREDENTIALS_H
 ```
 
-Update wifi credentials and your [Edge Impulse API key](https://docs.edgeimpulse.com/reference/edge-impulse-api/edge-impulse-api)
+Update wifi credentials and your [Edge Impulse API key](https://docs.edgeimpulse.com/reference/edge-impulse-api/edge-impulse-api) (WIP)
 
 ### Camera Settings
 
