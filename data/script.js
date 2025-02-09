@@ -59,7 +59,7 @@ class CameraInterface {
     async clearAllImages() {
         try {
           const response = await fetch('/clear', {
-            method: 'POST', // Use POST instead of GET
+            method: 'POST', // ** Use POST instead of GET
             headers: {
               'Content-Type': 'application/json'
             }
