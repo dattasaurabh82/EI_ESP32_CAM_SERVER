@@ -257,9 +257,12 @@ void setup() {
   // Capture endpoint
   server.on("/capture", HTTP_GET, handleCapture);
 
-  // Clear endpoint
+  // Clear endpoint: Both GET & POST
+  server.on("/clear", HTTP_GET, [](AsyncWebServerRequest *request) {
+    request->send(200, "text/plain", "Images cleared (GET)");
+  });
   server.on("/clear", HTTP_POST, [](AsyncWebServerRequest *request) {
-    request->send(200, "text/plain", "Images cleared");
+    request->send(200, "text/plain", "Images cleared (POST)");
   });
 
   server.begin();

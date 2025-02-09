@@ -58,15 +58,23 @@ class CameraInterface {
 
     async clearAllImages() {
         try {
-            await fetch('/clear');
-            this.imageTableBody.innerHTML = '';
-            this.imageCount = 0;
-            this.clearButton.style.display = 'none';
-            this.downloadButton.style.display = 'none';
+          const response = await fetch('/clear', {
+            method: 'POST', // Use POST instead of GET
+            headers: {
+              'Content-Type': 'application/json'
+            }
+          });
+          if (!response.ok) {
+            throw new Error('Failed to clear images');
+          }
+          this.imageTableBody.innerHTML = '';
+          this.imageCount = 0;
+          this.clearButton.style.display = 'none';
+          this.downloadButton.style.display = 'none';
         } catch (error) {
-            console.error('Error clearing images:', error);
+          console.error('Error clearing images:', error);
         }
-    }
+      }
 
     showModal(imageUrl) {
         this.modalImage.src = imageUrl;
