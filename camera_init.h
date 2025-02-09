@@ -1,3 +1,4 @@
+#include "sensor.h"
 #ifndef CAMERA_INIT_H
 #define CAMERA_INIT_H
 

@@ -13,32 +13,33 @@
 AsyncWebServer server(80);  // Single server instance
 
 // ======== Non-blocking MJPEG Stream ========
+
+/* Slower and safer */
 // void handleMjpeg(AsyncWebServerRequest *request) {
 //   AsyncWebServerResponse *response = request->beginChunkedResponse(
 //     "multipart/x-mixed-replace; boundary=frame",
 //     [](uint8_t *buffer, size_t maxLen, size_t index) -> size_t {
 //       camera_fb_t *fb = esp_camera_fb_get();
-//       if (!fb || fb->format != PIXFORMAT_JPEG) return 0;
+//       if (!fb) return 0;
 
+//       // Assume maxLen >= 100 (header) + fb->len
 //       size_t jpgLen = snprintf(
-//         (char *)buffer, maxLen,
+//         (char *)buffer, 100, // Limit header to first 100 bytes
 //         "--frame\r\nContent-Type: image/jpeg\r\nContent-Length: %d\r\n\r\n",
 //         fb->len
 //       );
 
-//       if (jpgLen + fb->len > maxLen) {
-//         esp_camera_fb_return(fb);
-//         return 0;
-//       }
-
 //       memcpy(buffer + jpgLen, fb->buf, fb->len);
 //       esp_camera_fb_return(fb);
+
 //       return jpgLen + fb->len;
 //     }
 //   );
 //   response->addHeader("Access-Control-Allow-Origin", "*");
 //   request->send(response);
 // }
+
+/* faster and less safer */
 void handleMjpeg(AsyncWebServerRequest *request) {
   AsyncWebServerResponse *response = request->beginChunkedResponse(
     "multipart/x-mixed-replace; boundary=frame",
@@ -67,7 +68,7 @@ void handleCapture(AsyncWebServerRequest *request) {
     request->send(500, "text/plain", "Camera capture failed");
     return;
   }
-  request->send_P(200, "image/jpeg", fb->buf, fb->len);
+  request->send(200, "image/jpeg", fb->buf, fb->len);
   esp_camera_fb_return(fb);
 }
 
@@ -217,8 +218,11 @@ void setupWIFIstn() {
 void setup() {
   // Brownout prevention
   WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0);
-  // Reduce CPU speed for stability
-  setCpuFrequencyMhz(80);  // 80MHz instead of 240MHz
+
+  // Configure PSRAM cache strategy
+  psramInit();
+  heap_caps_malloc_extmem_enable(512);  // Allocate PSRAM first
+
   // Camera power pin stabilization (AI Thinker specific)
   pinMode(12, OUTPUT);  // ESP32-CAM Flash LED pin
   digitalWrite(12, LOW);
@@ -247,18 +251,10 @@ void setup() {
     request->send(LittleFS, "/script.js", "application/javascript");
   });
 
-
-
   // Stream endpoint
-  // server.on("/stream", HTTP_GET, [](AsyncWebServerRequest *request) {
-  //   handleMjpeg(request);
-  // });
   server.on("/stream", HTTP_GET, handleMjpeg);
 
   // Capture endpoint
-  // server.on("/capture", HTTP_GET, [](AsyncWebServerRequest *request) {
-  //   handleCapture(request);
-  // });
   server.on("/capture", HTTP_GET, handleCapture);
 
   // Clear endpoint

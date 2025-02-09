@@ -6,14 +6,21 @@ This educational tool helps reduce the time needed for capturing and labeling ES
 
 Instead, it creates an MJPEG stream directly from the camera showing it to you on a frontend hosted by the camera, allowing you to capture, label, and bulk upload images to the edgeimpulse studio, just to make life a little easier as you have to other wise sit there a long time
 
+## Tested Hardware
+
+1. [AI Thinker CAM](https://amzn.eu/d/hD7porD)
+2. [XIAO_ESP32S3](https://wiki.seeedstudio.com/xiao_esp32s3_getting_started/)
+
 ## Preparation
 
 Arduino IDE version: `2.3.4`
 
-Hardware Tested On
+### Install libraries
 
-1. [AI Thinker CAM](https://amzn.eu/d/hD7porD)
-2. [XIAO_ESP32S3](https://wiki.seeedstudio.com/xiao_esp32s3_getting_started/)
+1. [ESPAsyncWebServer](https://github.com/ESP32Async/ESPAsyncWebServer)
+2. [AsyncTCP](https://github.com/ESP32Async/AsyncTCP)
+
+> You can find them from the Library Manager of IDE. There are various versions. Install ones by "ESP32Async" for both the libraries.
 
 ### File upload - for frontend
 
