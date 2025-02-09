@@ -14,8 +14,7 @@ class CameraInterface {
     }
 
     initializeStream() {
-        // this.streamImg.src = `http://${window.location.hostname}:81/stream`;
-        this.streamImg.src = `/stream`;
+        this.streamImg.src = "/stream"
     }
 
     setupEventListeners() {

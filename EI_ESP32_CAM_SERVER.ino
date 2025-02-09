@@ -1,89 +1,76 @@
 #include <WiFi.h>
+#include <AsyncTCP.h>
+#include <ESPAsyncWebServer.h>
+#include <LittleFS.h>
+
 #include "credentials.h"
-#include "filesystem_handler.h"
-#include "server_handlers.h"
 #include "camera_init.h"
-#include "soc/soc.h"           //disable brownout problems
-#include "soc/rtc_cntl_reg.h"  //disable brownout problems
 
-// WebServer server(80);        // Main web interface
-// WebServer streamServer(81);  // Just for MJPEG stream
-// httpd_handle_t webServer = NULL;
-
-// LittleFS file server
-// void serveFile(const char* path, const char* contentType) {
-//   if (LittleFS.exists(path)) {
-//     File file = LittleFS.open(path, "r");
-//     server.streamFile(file, contentType);
-//     file.close();
-//   } else {
-//     server.send(404, "text/plain", "File not found");
-//   }
-// }
+#include "soc/soc.h"
+#include "soc/rtc_cntl_reg.h"
 
 
-// // MJPEG streaming
-// void handleMjpeg() {
-//   Serial.println("Stream handler called on port 81");
-//   WiFiClient client = streamServer.client();  // Changed from server to streamServer
-//   if (!client.connected()) {
-//     Serial.println("No client connected to stream");
-//     return;
-//   }
-//   // Send HTTP headers
-//   client.println("HTTP/1.1 200 OK");
-//   client.println("Content-Type: multipart/x-mixed-replace; boundary=frame");
-//   client.println("Connection: keep-alive");
-//   client.println("Access-Control-Allow-Origin: *");
-//   client.println();
-//   // Continue streaming as long as client is connected
-//   while (true) {
-//     camera_fb_t* fb = esp_camera_fb_get();
-//     if (!fb) {
-//       Serial.println("Camera capture failed");
-//       delay(500);
-//       continue;
+AsyncWebServer server(80);  // Single server instance
+
+// ======== Non-blocking MJPEG Stream ========
+// void handleMjpeg(AsyncWebServerRequest *request) {
+//   AsyncWebServerResponse *response = request->beginChunkedResponse(
+//     "multipart/x-mixed-replace; boundary=frame",
+//     [](uint8_t *buffer, size_t maxLen, size_t index) -> size_t {
+//       camera_fb_t *fb = esp_camera_fb_get();
+//       if (!fb || fb->format != PIXFORMAT_JPEG) return 0;
+
+//       size_t jpgLen = snprintf(
+//         (char *)buffer, maxLen,
+//         "--frame\r\nContent-Type: image/jpeg\r\nContent-Length: %d\r\n\r\n",
+//         fb->len
+//       );
+
+//       if (jpgLen + fb->len > maxLen) {
+//         esp_camera_fb_return(fb);
+//         return 0;
+//       }
+
+//       memcpy(buffer + jpgLen, fb->buf, fb->len);
+//       esp_camera_fb_return(fb);
+//       return jpgLen + fb->len;
 //     }
-//     // Send frame boundary and headers
-//     client.println("--frame");
-//     client.println("Content-Type: image/jpeg");
-//     client.printf("Content-Length: %d\r\n", fb->len);
-//     client.println();
-//     // Send frame data
-//     client.write(fb->buf, fb->len);
-//     client.println();
-//     // Return frame buffer
-//     esp_camera_fb_return(fb);
-
-//     // Check if client is still connected
-//     if (!client.connected()) {
-//       Serial.println("Client disconnected");
-//       break;
-//     }
-//     // Small delay to control frame rate
-//     delay(50);
-//   }
+//   );
+//   response->addHeader("Access-Control-Allow-Origin", "*");
+//   request->send(response);
 // }
+void handleMjpeg(AsyncWebServerRequest *request) {
+  AsyncWebServerResponse *response = request->beginChunkedResponse(
+    "multipart/x-mixed-replace; boundary=frame",
+    [](uint8_t *buffer, size_t maxLen, size_t index) -> size_t {
+      camera_fb_t *fb = esp_camera_fb_get();
+      if (!fb) return 0;
+
+      size_t jpgLen = snprintf(
+        (char *)buffer, maxLen,
+        "--frame\r\nContent-Type: image/jpeg\r\nContent-Length: %d\r\n\r\n",
+        fb->len);
+      memcpy(buffer + jpgLen, fb->buf, fb->len);
+      esp_camera_fb_return(fb);
+
+      return jpgLen + fb->len;
+    });
+  response->addHeader("Access-Control-Allow-Origin", "*");
+  request->send(response);
+}
 
 
-// // Image saving
-// void handleCapture() {
-//   camera_fb_t* fb = esp_camera_fb_get();
-//   if (!fb) {
-//     server.send(500, "text/plain", "Camera capture failed");
-//     return;
-//   }
+// Image saving
+void handleCapture(AsyncWebServerRequest *request) {
+  camera_fb_t *fb = esp_camera_fb_get();
+  if (!fb) {
+    request->send(500, "text/plain", "Camera capture failed");
+    return;
+  }
+  request->send_P(200, "image/jpeg", fb->buf, fb->len);
+  esp_camera_fb_return(fb);
+}
 
-//   server.sendHeader("Content-Type", "image/jpeg");
-//   server.sendHeader("Content-Disposition", "inline; filename=capture.jpg");
-//   server.sendHeader("Access-Control-Allow-Origin", "*");
-
-//   // Stream directly from buffer
-//   WiFiClient client = server.client();
-//   client.write(fb->buf, fb->len);
-
-//   esp_camera_fb_return(fb);
-// }
 
 // Camera init with verbose output
 void initCamera() {
@@ -93,7 +80,7 @@ void initCamera() {
   if (setupCamera()) {
     Serial.println("✓ Success");
 
-    sensor_t* sensor = esp_camera_sensor_get();
+    sensor_t *sensor = esp_camera_sensor_get();
     if (sensor) {
       Serial.println("\n   Camera Details:");
       Serial.println("   --------------");
@@ -126,6 +113,59 @@ void initCamera() {
   Serial.println();
 }
 
+
+void initLittleFS() {
+  Serial.println("\n2. Checking LittleFS Status:");
+  Serial.print("   Mounting LittleFS... ");
+
+  if (LittleFS.begin(false)) {
+    Serial.println("✓ Mounted successfully (No formatting needed)");
+  } else {
+    Serial.println("✗ Mount failed");
+    Serial.print("   Attempting to format... ");
+
+    if (LittleFS.format()) {
+      Serial.println("✓ Format successful");
+      Serial.print("   Trying to mount again... ");
+
+      if (LittleFS.begin()) {
+        Serial.println("✓ Mounted successfully");
+        Serial.println("   ⚠ WARNING: File system is empty!");
+        Serial.println("   ⚠ Please upload files using ESP32 LittleFS Data Upload");
+        Serial.println("   ⚠ Do not forget to close the serail monitor before");
+        Serial.println("   ⚠ Then reset the device.");
+      } else {
+        Serial.println("✗ Mount failed after format");
+        Serial.println("   ❌ Fatal Error: Storage unavailable");
+        return;
+      }
+    } else {
+      Serial.println("✗ Format failed");
+      Serial.println("   ❌ Fatal Error: Unable to initialize storage");
+      return;
+    }
+  }
+  // Print LittleFS info for ESP32
+  Serial.println("\n   Storage Info:");
+  Serial.println("   ------------");
+  Serial.printf("   Total space: %u KB\n", LittleFS.totalBytes() / 1024);
+  Serial.printf("   Used space: %u KB\n", LittleFS.usedBytes() / 1024);
+  Serial.printf("   Free space: %u KB\n", (LittleFS.totalBytes() - LittleFS.usedBytes()) / 1024);
+
+  // List all files
+  Serial.println("\n   Files in storage:");
+  Serial.println("   ---------------");
+  File root = LittleFS.open("/");
+  File file = root.openNextFile();
+  while (file) {
+    String fileName = file.name();
+    size_t fileSize = file.size();
+    Serial.printf("   • %-20s %8u bytes\n", fileName.c_str(), fileSize);
+    file = root.openNextFile();
+  }
+
+  Serial.println();
+}
 
 
 void setupWIFIstn() {
@@ -175,66 +215,61 @@ void setupWIFIstn() {
 
 
 void setup() {
-  WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0);  //disable brownout detector
+  // Brownout prevention
+  WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0);
+  // Reduce CPU speed for stability
+  setCpuFrequencyMhz(80);  // 80MHz instead of 240MHz
+  // Camera power pin stabilization (AI Thinker specific)
+  pinMode(12, OUTPUT);  // ESP32-CAM Flash LED pin
+  digitalWrite(12, LOW);
 
   Serial.begin(115200);
-  Serial.setDebugOutput(false);
   delay(3000);
   Serial.println();
   Serial.println("___ ESP32-CAM-WEB-SERVER - (edgeImpulse tool)___");
 
   // 1. Cam init
   initCamera();
-
   // 2. LittleFS init
   initLittleFS();
-
   // 3. Connect to WiFi
   setupWIFIstn();
 
-  // 4. Start server
-  startCameraServer();
+  // 4. Configure AsyncWebServer Routes
+  // Static files
+  server.on("/", HTTP_GET, [](AsyncWebServerRequest *request) {
+    request->send(LittleFS, "/index.html", "text/html");
+  });
+  server.on("/styles.css", HTTP_GET, [](AsyncWebServerRequest *request) {
+    request->send(LittleFS, "/styles.css", "text/css");
+  });
+  server.on("/script.js", HTTP_GET, [](AsyncWebServerRequest *request) {
+    request->send(LittleFS, "/script.js", "application/javascript");
+  });
 
-  // // 3. Define web routes for main server (port 80)
-  // server.on("/", HTTP_GET, []() {
-  //   serveFile("/index.html", "text/html");
-  // });
-  // server.on("/styles.css", HTTP_GET, []() {
-  //   serveFile("/styles.css", "text/css");
-  // });
-  // server.on("/script.js", HTTP_GET, []() {
-  //   serveFile("/script.js", "application/javascript");
-  // });
 
-  // // capture and clear on main server
-  // server.on("/capture", HTTP_GET, handleCapture);
-  // server.on("/clear", HTTP_POST, []() {
-  //   server.send(200, "text/plain", "Images cleared");
+
+  // Stream endpoint
+  // server.on("/stream", HTTP_GET, [](AsyncWebServerRequest *request) {
+  //   handleMjpeg(request);
   // });
+  server.on("/stream", HTTP_GET, handleMjpeg);
 
-  // // 404 handler for main server
-  // server.onNotFound([]() {
-  //   server.send(404, "text/plain", "404: Not found");
+  // Capture endpoint
+  // server.on("/capture", HTTP_GET, [](AsyncWebServerRequest *request) {
+  //   handleCapture(request);
   // });
+  server.on("/capture", HTTP_GET, handleCapture);
 
-  // // Setup stream server (port 81)
-  // streamServer.on("/stream", HTTP_GET, handleMjpeg);
-  // // 404 handler for stream server
-  // streamServer.onNotFound([]() {
-  //   streamServer.send(404, "text/plain", "404: Not found");
-  // });
+  // Clear endpoint
+  server.on("/clear", HTTP_POST, [](AsyncWebServerRequest *request) {
+    request->send(200, "text/plain", "Images cleared");
+  });
 
-  // // Start both servers
-  // // Start both servers
-  // server.begin();
-  // Serial.println("   ⤷ Main HTTP server started on port 80");
-
-  // streamServer.begin();
-  // Serial.println("   ⤷ MJPEG server started on port 81");
+  server.begin();
+  Serial.println("Async HTTP server started on port 80");
 }
 
 void loop() {
-  // server.handleClient();
-  // streamServer.handleClient();
-  delay(2);
+  delay(1);
 }
