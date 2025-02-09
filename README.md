@@ -1,5 +1,7 @@
 # EI_ESP32_CAM_SERVER
 
+WIP ...
+
 This educational tool helps reduce the time needed for capturing and labeling ESP32 camera images for TinyML training in [edgeimpulse](https://docs.edgeimpulse.com/reference). It's more efficient than the standard method of capturing and uploading single images through the [edgeimpulse data forwarder firmware](https://github.com/edgeimpulse/firmware-espressif-esp32).
 
 Instead, it creates an MJPEG stream directly from the camera showing it to you on a frontend hosted by the camera, allowing you to capture, label, and bulk upload images to the edgeimpulse studio, just to make life a little easier as you have to other wise sit there a long time
