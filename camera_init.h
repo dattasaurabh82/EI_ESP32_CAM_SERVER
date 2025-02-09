@@ -58,6 +58,8 @@ bool setupCamera() {
         s->set_framesize(s, FRAMESIZE_QQVGA);  // 160x120
         // Flip camera vertically
         s->set_vflip(s, 1);
+        // Flip camera horizontally
+        // s->set_hmirror(s, 1)
     }
 
     return true;
