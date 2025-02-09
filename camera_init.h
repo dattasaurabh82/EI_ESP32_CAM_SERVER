@@ -2,14 +2,12 @@
 #define CAMERA_INIT_H
 
 // Define camera model before including camera_pins.h
-#define CAMERA_MODEL_AI_THINKER 1  // Adding a value to the define
+#define CAMERA_MODEL_AI_THINKER 1
 #include "esp_camera.h"
 #include "camera_pins.h"
 
-// Function declaration
 bool setupCamera();
 
-// Function implementation
 bool setupCamera() {
     camera_config_t config;
     config.ledc_channel = LEDC_CHANNEL_0;

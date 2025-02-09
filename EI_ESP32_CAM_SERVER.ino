@@ -7,7 +7,6 @@
 #include "soc/rtc_cntl_reg.h"  //disable brownout problems
 
 WebServer server(80);
-WebServer streamServer(81);
 
 // LittleFS file server
 void serveFile(const char* path, const char* contentType) {
