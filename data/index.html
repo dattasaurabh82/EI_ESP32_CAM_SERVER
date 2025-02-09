@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ESP32 Camera Interface</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <div class="stream-container">
+            <img id="streamImg" alt="Camera Stream">
+        </div>
+        
+        <div class="button-container">
+            <button id="startCollecting">Start Collecting</button>
+            <button id="clearAll" style="display: none;">Clear All</button>
+            <button id="download" style="display: none;">Download</button>
+        </div>
+
+        <table class="image-table">
+            <tbody id="imageTableBody"></tbody>
+        </table>
+    </div>
+
+    <div id="imageModal" class="modal">
+        <img id="modalImage" src="" alt="Full size preview">
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
