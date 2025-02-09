@@ -1,5 +1,9 @@
 # EI_ESP32_CAM_SERVER
 
+This educational tool helps reduce the time needed for capturing and labeling ESP32 camera images for TinyML training in [edgeimpulse](https://docs.edgeimpulse.com/reference). It's more efficient than the standard method of capturing and uploading single images through the [edgeimpulse data forwarder firmware](https://github.com/edgeimpulse/firmware-espressif-esp32).
+
+Instead, it creates an MJPEG stream directly from the camera showing it to you on a frontend hosted by the camera, allowing you to capture, label, and bulk upload images to the edgeimpulse studio, just to make life a little easier as you have to other wise sit there a long time
+
 ## Preparation
 
 Arduino IDE version: `2.3.4`
@@ -9,7 +13,7 @@ Hardware Tested On
 1. [AI Thinker CAM](https://amzn.eu/d/hD7porD)
 2. [XIAO_ESP32S3](https://wiki.seeedstudio.com/xiao_esp32s3_getting_started/)
 
-### File upload
+### File upload - for frontend
 
 We need to upload our files (html, css. js, etc. for the frontend) to esp-32 via [arduino-littlefs-upload](https://github.com/earlephilhower/arduino-littlefs-upload)
 
@@ -80,6 +84,75 @@ Most of the camera settings doesn't need to be changed but sometimes you may nee
 ### Server Port Settings
 
 Our default web server is on port `80` defined in `WebServer server(80);` in our [EI_ESP32_CAM_SERVER.ino](EI_ESP32_CAM_SERVER.ino)
+
+### Usage
+
+After successful upload, you should see something like this
+
+```txt
+___ ESP32-CAM-WEB-SERVER - (edgeImpulse tool)___
+
+1. Checking Camera Status:
+   Initializing camera... ✓ Success
+
+   Camera Details:
+   --------------
+   Resolution: 1x1
+   Quality: 10
+   Brightness: 0
+   Contrast: 0
+   Saturation: 0
+   Special Effect: 0
+   Vertical Flip: Yes
+   Horizontal Mirror: No
+
+   Memory Info:
+   -----------
+   PSRAM: Available ✓
+   Free PSRAM: 4184412 bytes
+   Total PSRAM: 4194304 bytes
+
+
+2. Checking LittleFS Status:
+   Mounting LittleFS... ✓ Mounted successfully (No formatting needed)
+
+   Storage Info:
+   ------------
+   Total space: 896 KB
+   Used space: 20 KB
+   Free space: 876 KB
+
+   Files in storage:
+   ---------------
+   • index.html                941 bytes
+   • script.js                3038 bytes
+   • styles.css               1426 bytes
+
+
+3. Checking WiFi Status:
+   Connecting to SSID: :) .. ✓ Connected!
+
+   Network Info:
+   ------------
+   ⤷ IP Address: 192.168.1.172
+   ⤷ Subnet Mask: 255.255.255.0
+   ⤷ Gateway: 192.168.1.1
+   ⤷ DNS: 192.168.1.1
+   ⤷ MAC Address: 24:0A:C4:EF:F5:30
+
+   Signal Info:
+   -----------
+   ⤷ RSSI: -60 dBm
+   ⤷ Channel: 1
+   ⤷ TX Power: 78 dBm
+
+   Connection Info:
+   ---------------
+   ⤷ SSID: :)
+   ⤷ Connection Time: 1000 ms
+
+   ⤷ HTTP server started on port 80
+```
 
 ---
 

@@ -102,17 +102,7 @@ void handleCapture() {
 //   esp_camera_fb_return(fb);
 // }
 
-
-void setup() {
-  WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0);  //disable brownout detector
-
-  Serial.begin(115200);
-  Serial.setDebugOutput(false);
-  delay(3000);
-  Serial.println();
-  Serial.println("___ ESP32-CAM-WEB-SERVER - (edgeImpulse tool)___");
-
-  // 1. Cam init
+void initCamera() {
   Serial.println("\n1. Checking Camera Status:");
   Serial.print("   Initializing camera... ");
 
@@ -150,8 +140,11 @@ void setup() {
   }
 
   Serial.println();
+}
 
-  // 2. LittleFS init
+
+
+void initLittleFS() {
   Serial.println("\n2. Checking LittleFS Status:");
   Serial.print("   Mounting LittleFS... ");
 
@@ -202,8 +195,10 @@ void setup() {
   }
 
   Serial.println();
+}
 
-  // 3. Connect to WiFi
+
+void setupWIFIstn() {
   Serial.println("\n3. Checking WiFi Status:");
   Serial.printf("   Connecting to SSID: %s ", ssid);
 
@@ -246,16 +241,34 @@ void setup() {
   }
 
   Serial.println();
+}
+
+
+void setup() {
+  WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0);  //disable brownout detector
+
+  Serial.begin(115200);
+  Serial.setDebugOutput(false);
+  delay(3000);
+  Serial.println();
+  Serial.println("___ ESP32-CAM-WEB-SERVER - (edgeImpulse tool)___");
+
+  // 1. Cam init
+  initCamera();
+
+  // 2. LittleFS init
+  initLittleFS();
+
+  // 3. Connect to WiFi
+  setupWIFIstn();
 
   // 3. Define web routes
   server.on("/", HTTP_GET, []() {
     serveFile("/index.html", "text/html");
   });
-
   server.on("/styles.css", HTTP_GET, []() {
     serveFile("/styles.css", "text/css");
   });
-
   server.on("/script.js", HTTP_GET, []() {
     serveFile("/script.js", "application/javascript");
   });
