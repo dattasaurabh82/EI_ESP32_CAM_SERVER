@@ -13,7 +13,6 @@
 AsyncWebServer server(80);  // Single server instance
 
 // ======== Non-blocking MJPEG Stream ========
-
 /* Slower and safer */
 // void handleMjpeg(AsyncWebServerRequest *request) {
 //   AsyncWebServerResponse *response = request->beginChunkedResponse(

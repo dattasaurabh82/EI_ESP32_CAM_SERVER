@@ -21,6 +21,7 @@ class CameraInterface {
         this.startButton.addEventListener('click', () => this.captureImage());
         this.clearButton.addEventListener('click', () => this.clearAllImages());
         this.imageModal.addEventListener('click', (e) => this.handleModalClick(e));
+        this.downloadButton.addEventListener('click', () => this.downloadImages());
         document.addEventListener('keydown', (e) => this.handleKeyPress(e));
     }
 
@@ -29,7 +30,7 @@ class CameraInterface {
             const response = await fetch('/capture');
             const imageBlob = await response.blob();
             const imageUrl = URL.createObjectURL(imageBlob);
-            
+
             this.addImageToTable(imageUrl);
             this.updateButtonVisibility();
         } catch (error) {
@@ -70,23 +71,46 @@ class CameraInterface {
 
     async clearAllImages() {
         try {
-          const response = await fetch('/clear', {
-            method: 'POST', // ** Use POST instead of GET
-            headers: {
-              'Content-Type': 'application/json'
+            const response = await fetch('/clear', {
+                method: 'POST', // ** Use POST instead of GET
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+            if (!response.ok) {
+                throw new Error('Failed to clear images');
             }
-          });
-          if (!response.ok) {
-            throw new Error('Failed to clear images');
-          }
-          this.imageTableBody.innerHTML = '';
-          this.imageCount = 0;
-          this.clearButton.style.display = 'none';
-          this.downloadButton.style.display = 'none';
+            this.imageTableBody.innerHTML = '';
+            this.imageCount = 0;
+            this.clearButton.style.display = 'none';
+            this.downloadButton.style.display = 'none';
         } catch (error) {
-          console.error('Error clearing images:', error);
+            console.error('Error clearing images:', error);
         }
-      }
+    }
+
+    async downloadImages() {
+        const label = prompt("Enter a label for the images:");
+        if (!label) return;
+
+        const zip = new JSZip();
+        const images = document.querySelectorAll('.preview-image');
+        const timestamp = new Date().toISOString().split('T')[0];
+
+        for (let i = 0; i < images.length; i++) {
+            const img = images[i];
+            const response = await fetch(img.src);
+            const blob = await response.blob();
+            const filename = `${label}_IMG_${timestamp}_${i + 1}.jpg`;
+            zip.file(filename, blob);
+        }
+
+        const content = await zip.generateAsync({ type: "blob" });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(content);
+        link.download = `${label}_images.zip`;
+        link.click();
+    }
 
     showModal(imageUrl) {
         this.modalImage.src = imageUrl;
