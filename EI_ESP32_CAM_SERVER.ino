@@ -14,55 +14,55 @@ AsyncWebServer server(80);  // Single server instance
 
 // ======== Non-blocking MJPEG Stream ========
 /* Slower and safer */
-// void handleMjpeg(AsyncWebServerRequest *request) {
-//   AsyncWebServerResponse *response = request->beginChunkedResponse(
-//     "multipart/x-mixed-replace; boundary=frame",
-//     [](uint8_t *buffer, size_t maxLen, size_t index) -> size_t {
-//       camera_fb_t *fb = esp_camera_fb_get();
-//       if (!fb) return 0;
-
-//       // Assume maxLen >= 100 (header) + fb->len
-//       size_t jpgLen = snprintf(
-//         (char *)buffer, 100, // Limit header to first 100 bytes
-//         "--frame\r\nContent-Type: image/jpeg\r\nContent-Length: %d\r\n\r\n",
-//         fb->len
-//       );
-
-//       memcpy(buffer + jpgLen, fb->buf, fb->len);
-//       esp_camera_fb_return(fb);
-
-//       return jpgLen + fb->len;
-//     }
-//   );
-//   response->addHeader("Access-Control-Allow-Origin", "*");
-//   request->send(response);
-// }
-
-/* faster and less safer */
 void handleMjpeg(AsyncWebServerRequest *request) {
   AsyncWebServerResponse *response = request->beginChunkedResponse(
     "multipart/x-mixed-replace; boundary=frame",
     [](uint8_t *buffer, size_t maxLen, size_t index) -> size_t {
-
-      // Add flip before getting frame
-      // sensor_t *s = esp_camera_sensor_get();
-      // s->set_vflip(s, 1);
-
       camera_fb_t *fb = esp_camera_fb_get();
       if (!fb) return 0;
 
+      // Assume maxLen >= 100 (header) + fb->len
       size_t jpgLen = snprintf(
-        (char *)buffer, maxLen,
+        (char *)buffer, 100, // Limit header to first 100 bytes
         "--frame\r\nContent-Type: image/jpeg\r\nContent-Length: %d\r\n\r\n",
-        fb->len);
+        fb->len
+      );
+
       memcpy(buffer + jpgLen, fb->buf, fb->len);
       esp_camera_fb_return(fb);
 
       return jpgLen + fb->len;
-    });
+    }
+  );
   response->addHeader("Access-Control-Allow-Origin", "*");
   request->send(response);
 }
+
+/* faster and less safer */
+// void handleMjpeg(AsyncWebServerRequest *request) {
+//   AsyncWebServerResponse *response = request->beginChunkedResponse(
+//     "multipart/x-mixed-replace; boundary=frame",
+//     [](uint8_t *buffer, size_t maxLen, size_t index) -> size_t {
+
+//       // Add flip before getting frame
+//       // sensor_t *s = esp_camera_sensor_get();
+//       // s->set_vflip(s, 1);
+
+//       camera_fb_t *fb = esp_camera_fb_get();
+//       if (!fb) return 0;
+
+//       size_t jpgLen = snprintf(
+//         (char *)buffer, maxLen,
+//         "--frame\r\nContent-Type: image/jpeg\r\nContent-Length: %d\r\n\r\n",
+//         fb->len);
+//       memcpy(buffer + jpgLen, fb->buf, fb->len);
+//       esp_camera_fb_return(fb);
+
+//       return jpgLen + fb->len;
+//     });
+//   response->addHeader("Access-Control-Allow-Origin", "*");
+//   request->send(response);
+// }
 
 
 // Image saving
@@ -224,8 +224,8 @@ void setup() {
   WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0);
 
   // Configure PSRAM cache strategy
-  psramInit();
-  heap_caps_malloc_extmem_enable(512);  // Allocate PSRAM first
+  // psramInit();
+  // heap_caps_malloc_extmem_enable(512);  // Allocate PSRAM first
 
   // Camera power pin stabilization (AI Thinker specific)
   pinMode(12, OUTPUT);  // ESP32-CAM Flash LED pin
@@ -274,5 +274,5 @@ void setup() {
 }
 
 void loop() {
-  delay(1);
+  delay(1000);
 }

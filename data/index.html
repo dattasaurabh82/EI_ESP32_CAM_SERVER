@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,21 +9,36 @@
     <link rel="stylesheet" href="styles.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.7.1/jszip.min.js"></script>
 </head>
+
 <body>
     <div class="container">
         <div class="stream-container">
             <img id="streamImg" alt="Camera Stream">
         </div>
-        
+
         <div class="button-container">
             <button id="clearAll" style="display: none;"><i class="fas fa-trash"></i> Clear All </button>
             <button id="startCollecting"><i class="fas fa-camera"></i> Start Capture </button>
             <button id="download" style="display: none;"><i class="fas fa-save"></i> Download ALL </button>
         </div>
 
-        <table class="image-table">
+        <!-- <table class="image-table">
             <tbody id="imageTableBody"></tbody>
-        </table>
+        </table> -->
+
+        <div class="table-container">
+            <table class="image-table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Preview</th>
+                        <th>Filename</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="imageTableBody"></tbody>
+            </table>
+        </div>
     </div>
 
     <div id="imageModal" class="modal">
@@ -31,4 +47,5 @@
 
     <script src="script.js"></script>
 </body>
+
 </html>

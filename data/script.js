@@ -38,28 +38,80 @@ class CameraInterface {
         }
     }
 
+    // addImageToTable(imageUrl) {
+    //     const row = this.imageTableBody.insertRow();
+    //     const cell = row.insertCell();
+
+    //     // Create image element
+    //     const img = document.createElement('img');
+    //     img.src = imageUrl;
+    //     img.className = 'preview-image';
+    //     img.addEventListener('click', () => this.showModal(imageUrl));
+
+    //     // Create filename element
+    //     const now = new Date();
+    //     const filename = `IMG_${now.toISOString().replace(/[:.]/g, '-')}_${img.width}x${img.height}.jpg`;
+    //     const filenameElement = document.createElement('div');
+    //     filenameElement.textContent = filename;
+    //     filenameElement.className = 'filename';
+
+    //     // Append to table
+    //     cell.appendChild(img);
+    //     cell.appendChild(filenameElement);
+
+    //     this.imageCount++;
+    // }
+
     addImageToTable(imageUrl) {
         const row = this.imageTableBody.insertRow();
-        const cell = row.insertCell();
 
-        // Create image element
+        // Index cell
+        const indexCell = row.insertCell();
+        indexCell.textContent = this.imageCount + 1;
+
+        // Image cell
+        const imgCell = row.insertCell();
         const img = document.createElement('img');
         img.src = imageUrl;
         img.className = 'preview-image';
         img.addEventListener('click', () => this.showModal(imageUrl));
+        imgCell.appendChild(img);
 
-        // Create filename element
-        const now = new Date();
-        const filename = `IMG_${now.toISOString().replace(/[:.]/g, '-')}_${img.width}x${img.height}.jpg`;
-        const filenameElement = document.createElement('div');
-        filenameElement.textContent = filename;
-        filenameElement.className = 'filename';
+        // Filename cell
+        const filenameCell = row.insertCell();
+        const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+        const filename = `IMG_${timestamp}_96x96.jpg`;
+        filenameCell.textContent = filename;
 
-        // Append to table
-        cell.appendChild(img);
-        cell.appendChild(filenameElement);
+        // Delete button cell
+        const deleteCell = row.insertCell();
+        const deleteBtn = document.createElement('button');
+        deleteBtn.innerHTML = '<i class="fas fa-trash"></i>';
+        deleteBtn.className = 'delete-btn';
+        deleteBtn.addEventListener('click', () => this.deleteRow(row));
+        deleteCell.appendChild(deleteBtn);
 
         this.imageCount++;
+        this.updateButtonVisibility();
+    }
+
+    updateRowNumbers() {
+        const rows = this.imageTableBody.getElementsByTagName('tr');
+        for (let i = 0; i < rows.length; i++) {
+            rows[i].cells[0].textContent = i + 1;
+        }
+    }
+
+    deleteRow(row) {
+        if (confirm('Are you sure you want to delete this image?')) {
+            row.remove();
+            this.imageCount--;
+            this.updateRowNumbers();
+            if (this.imageCount <= 1) {
+                this.clearButton.style.display = 'none';
+                this.downloadButton.style.display = 'none';
+            }
+        }
     }
 
     updateButtonVisibility() {
@@ -101,14 +153,14 @@ class CameraInterface {
             const img = images[i];
             const response = await fetch(img.src);
             const blob = await response.blob();
-            const filename = `${label}_IMG_${timestamp}_${i + 1}.jpg`;
+            const filename = `${label}_${timestamp}_${i + 1}.jpg`;
             zip.file(filename, blob);
         }
 
         const content = await zip.generateAsync({ type: "blob" });
         const link = document.createElement('a');
         link.href = URL.createObjectURL(content);
-        link.download = `${label}_images.zip`;
+        link.download = `${label}.zip`;
         link.click();
     }
 

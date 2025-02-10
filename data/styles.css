@@ -21,15 +21,17 @@ body {
     background: #fff;
     padding: 10px;
     border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 #streamImg {
-    width: 220px; /* Adjust as needed - orig size 96 px */
-    height: 220px; /* Keep it square - orig size 96 px */
+    width:120px;
+    /* Adjust as needed - orig size 96 px */
+    height: 120px;
+    /* Keep it square - orig size 96 px */
 
     /* Flip the image vertically */
-    /* transform: scaleY(-1); */ 
+    /* transform: scaleY(-1); */
     /* Don't do it here as we are already telling esp32 to do it */
 
     object-fit: cover;
@@ -60,50 +62,54 @@ button:hover {
     display: flex;
     justify-content: space-between;
     width: 100%;
-    max-width: 800px; /* Match container width */
+    max-width: 800px;
+    /* Match container width */
     margin: 0 auto;
- }
- 
- #startCollecting {
+}
+
+#startCollecting {
     background: #007bff;
-    order: 2; /* Center button */
+    order: 2;
+    /* Center button */
     margin: 0 auto;
- }
- 
- #clearAll {
-    background: #dc3545; /* Red */
+}
+
+#clearAll {
+    background: #dc3545;
+    /* Red */
     order: 1;
- }
- 
- #download {
-    background: #6f42c1; /* Purple */
+}
+
+#download {
+    background: #6f42c1;
+    /* Purple */
     order: 3;
- }
- 
- button {
+}
+
+button {
     padding: 8px 16px;
     border: none;
     border-radius: 4px;
     color: white;
     cursor: pointer;
     transition: background 0.3s;
- }
- 
- button:hover {
+}
+
+button:hover {
     filter: brightness(90%);
- }
- 
- button:disabled {
-    background: #cccccc;
-    cursor: not-allowed;
- }
+}
 
 button:disabled {
     background: #cccccc;
     cursor: not-allowed;
 }
 
-.image-table {
+button:disabled {
+    background: #cccccc;
+    cursor: not-allowed;
+}
+
+/* .image-table {
     width: 100%;
     border-collapse: collapse;
     margin-top: 20px;
@@ -113,13 +119,15 @@ button:disabled {
     padding: 10px;
     border: 1px solid #ddd;
 }
+*/
 
 .preview-image {
-    width: 96px;
-    height: 96px;
+    width: 42px;
+    height: 42px;
     object-fit: cover;
     cursor: pointer;
 }
+
 
 .modal {
     display: none;
@@ -138,6 +146,40 @@ button:disabled {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    max-width: 90%;
-    max-height: 90%;
+    max-width: 100%;
+    max-height: 100%;
+}
+
+.table-container {
+    max-height: 400px;
+    overflow-y: auto;
+    margin-top: 20px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+}
+
+.image-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.image-table th,
+.image-table td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+.image-table th {
+    background: #f8f9fa;
+    position: sticky;
+    top: 0;
+}
+
+.delete-btn {
+    color: #dc3545;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 5px;
 }
