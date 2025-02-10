@@ -40,12 +40,24 @@ class CameraInterface {
     addImageToTable(imageUrl) {
         const row = this.imageTableBody.insertRow();
         const cell = row.insertCell();
+
+        // Create image element
         const img = document.createElement('img');
         img.src = imageUrl;
         img.className = 'preview-image';
         img.addEventListener('click', () => this.showModal(imageUrl));
+
+        // Create filename element
+        const now = new Date();
+        const filename = `IMG_${now.toISOString().replace(/[:.]/g, '-')}_${img.width}x${img.height}.jpg`;
+        const filenameElement = document.createElement('div');
+        filenameElement.textContent = filename;
+        filenameElement.className = 'filename';
+
+        // Append to table
         cell.appendChild(img);
-        
+        cell.appendChild(filenameElement);
+
         this.imageCount++;
     }
 

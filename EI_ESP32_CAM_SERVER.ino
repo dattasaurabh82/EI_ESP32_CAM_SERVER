@@ -44,6 +44,11 @@ void handleMjpeg(AsyncWebServerRequest *request) {
   AsyncWebServerResponse *response = request->beginChunkedResponse(
     "multipart/x-mixed-replace; boundary=frame",
     [](uint8_t *buffer, size_t maxLen, size_t index) -> size_t {
+
+      // Add flip before getting frame
+      // sensor_t *s = esp_camera_sensor_get();
+      // s->set_vflip(s, 1);
+
       camera_fb_t *fb = esp_camera_fb_get();
       if (!fb) return 0;
 

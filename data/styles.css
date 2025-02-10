@@ -25,14 +25,20 @@ body {
 }
 
 #streamImg {
-    width: 96px;
-    height: 96px;
-    transform: scaleY(-1);
+    width: 220px; /* Adjust as needed - orig size 96 px */
+    height: 220px; /* Keep it square - orig size 96 px */
+
+    /* Flip the image vertically */
+    /* transform: scaleY(-1); */ 
+    /* Don't do it here as we are already telling esp32 to do it */
+
     object-fit: cover;
 }
 
-.button-container {
-    margin: 15px 0;
+/* .button-container {
+    display: flex;
+    justify-content: center;
+    gap: 24px;
 }
 
 button {
@@ -48,7 +54,49 @@ button {
 
 button:hover {
     background: #0056b3;
-}
+} */
+
+.button-container {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    max-width: 800px; /* Match container width */
+    margin: 0 auto;
+ }
+ 
+ #startCollecting {
+    background: #007bff;
+    order: 2; /* Center button */
+    margin: 0 auto;
+ }
+ 
+ #clearAll {
+    background: #dc3545; /* Red */
+    order: 1;
+ }
+ 
+ #download {
+    background: #6f42c1; /* Purple */
+    order: 3;
+ }
+ 
+ button {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    color: white;
+    cursor: pointer;
+    transition: background 0.3s;
+ }
+ 
+ button:hover {
+    filter: brightness(90%);
+ }
+ 
+ button:disabled {
+    background: #cccccc;
+    cursor: not-allowed;
+ }
 
 button:disabled {
     background: #cccccc;
@@ -67,8 +115,8 @@ button:disabled {
 }
 
 .preview-image {
-    width: 48px;
-    height: 48px;
+    width: 96px;
+    height: 96px;
     object-fit: cover;
     cursor: pointer;
 }
