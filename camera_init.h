@@ -39,24 +39,24 @@ bool setupCamera() {
   // Initial buffer size settings
   if (psramFound()) {
     Serial.println();
-    Serial.println("  PSRAM found ...");
+    Serial.println("    [camera_init.h] PSRAM found ...");
 
     config.frame_size = FRAMESIZE_QQVGA;  // 160x120
-    config.jpeg_quality = 12;             // 0-63 lower means higher quality
-    config.fb_count = 2;
+    config.jpeg_quality = 25;             // 0-63: lower means higher quality
+    config.fb_count = 1;
   } else {
     Serial.println();
-    Serial.println("  PSRAM found ...");
+    Serial.println("    [camera_init.h] PSRAM Not found ...");
 
-    config.frame_size = FRAMESIZE_QQVGA;
-    config.jpeg_quality = 10;
+    config.frame_size = FRAMESIZE_QQVGA;  // Still 160x120
+    config.jpeg_quality = 30;             // 0-63: lower means higher quality
     config.fb_count = 1;
   }
 
   // Initialize the camera
   esp_err_t err = esp_camera_init(&config);
   if (err != ESP_OK) {
-    Serial.printf("Camera init failed with error 0x%x", err);
+    Serial.printf("[camera_init.h] Camera init failed with error 0x%x", err);
     return false;
   }
 
