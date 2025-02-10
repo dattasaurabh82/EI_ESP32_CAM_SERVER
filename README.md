@@ -12,7 +12,7 @@ WIP ...
 - [ ] Migrate to zigzag github
 - [ ] Feature: If not connected to wifi, first load captive portal in AP mode
 
-![alt text](<Screenshot 2025-02-10 at 03.02.40.png>)
+![alt text](<assets/Screenshot 2025-02-10 at 03.02.40.png>)
 
 This educational tool helps reduce the time needed for capturing and labeling ESP32 camera images for TinyML training in [edgeimpulse](https://docs.edgeimpulse.com/reference). It's more efficient than the standard method of capturing and uploading single images through the [edgeimpulse data forwarder firmware](https://github.com/edgeimpulse/firmware-espressif-esp32).
 
