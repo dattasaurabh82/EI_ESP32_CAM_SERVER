@@ -6,8 +6,8 @@
 #include "credentials.h"
 #include "camera_init.h"
 
-#include "soc/soc.h"
-#include "soc/rtc_cntl_reg.h"
+// #include "soc/soc.h"
+// #include "soc/rtc_cntl_reg.h"
 
 
 AsyncWebServer server(80);  // Single server instance
@@ -23,17 +23,15 @@ void handleMjpeg(AsyncWebServerRequest *request) {
 
       // Assume maxLen >= 100 (header) + fb->len
       size_t jpgLen = snprintf(
-        (char *)buffer, 100, // Limit header to first 100 bytes
+        (char *)buffer, 100,  // Limit header to first 100 bytes
         "--frame\r\nContent-Type: image/jpeg\r\nContent-Length: %d\r\n\r\n",
-        fb->len
-      );
+        fb->len);
 
       memcpy(buffer + jpgLen, fb->buf, fb->len);
       esp_camera_fb_return(fb);
 
       return jpgLen + fb->len;
-    }
-  );
+    });
   response->addHeader("Access-Control-Allow-Origin", "*");
   request->send(response);
 }
@@ -221,17 +219,20 @@ void setupWIFIstn() {
 
 void setup() {
   // Brownout prevention
-  WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0);
+  // WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0);
 
   // Configure PSRAM cache strategy
   // psramInit();
   // heap_caps_malloc_extmem_enable(512);  // Allocate PSRAM first
 
-  // Camera power pin stabilization (AI Thinker specific)
-  pinMode(12, OUTPUT);  // ESP32-CAM Flash LED pin
-  digitalWrite(12, LOW);
+  // // Camera power pin stabilization (AI Thinker specific)
+  // pinMode(12, OUTPUT);  // ESP32-CAM Flash LED pin
+  // digitalWrite(12, LOW);
 
   Serial.begin(115200);
+  while (!Serial) {
+    ;
+  }
   delay(3000);
   Serial.println();
   Serial.println("___ ESP32-CAM-WEB-SERVER - (edgeImpulse tool)___");
