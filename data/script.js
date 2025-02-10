@@ -1,16 +1,176 @@
+class EdgeImpulseIntegration {
+    constructor() {
+        this.apiKey = '';
+        this.projectId = '';
+        this.deviceName = '';
+        this.category = 'training';
+        this.label = '';
+
+        // Load saved configuration
+        this.loadConfig();
+        this.setupEventListeners();
+
+        // Setup toggle functionality
+        this.setupConfigToggle();
+    }
+
+    loadConfig() {
+        // Load from localStorage (encrypted)
+        const encryptedConfig = localStorage.getItem('eiConfig');
+        if (encryptedConfig) {
+            try {
+                const config = this.decrypt(encryptedConfig);
+                const parsedConfig = JSON.parse(config);
+                this.apiKey = parsedConfig.apiKey || '';
+                this.projectId = parsedConfig.projectId || '';
+                this.deviceName = parsedConfig.deviceName || '';
+
+                // Populate UI
+                document.getElementById('apiKey').value = this.apiKey;
+                document.getElementById('projectID').value = this.projectId;
+                document.getElementById('deviceName').value = this.deviceName;
+            } catch (error) {
+                console.error('Error loading configuration:', error);
+            }
+        }
+    }
+
+    setupEventListeners() {
+        document.getElementById('saveConfig').addEventListener('click', () => this.saveConfig());
+        document.getElementById('uploadToEI').addEventListener('click', () => this.uploadImages());
+    }
+
+    setupConfigToggle() {
+        const toggleBtn = document.getElementById('toggleConfig');
+        const configPanel = document.querySelector('.config-panel');
+
+        toggleBtn.addEventListener('click', () => {
+            const isVisible = configPanel.style.display !== 'none';
+            configPanel.style.display = isVisible ? 'none' : 'block';
+            toggleBtn.classList.toggle('active');
+        });
+    }
+
+    saveConfig() {
+        const config = {
+            apiKey: document.getElementById('apiKey').value,
+            projectId: document.getElementById('projectID').value,
+            deviceName: document.getElementById('deviceName').value
+        };
+
+        // Encrypt and save to localStorage
+        const encrypted = this.encrypt(JSON.stringify(config));
+        localStorage.setItem('eiConfig', encrypted);
+
+        this.apiKey = config.apiKey;
+        this.projectId = config.projectId;
+        this.deviceName = config.deviceName;
+
+        alert('Configuration saved!');
+    }
+
+    // Simple encryption/decryption functions
+    encrypt(text) {
+        return btoa(text);  // For demo - replace with more secure encryption
+    }
+
+    decrypt(encrypted) {
+        return atob(encrypted);  // For demo - replace with more secure decryption
+    }
+
+    async uploadImages() {
+        const images = document.querySelectorAll('.preview-image');
+        const category = document.getElementById('category').value;
+        const label = document.getElementById('label').value;
+
+        if (!this.apiKey || !this.projectId || !this.deviceName) {
+            alert('Please configure Edge Impulse settings first');
+            return;
+        }
+
+        if (!label) {
+            alert('Please enter a label for the images');
+            return;
+        }
+
+        for (let i = 0; i < images.length; i++) {
+            const img = images[i];
+            try {
+                const response = await fetch(img.src);
+                const blob = await response.blob();
+                await this.uploadToEdgeImpulse(blob, label, category, i);
+            } catch (error) {
+                console.error(`Error uploading image ${i + 1}:`, error);
+                alert(`Failed to upload image ${i + 1}. Please try again.`);
+            }
+        }
+    }
+
+    async uploadToEdgeImpulse(blob, label, category, index) {
+        const timestamp = Date.now();
+        const filename = `${this.deviceName}_${label}_${timestamp}_${index}.jpg`;
+
+        // Create form data
+        const formData = new FormData();
+        formData.append('data', blob, filename);
+        formData.append('label', label);
+        formData.append('category', category);
+
+        // Upload to Edge Impulse
+        const response = await fetch(`https://ingestion.edgeimpulse.com/api/training/files`, {
+            method: 'POST',
+            headers: {
+                'x-api-key': this.apiKey,
+                'x-project-id': this.projectId
+            },
+            body: formData
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        return response.json();
+    }
+}
+
 class CameraInterface {
     constructor() {
+        // Stream frame
         this.streamImg = document.getElementById('streamImg');
+
+        // Buttons
         this.startButton = document.getElementById('startCollecting');
         this.clearButton = document.getElementById('clearAll');
         this.downloadButton = document.getElementById('download');
+        this.uploadButton = document.getElementById('uploadToEI')
+
+        // saved image table
         this.imageTableBody = document.getElementById('imageTableBody');
+        // Image preview
         this.imageModal = document.getElementById('imageModal');
         this.modalImage = document.getElementById('modalImage');
         this.imageCount = 0;
 
         this.initializeStream();
         this.setupEventListeners();
+        
+        // Initialize Edge Impulse integration
+        this.edgeImpulse = new EdgeImpulseIntegration();
+
+        // Show upload button when images are present
+        this.updateButtonVisibility = function () {
+            if (this.imageCount > 0) {
+                this.uploadButton.style.display = 'inline-block';
+                this.clearButton.style.display = 'inline-block';
+                this.downloadButton.style.display = 'inline-block';
+
+            } else {
+                this.updateButton.style.display = 'none';
+                this.clearButton.style.display = 'none';
+                this.downloadButton.style.display = 'none';
+            }
+        };
     }
 
     initializeStream() {

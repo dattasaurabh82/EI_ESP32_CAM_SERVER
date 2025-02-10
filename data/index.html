@@ -12,6 +12,51 @@
 
 <body>
     <div class="container">
+        <div class="config-toggle">
+            <button id="toggleConfig" class="toggle-btn">
+                <i class="fas fa-cog"></i> Edge Impulse Configuration
+            </button>
+        </div>
+
+        <div class="config-panel" style="display: none;">
+            <div class="config-section">
+                <div class="config-row main-config">
+                    <div class="input-group">
+                        <label for="apiKey">API Key</label>
+                        <input type="password" id="apiKey" placeholder="Enter Edge Impulse API Key"
+                            class="config-input">
+                    </div>
+                    <div class="input-group">
+                        <label for="projectID">Project ID</label>
+                        <input type="text" id="projectID" placeholder="Enter Project ID" class="config-input">
+                    </div>
+                    <div class="input-group">
+                        <label for="deviceName">Device Name</label>
+                        <input type="text" id="deviceName" placeholder="Enter Device Name" class="config-input">
+                    </div>
+                    <div class="input-group button-group">
+                        <button id="saveConfig" class="config-btn">Save Configuration</button>
+                    </div>
+                </div>
+            </div>
+            <div class="config-divider"></div>
+            <div class="config-section">
+                <div class="config-row sampling-row">
+                    <div class="input-group">
+                        <label for="category">Sampling Category</label>
+                        <select id="category" class="config-input">
+                            <option value="training">Training</option>
+                            <option value="testing">Testing</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label for="label">Label</label>
+                        <input type="text" id="label" placeholder="Enter Label" class="config-input">
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div class="stream-container">
             <img id="streamImg" alt="Camera Stream">
         </div>
@@ -20,6 +65,8 @@
             <button id="clearAll" style="display: none;"><i class="fas fa-trash"></i> Clear All </button>
             <button id="startCollecting"><i class="fas fa-camera"></i> Start Capture </button>
             <button id="download" style="display: none;"><i class="fas fa-save"></i> Download ALL </button>
+            <button id="uploadToEI" style="display: none;"><i class="fas fa-cloud-upload-alt"></i> Upload to Edge
+                Impulse</button>
         </div>
 
         <!-- <table class="image-table">

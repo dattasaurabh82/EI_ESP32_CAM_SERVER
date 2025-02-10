@@ -11,6 +11,7 @@ Instead, it creates an MJPEG stream directly from the camera and displays it on 
 - [x] Stabilize Stream
 - [x] Optimize Capture frame
 - [ ] Integrate edge impulse upload API
+- [ ] Button to Start Stop Stream But still retain snapshot
 - [ ] Beautify a bit
 - [ ] Add Footer
 - [ ] Migrate to zigzag github
