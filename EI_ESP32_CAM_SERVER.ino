@@ -17,31 +17,6 @@
 AsyncWebServer server(80);  // Single server instance
 
 // ======== Non-blocking MJPEG Stream ========
-/* Slower and safer */
-// [OLD]
-// void handleMjpeg(AsyncWebServerRequest *request) {
-//   Serial.println("  Starting stream ...");
-//   AsyncWebServerResponse *response = request->beginChunkedResponse(
-//     "multipart/x-mixed-replace; boundary=frame",
-//     [](uint8_t *buffer, size_t maxLen, size_t index) -> size_t {
-//       camera_fb_t *fb = esp_camera_fb_get();
-//       if (!fb) return 0;
-
-//       // Assume maxLen >= 100 (header) + fb->len
-//       size_t jpgLen = snprintf(
-//         (char *)buffer, 100,  // Limit header to first 100 bytes
-//         "--frame\r\nContent-Type: image/jpeg\r\nContent-Length: %d\r\n\r\n",
-//         fb->len);
-
-//       memcpy(buffer + jpgLen, fb->buf, fb->len);
-//       esp_camera_fb_return(fb);
-
-//       return jpgLen + fb->len;
-//     });
-//   response->addHeader("Access-Control-Allow-Origin", "*");
-//   request->send(response);
-// }
-// [NEW]
 void handleMjpeg(AsyncWebServerRequest *request) {
   AsyncWebServerResponse *response = request->beginChunkedResponse(
     "multipart/x-mixed-replace; boundary=frame",
@@ -67,19 +42,7 @@ void handleMjpeg(AsyncWebServerRequest *request) {
 }
 
 
-
 // Image saving
-// [OLD]
-// void handleCapture(AsyncWebServerRequest *request) {
-//   camera_fb_t *fb = esp_camera_fb_get();
-//   if (!fb) {
-//     request->send(500, "text/plain", "Camera capture failed");
-//     return;
-//   }
-//   request->send(200, "image/jpeg", fb->buf, fb->len);
-//   esp_camera_fb_return(fb);
-// }
-// [New]
 void handleCapture(AsyncWebServerRequest *request) {
   Serial.println("  Received Save frame request ...");
   static unsigned long lastCapture = 0;
@@ -245,16 +208,6 @@ void setupWIFIstn() {
 
 
 void setup() {
-  // #ifndef CAMERA_MODEL_AI_THINKER
-  //   // Brownout prevention
-  //   WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0);
-  //   // Camera power pin stabilization (AI Thinker specific)
-  //   pinMode(10, OUTPUT);  // ESP32-CAM Flash LED pin
-  //   digitalWrite(1, LOW);
-  //   pinMode(12, OUTPUT);  // ESP32-CAM Flash LED pin
-  //   digitalWrite(12, LOW);
-  // #endif
-
 #ifdef CAMERA_MODEL_XIAO_ESP32S3
   // Skip brownout and pin settings
 #elif defined(CAMERA_MODEL_AI_THINKER)

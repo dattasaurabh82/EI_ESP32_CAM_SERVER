@@ -25,9 +25,9 @@ body {
 }
 
 #streamImg {
-    width:120px;
+    width:220px;
     /* Adjust as needed - orig size 96 px */
-    height: 120px;
+    height: 220px;
     /* Keep it square - orig size 96 px */
 
     /* Flip the image vertically */
@@ -122,8 +122,8 @@ button:disabled {
 */
 
 .preview-image {
-    width: 42px;
-    height: 42px;
+    width: 32px;
+    height: 32px;
     object-fit: cover;
     cursor: pointer;
 }
