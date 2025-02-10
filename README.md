@@ -10,11 +10,11 @@ Instead, it creates an MJPEG stream directly from the camera and displays it on 
 
 - [x] Stabilize Stream
 - [x] Optimize Capture frame
-- [ ] Integrate edge impulse upload API
-- [ ] Button to Start Stop Stream But still retain snapshot
+- [x] Integrate edge impulse upload API
 - [ ] Beautify a bit
 - [ ] Add Footer
 - [ ] Migrate to zigzag github
+- [ ] Feature: Button to Start Stop Stream But still retain snapshot
 - [ ] Feature: If not connected to wifi, first load captive portal in AP mode
 
 ![alt text](<assets/Screenshot 2025-02-10 at 03.02.40.png>)
@@ -42,22 +42,22 @@ We need to upload our files (html, css. js, etc. for the frontend) to esp-32 via
 1. Go to the [releases](https://github.com/earlephilhower/arduino-littlefs-upload/releases) page and click the `.vsix` file to download.
 2. Move the file to Plugins Directory
 
-    ```bash
-    # Find the .arduinoIDE directory
-    cd ~/.arduinoIDE/
-    pwd
-    # Create plugins dir, if it's not there
-    mkdir plugins
-    # Copt the files, in my case it was downloaded in Downloads dir
-    cd \
-    cd Downloads
-    cp arduino-littlefs-upload-x.x.x.vsix ~/.arduinoIDE/plugins/
-    ```
+   ```bash
+   # Find the .arduinoIDE directory
+   cd ~/.arduinoIDE/
+   pwd
+   # Create plugins dir, if it's not there
+   mkdir plugins
+   # Copt the files, in my case it was downloaded in Downloads dir
+   cd \
+   cd Downloads
+   cp arduino-littlefs-upload-x.x.x.vsix ~/.arduinoIDE/plugins/
+   ```
 
 3. Quit & reopen Arduino IDE
 4. Pressing `CMD` + `SHIFT` + `P`, will open commands palette of Arduino IDE
 5. Type in `Upload LittleFS` and the full command (`Upload LittleFS to Pico/ESP8266/ESP32`) will show up. Hit `ENTER`
-6. All the contents from [`data/`](data/) will not be transferred to the fs of ESP32 
+6. All the contents from [`data/`](data/) will not be transferred to the fs of ESP32
    > Make sure Serial Monitor is closed
 
 ### Credentials Settings

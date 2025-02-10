@@ -107,32 +107,38 @@ class EdgeImpulseIntegration {
     }
 
     async uploadToEdgeImpulse(blob, label, category, index) {
-        const timestamp = Date.now();
-        const filename = `${this.deviceName}_${label}_${timestamp}_${index}.jpg`;
+        const filename = `${label}_${index}.jpg`;
 
-        // Create form data
         const formData = new FormData();
         formData.append('data', blob, filename);
-        formData.append('label', label);
-        formData.append('category', category);
 
-        // Upload to Edge Impulse
-        const response = await fetch(`https://ingestion.edgeimpulse.com/api/training/files`, {
-            method: 'POST',
-            headers: {
-                'x-api-key': this.apiKey,
-                'x-project-id': this.projectId
-            },
-            body: formData
-        });
+        try {
+            const endpoint = category === 'training' ? 'training' : 'testing';
+            const response = await fetch(`https://ingestion.edgeimpulse.com/api/${endpoint}/files`, {
+                method: 'POST',
+                headers: {
+                    'x-api-key': this.apiKey,
+                    'x-label': label.trim().toLowerCase(), // Ensure label is clean
+                    'x-add-date-id': '1',  // Let EI handle unique filenames: https://docs.edgeimpulse.com/reference/data-ingestion/ingestion-api#header-parameters
+                },
+                body: formData
+            });
 
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
+            console.log(label.trim().toLowerCase());
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
+            }
+
+            return response.json();
+        } catch (error) {
+            console.log('Upload error details:', error);
+            throw error;
         }
-
-        return response.json();
     }
 }
+
 
 class CameraInterface {
     constructor() {
@@ -154,7 +160,7 @@ class CameraInterface {
 
         this.initializeStream();
         this.setupEventListeners();
-        
+
         // Initialize Edge Impulse integration
         this.edgeImpulse = new EdgeImpulseIntegration();
 
