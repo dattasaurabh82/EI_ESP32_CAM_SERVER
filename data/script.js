@@ -90,7 +90,7 @@ class CameraInterface {
     }
 
     async downloadImages() {
-        const label = prompt("Enter a label for the images:");
+        const label = prompt("Enter Label");
         if (!label) return;
 
         const zip = new JSZip();
