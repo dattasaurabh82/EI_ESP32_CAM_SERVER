@@ -1,15 +1,13 @@
-/* Base Reset */
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
 
-/* Variables */
 :root {
     /* Light Theme */
-    --bg-color: #f8fafc;
-    --card-bg: #ffffff;
+    --bg-color: #e2e3e4;
+    --card-bg: #f2f1f1;
     --text-primary: #1e293b;
     --text-secondary: #64748b;
     --border-color: #e2e8f0;
@@ -27,8 +25,8 @@
 
 /* Dark Theme */
 [data-theme="dark"] {
-    --bg-color: #0f172a;
-    --card-bg: #1e293b;
+    --bg-color: #131820;
+    --card-bg: #161e2c;
     --text-primary: #e2e8f0;
     --text-secondary: #94a3b8;
     --border-color: #334155;
