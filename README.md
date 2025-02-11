@@ -14,7 +14,6 @@ Instead, it creates an MJPEG stream directly from the camera and displays it on 
 - [ ] WIP - [Check detecting a Project's Set Labelling Method](https://forum.edgeimpulse.com/t/is-there-an-api-end-point-to-get-projects-set-labelling-method/13292?u=dattasaurabh82)
 - [x] Beautify a bit
 - [x] Add Footer
-- [ ] Migrate to zigzag github
 - [ ] Feature: Button to Start Stop Stream But still retain snapshot
 - [ ] Feature: If not connected to wifi, first load captive portal in AP mode
 

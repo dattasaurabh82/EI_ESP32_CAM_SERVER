@@ -346,10 +346,10 @@ button:disabled {
 
 /* Footer */
 .footer {
-    background: #1e293b;
+    background: #161e2c;
     color: #e2e8f0;
-    padding: 20px;
-    margin-top: 40px;
+    padding: 12px;
+    margin-top: 20px;
     text-align: center;
 }
 
@@ -359,7 +359,8 @@ button:disabled {
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 20px;
+    gap: 28px;
+    font-size: 14px;
 }
 
 .footer a {
@@ -376,7 +377,7 @@ button:disabled {
 }
 
 .footer i {
-    font-size: 20px;
+    font-size: 16px;
 }
 
 /* Upload Progress Styles */
