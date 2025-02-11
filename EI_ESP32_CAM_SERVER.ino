@@ -247,6 +247,9 @@ void setup() {
   server.on("/script.js", HTTP_GET, [](AsyncWebServerRequest *request) {
     request->send(LittleFS, "/script.js", "application/javascript");
   });
+  server.on("/ei-labeling-guide.png", HTTP_GET, [](AsyncWebServerRequest *request) {
+    request->send(LittleFS, "/ei-labeling-guide.png", "image/png");
+  });
 
   // Stream endpoint
   server.on("/stream", HTTP_GET, handleMjpeg);
@@ -272,8 +275,8 @@ void loop() {
   // Monitor HEAP and PSRAM USAGE and apply a more aggressive restart control
   // Note: More easy would be if ESP.getFreeHeap() < 60000
   if (ESP.getFreeHeap() < 20000 || ESP.getFreePsram() < 10000) {
-    Serial.printf("Free PSRAM: %u bytes\n", ESP.getFreePsram());
-    Serial.printf("Free Heap: %u bytes\n\n", ESP.getFreeHeap());
+    Serial.printf("Free PSRAM: %lu bytes\n", ESP.getFreePsram());
+    Serial.printf("Free Heap: %lu bytes\n\n", ESP.getFreeHeap());
     Serial.println("Low memory: Restarting\n");
     ESP.restart();
   }

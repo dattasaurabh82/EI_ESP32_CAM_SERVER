@@ -39,22 +39,6 @@
                     </div>
                 </div>
             </div>
-            <div class="config-divider"></div>
-            <div class="config-section">
-                <div class="config-row sampling-row">
-                    <div class="input-group">
-                        <label for="category">Sampling Category</label>
-                        <select id="category" class="config-input">
-                            <option value="training">Training</option>
-                            <option value="testing">Testing</option>
-                        </select>
-                    </div>
-                    <div class="input-group">
-                        <label for="label">Label</label>
-                        <input type="text" id="label" placeholder="Enter Label" class="config-input">
-                    </div>
-                </div>
-            </div>
         </div>
 
         <div class="stream-container">
@@ -62,16 +46,35 @@
         </div>
 
         <div class="button-container">
-            <button id="clearAll" style="display: none;"><i class="fas fa-trash"></i> Clear All </button>
-            <button id="startCollecting"><i class="fas fa-camera"></i> Start Capture </button>
-            <button id="download" style="display: none;"><i class="fas fa-save"></i> Download ALL </button>
-            <button id="uploadToEI" style="display: none;"><i class="fas fa-cloud-upload-alt"></i> Upload to Edge
-                Impulse</button>
+            <button id="clearAll" style="display: none;">
+                <i class="fas fa-trash"></i> Clear All </button>
+            <button id="startCollecting"><i class="fas fa-camera"></i> Start Capture
+            </button>
+            <button id="download" style="display: none;">
+                <i class="fas fa-save"></i> Download ALL
+            </button>
         </div>
 
-        <!-- <table class="image-table">
-            <tbody id="imageTableBody"></tbody>
-        </table> -->
+        <div class="sampling-controls">
+            <div class="sampling-row">
+                <div class="input-group">
+                    <label for="category">Sampling Category</label>
+                    <select id="category" class="config-input">
+                        <option value="training">Training</option>
+                        <option value="testing">Testing</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label for="label">Label</label>
+                    <input type="text" id="label" placeholder="Enter Label" class="config-input">
+                </div>
+                <div class="button-group">
+                    <button id="uploadToEI" class="upload-btn">
+                        <i class="fas fa-cloud-upload-alt"></i> Upload to Edge Impulse
+                    </button>
+                </div>
+            </div>
+        </div>
 
         <div class="table-container">
             <table class="image-table">
@@ -92,7 +95,42 @@
         <img id="modalImage" src="" alt="Full size preview">
     </div>
 
+    <div id="uploadModal" class="modal">
+        <div class="modal-content upload-status">
+            <h3>Uploading to Edge Impulse</h3>
+            <div class="progress-container">
+                <div class="progress-bar">
+                    <div class="progress" id="uploadProgress"></div>
+                </div>
+                <div class="progress-text">
+                    <span id="uploadCount">0/0</span> images uploaded
+                </div>
+            </div>
+            <div id="uploadComplete" class="upload-complete" style="display: none;">
+                <i class="fas fa-check-circle"></i>
+                <p>Upload Complete!</p>
+                <button onclick="document.getElementById('uploadModal').style.display='none'"
+                    class="close-btn">Close</button>
+            </div>
+        </div>
+    </div>
+
     <script src="script.js"></script>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <span>Saurabh Datta</span>
+            <a href="https://github.com/dattasaurabh82/EI_ESP32_CAM_SERVER" target="_blank" rel="noopener">
+                <i class=" fab fa-github"></i>
+                GitHub
+            </a>
+            <a href="https://github.com/dattasaurabh82/EI_ESP32_CAM_SERVER/blob/main/LICENSE" target="_blank"
+                rel="noopener">
+                <i class="fas fa-balance-scale"></i>
+                License
+            </a>
+        </div>
+    </footer>
 </body>
 
 </html>

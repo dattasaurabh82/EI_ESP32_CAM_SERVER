@@ -78,32 +78,77 @@ class EdgeImpulseIntegration {
         return atob(encrypted);  // For demo - replace with more secure decryption
     }
 
+    // async uploadImages() {
+    //     const images = document.querySelectorAll('.preview-image');
+    //     const category = document.getElementById('category').value;
+    //     const label = document.getElementById('label').value;
+
+    //     if (!this.apiKey || !this.projectId || !this.deviceName) {
+    //         alert('Please configure Edge Impulse settings first');
+    //         return;
+    //     }
+
+    //     if (!label) {
+    //         alert('Please enter a label for the images');
+    //         return;
+    //     }
+
+    //     for (let i = 0; i < images.length; i++) {
+    //         const img = images[i];
+    //         try {
+    //             const response = await fetch(img.src);
+    //             const blob = await response.blob();
+    //             await this.uploadToEdgeImpulse(blob, label, category, i);
+    //         } catch (error) {
+    //             console.error(`Error uploading image ${i + 1}:`, error);
+    //             alert(`Failed to upload image ${i + 1}. Please try again.`);
+    //         }
+    //     }
+    // }
+
     async uploadImages() {
         const images = document.querySelectorAll('.preview-image');
         const category = document.getElementById('category').value;
         const label = document.getElementById('label').value;
 
-        if (!this.apiKey || !this.projectId || !this.deviceName) {
+        if (!this.apiKey || !this.projectId) {
             alert('Please configure Edge Impulse settings first');
             return;
         }
-
         if (!label) {
             alert('Please enter a label for the images');
             return;
         }
 
+        // Show upload modal
+        const modal = document.getElementById('uploadModal');
+        const progressBar = document.getElementById('uploadProgress');
+        const uploadCount = document.getElementById('uploadCount');
+        const uploadComplete = document.getElementById('uploadComplete');
+
+        modal.style.display = 'block';
+        progressBar.style.width = '0%';
+        uploadComplete.style.display = 'none';
+        uploadCount.textContent = `0/${images.length}`;
+
+        let successCount = 0;
         for (let i = 0; i < images.length; i++) {
             const img = images[i];
             try {
                 const response = await fetch(img.src);
                 const blob = await response.blob();
                 await this.uploadToEdgeImpulse(blob, label, category, i);
+
+                successCount++;
+                progressBar.style.width = `${(successCount / images.length) * 100}%`;
+                uploadCount.textContent = `${successCount}/${images.length}`;
             } catch (error) {
                 console.error(`Error uploading image ${i + 1}:`, error);
-                alert(`Failed to upload image ${i + 1}. Please try again.`);
             }
         }
+
+        // Show completion message
+        uploadComplete.style.display = 'block';
     }
 
     async uploadToEdgeImpulse(blob, label, category, index) {
@@ -124,7 +169,7 @@ class EdgeImpulseIntegration {
                 body: formData
             });
 
-            console.log(label.trim().toLowerCase());
+            // console.log(label.trim().toLowerCase());
 
             if (!response.ok) {
                 const errorText = await response.text();
@@ -203,30 +248,6 @@ class CameraInterface {
             console.error('Error capturing image:', error);
         }
     }
-
-    // addImageToTable(imageUrl) {
-    //     const row = this.imageTableBody.insertRow();
-    //     const cell = row.insertCell();
-
-    //     // Create image element
-    //     const img = document.createElement('img');
-    //     img.src = imageUrl;
-    //     img.className = 'preview-image';
-    //     img.addEventListener('click', () => this.showModal(imageUrl));
-
-    //     // Create filename element
-    //     const now = new Date();
-    //     const filename = `IMG_${now.toISOString().replace(/[:.]/g, '-')}_${img.width}x${img.height}.jpg`;
-    //     const filenameElement = document.createElement('div');
-    //     filenameElement.textContent = filename;
-    //     filenameElement.className = 'filename';
-
-    //     // Append to table
-    //     cell.appendChild(img);
-    //     cell.appendChild(filenameElement);
-
-    //     this.imageCount++;
-    // }
 
     addImageToTable(imageUrl) {
         const row = this.imageTableBody.insertRow();
@@ -348,7 +369,33 @@ class CameraInterface {
     }
 }
 
-// Initialize the camera interface when the DOM is loaded
+function setupThemeToggle() {
+    const themeToggle = document.createElement('button');
+    themeToggle.className = 'theme-toggle';
+    themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
+    document.body.appendChild(themeToggle);
+
+    // Check for saved theme preference
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    document.documentElement.setAttribute('data-theme', savedTheme);
+    updateThemeIcon(savedTheme);
+
+    themeToggle.addEventListener('click', () => {
+        const currentTheme = document.documentElement.getAttribute('data-theme');
+        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+
+        document.documentElement.setAttribute('data-theme', newTheme);
+        localStorage.setItem('theme', newTheme);
+        updateThemeIcon(newTheme);
+    });
+}
+
+function updateThemeIcon(theme) {
+    const icon = document.querySelector('.theme-toggle i');
+    icon.className = theme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     new CameraInterface();
+    setupThemeToggle();
 });

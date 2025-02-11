@@ -1,27 +1,112 @@
+/* Base Reset */
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
 
+/* Variables */
+:root {
+    /* Light Theme */
+    --bg-color: #f8fafc;
+    --card-bg: #ffffff;
+    --text-primary: #1e293b;
+    --text-secondary: #64748b;
+    --border-color: #e2e8f0;
+    --hover-bg: #f1f5f9;
+    --shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    
+    /* Button Colors (Same for both themes) */
+    --btn-danger: #dc3545;
+    --btn-primary: #007bff;
+    --btn-purple: #6f42c1;
+    --btn-info: #17a2b8;
+    --btn-success: #28a745;
+    --btn-gray: #6c757d;
+}
+
+/* Dark Theme */
+[data-theme="dark"] {
+    --bg-color: #0f172a;
+    --card-bg: #1e293b;
+    --text-primary: #e2e8f0;
+    --text-secondary: #94a3b8;
+    --border-color: #334155;
+    --hover-bg: #273548;
+    --shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+}
+
+/* Theme Toggle Button */
+.theme-toggle {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    padding: 8px;
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: var(--shadow);
+    z-index: 100;
+    color: var(--text-primary)
+}
+
+.theme-toggle:hover {
+    background: var(--hover-bg);
+}
+
+/* Apply Theme Colors */
+/* Basic Layout */
 body {
     font-family: Arial, sans-serif;
     padding: 20px;
-    background: #f5f5f5;
+    background: var(--bg-color);
+    color: var(--text-primary);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
 }
 
 .container {
     max-width: 800px;
     margin: 0 auto;
     text-align: center;
+    flex: 1;
 }
 
+/* Card Components */
+.config-panel,
+.stream-container,
+.table-container {
+    background: var(--card-bg);
+    border: 1px solid;
+    border-color: var(--border-color);
+    color: var(--text-primary);
+    border-radius: 8px;
+    box-shadow: var(--shadow);
+    margin-bottom: 20px;
+    padding: 20px;
+}
+
+/* Stream Container */
+.stream-container {
+    margin: 20px 0;
+    padding: 10px;
+}
+
+#streamImg {
+    width: 220px;
+    height: 220px;
+    object-fit: cover;
+}
+
+/* Configuration Toggle */
 .config-toggle {
     margin-bottom: 10px;
 }
 
 .toggle-btn {
-    background: #6c757d;
+    background: var(--btn-gray);
     color: white;
     border: none;
     padding: 8px 16px;
@@ -35,7 +120,7 @@ body {
 }
 
 .toggle-btn:hover {
-    background: #5a6268;
+    filter: brightness(90%);
 }
 
 .toggle-btn i {
@@ -46,15 +131,7 @@ body {
     transform: rotate(180deg);
 }
 
-.config-panel {
-    background: #fff;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    margin-bottom: 20px;
-    transition: all 0.3s ease;
-}
-
+/* Configuration Panel */
 .config-section {
     padding: 10px 0;
 }
@@ -73,7 +150,6 @@ body {
 
 .main-config {
     align-items: flex-end;
-    /* This aligns items to bottom */
 }
 
 .input-group {
@@ -85,13 +161,14 @@ body {
 
 .button-group {
     flex: 0 0 auto;
-    /* Prevents the button from stretching */
     justify-content: flex-end;
 }
 
+/* Inputs and Buttons */
 .input-group label {
     font-size: 14px;
-    color: #495057;
+    /* color: var(--primary-text); */
+    color: var(--text-secondary);
     font-weight: 500;
     text-align: left;
 }
@@ -99,93 +176,35 @@ body {
 .config-input,
 .config-btn {
     height: 34px;
-    /* Fixed height for all inputs and button */
     padding: 8px 16px;
-    border: 1px solid #ddd;
     border-radius: 4px;
     font-size: 14px;
 }
 
+.config-input {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+}
+
+.config-btn {
+    background: var(--btn-success);
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
 .sampling-row {
-    background: #f8f9fa;
+    display: flex;
+    gap: 12px;
+    align-items: flex-end;
+    background: var(--hover-bg);
     padding: 15px;
     border-radius: 6px;
     margin-top: 5px;
 }
 
-.config-row {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 10px;
-}
-
-.config-row:last-child {
-    margin-bottom: 0;
-}
-
-.config-input {
-    flex: 1;
-    padding: 8px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    font-size: 14px;
-}
-
-.config-btn {
-    background: #28a745;
-    color: white;
-    border: none;
-    padding: 8px 16px;
-    border-radius: 4px;
-    cursor: pointer;
-}
-
-.config-btn:hover {
-    background: #218838;
-}
-
-.stream-container {
-    margin: 20px 0;
-    background: #fff;
-    padding: 10px;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-#streamImg {
-    width: 220px;
-    /* Adjust as needed - orig size 96 px */
-    height: 220px;
-    /* Keep it square - orig size 96 px */
-
-    /* Flip the image vertically */
-    /* transform: scaleY(-1); */
-    /* Don't do it here as we are already telling esp32 to do it */
-
-    object-fit: cover;
-}
-
-/* .button-container {
-    display: flex;
-    justify-content: center;
-    gap: 24px;
-}
-
-button {
-    padding: 8px 16px;
-    border: none;
-    border-radius: 4px;
-    background: #007bff;
-    color: white;
-    cursor: pointer;
-    margin: 0 5px;
-    transition: background 0.3s;
-}
-
-button:hover {
-    background: #0056b3;
-} */
-
+/* Button Container */
 .button-container {
     display: flex;
     justify-content: center;
@@ -195,28 +214,21 @@ button:hover {
     margin: 0 auto;
 }
 
+/* Action Buttons */
 #clearAll {
-    background: #dc3545;
-    /* Red */
-    /* order: 1; */
+    background: var(--btn-danger);
 }
 
 #startCollecting {
-    background: #007bff;
-    /* order: 2; */
-    /* Center button */
-    /* margin: 0 auto; */
+    background: var(--btn-primary);
 }
 
 #download {
-    background: #6f42c1;
-    /* Purple */
-    /* order: 3; */
+    background: var(--btn-purple);
 }
 
 #uploadToEI {
-    background: #17a2b8;
-    /* order: 4; */
+    background: var(--btn-info);
 }
 
 button {
@@ -237,22 +249,43 @@ button:disabled {
     cursor: not-allowed;
 }
 
-button:disabled {
-    background: #cccccc;
-    cursor: not-allowed;
+/* Table Styles */
+.table-container {
+    max-height: 400px;
+    overflow-y: auto;
+    margin-top: 20px;
+    padding: 0;
 }
 
-/* .image-table {
+.image-table {
     width: 100%;
     border-collapse: collapse;
-    margin-top: 20px;
+}
+
+.image-table th,
+.image-table td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid var(--border-color);
 }
 
 .image-table td {
-    padding: 10px;
-    border: 1px solid #ddd;
+    border-color: var(--border-color);
+    color: var(--text-secondary);
 }
-*/
+
+.image-table th {
+    background: var(--card-bg);
+    color: var(--text-primary);
+    border-bottom: 2px solid var(--border-color);
+    position: sticky;
+    top: 0;
+    font-weight: 500;
+}
+
+.image-table tr:hover {
+    background: var(--hover-bg);
+}
 
 .preview-image {
     width: 32px;
@@ -261,7 +294,15 @@ button:disabled {
     cursor: pointer;
 }
 
+.delete-btn {
+    color: var(--btn-danger);
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 5px;
+}
 
+/* Modal */
 .modal {
     display: none;
     position: fixed;
@@ -283,36 +324,109 @@ button:disabled {
     max-height: 100%;
 }
 
-.table-container {
-    max-height: 400px;
-    overflow-y: auto;
-    margin-top: 20px;
-    border: 1px solid #ddd;
+/* Modal Content for Config Error */
+.modal-content {
+    background: white;
+    padding: 20px;
     border-radius: 8px;
+    max-width: 900px;
+    width: 90%;
+    margin: 0 auto;
+    position: relative;
+    top: 50%;
+    transform: translateY(-50%);
+    text-align: center;
 }
 
-.image-table {
-    width: 100%;
-    border-collapse: collapse;
+.modal-content img {
+    width: 800px;
+    max-width: 100%;
+    height: auto;
+    margin: 20px 0;
+    border: 1px solid var(--border-color);
 }
 
-.image-table th,
-.image-table td {
-    padding: 12px;
-    text-align: left;
-    border-bottom: 1px solid #ddd;
+/* Footer */
+.footer {
+    background: #1e293b;
+    color: #e2e8f0;
+    padding: 20px;
+    margin-top: 40px;
+    text-align: center;
 }
 
-.image-table th {
-    background: #f8f9fa;
-    position: sticky;
-    top: 0;
+.footer-content {
+    max-width: 800px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
 }
 
-.delete-btn {
-    color: #dc3545;
-    background: none;
+.footer a {
+    color: #e2e8f0;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    transition: color 0.3s ease;
+}
+
+.footer a:hover {
+    color: #0ea5e9;
+}
+
+.footer i {
+    font-size: 20px;
+}
+
+/* Upload Progress Styles */
+.upload-status {
+    text-align: center;
+    padding: 30px;
+}
+
+.progress-container {
+    margin: 20px 0;
+}
+
+.progress-bar {
+    background: var(--border-color);
+    height: 6px;
+    border-radius: 3px;
+    margin: 10px 0;
+    overflow: hidden;
+}
+
+.progress {
+    background: var(--btn-primary);
+    height: 100%;
+    width: 0%;
+    transition: width 0.3s ease;
+}
+
+.progress-text {
+    color: var(--text-secondary);
+    font-size: 14px;
+}
+
+.upload-complete {
+    margin-top: 20px;
+}
+
+.upload-complete i {
+    color: var(--btn-success);
+    font-size: 48px;
+    margin-bottom: 10px;
+}
+
+.close-btn {
+    margin-top: 15px;
+    background: var(--btn-primary);
+    color: white;
     border: none;
+    padding: 8px 20px;
+    border-radius: 4px;
     cursor: pointer;
-    padding: 5px;
 }
