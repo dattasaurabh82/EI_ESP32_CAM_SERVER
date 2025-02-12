@@ -78,34 +78,6 @@ class EdgeImpulseIntegration {
         return atob(encrypted);  // For demo - replace with more secure decryption
     }
 
-    // async uploadImages() {
-    //     const images = document.querySelectorAll('.preview-image');
-    //     const category = document.getElementById('category').value;
-    //     const label = document.getElementById('label').value;
-
-    //     if (!this.apiKey || !this.projectId || !this.deviceName) {
-    //         alert('Please configure Edge Impulse settings first');
-    //         return;
-    //     }
-
-    //     if (!label) {
-    //         alert('Please enter a label for the images');
-    //         return;
-    //     }
-
-    //     for (let i = 0; i < images.length; i++) {
-    //         const img = images[i];
-    //         try {
-    //             const response = await fetch(img.src);
-    //             const blob = await response.blob();
-    //             await this.uploadToEdgeImpulse(blob, label, category, i);
-    //         } catch (error) {
-    //             console.error(`Error uploading image ${i + 1}:`, error);
-    //             alert(`Failed to upload image ${i + 1}. Please try again.`);
-    //         }
-    //     }
-    // }
-
     async uploadImages() {
         const images = document.querySelectorAll('.preview-image');
         const category = document.getElementById('category').value;
