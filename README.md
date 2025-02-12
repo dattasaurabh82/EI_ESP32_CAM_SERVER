@@ -11,10 +11,11 @@ Instead, it creates an MJPEG stream directly from the camera and displays it on 
 - [x] Stabilize Stream
 - [x] Optimize Capture frame
 - [x] Integrate edge impulse upload API
+- [ ] Button to Start Stop Stream But still retain snapshot (currently it's alwawys streaming)
+- [ ] Add button and counter option for auto matic capture at certain delays
 - [ ] [WIP] [Check detecting a Project's `Set Labelling Method`](https://forum.edgeimpulse.com/t/is-there-an-api-end-point-to-get-projects-set-labelling-method/13292?u=dattasaurabh82)
 - [x] Beautify a bit
 - [x] Add Footer
-- [ ] Feature: Button to Start Stop Stream But still retain snapshot
 - [ ] Feature: If not connected to wifi, first load captive portal in AP mode
 
 ![alt text](<assets/Screenshot 2025-02-11 at 02.08.08.png>)
