@@ -25,6 +25,11 @@ Instead, it creates an MJPEG stream directly from the camera and displays it on 
 1. [AI Thinker CAM](https://amzn.eu/d/hD7porD)
 2. [XIAO_ESP32S3](https://wiki.seeedstudio.com/xiao_esp32s3_getting_started/)
 
+
+![alt text](assets/xiao_with_cooling_contraption_and_gorilla_po_mount_render.png)
+
+> xiao with cooling contraption and gorilla pod mount | render
+
 ## Edge Impulse Studio Project setup
 
 TBD
