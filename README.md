@@ -13,9 +13,10 @@ Instead, it creates an MJPEG stream directly from the camera and displays it on 
 - [x] Integrate edge impulse upload API
 - [ ] Button to Start Stop Stream But still retain snapshot (currently it's alwawys streaming)
 - [ ] Add button and counter option for auto matic capture at certain delays
-- [ ] [WIP] [Check detecting a Project's `Set Labelling Method`](https://forum.edgeimpulse.com/t/is-there-an-api-end-point-to-get-projects-set-labelling-method/13292?u=dattasaurabh82)
 - [x] Beautify a bit
 - [x] Add Footer
+- [ ] Implement gzipped method and transformations for optimsing file storage in SPIFFS
+- [ ] [WIP] [Check detecting a Project's `Set Labelling Method`](https://forum.edgeimpulse.com/t/is-there-an-api-end-point-to-get-projects-set-labelling-method/13292?u=dattasaurabh82)
 - [ ] Feature: If not connected to wifi, first load captive portal in AP mode
 
 ![alt text](<assets/Screenshot 2025-02-11 at 02.08.08.png>)
@@ -25,10 +26,16 @@ Instead, it creates an MJPEG stream directly from the camera and displays it on 
 1. [AI Thinker CAM](https://amzn.eu/d/hD7porD)
 2. [XIAO_ESP32S3](https://wiki.seeedstudio.com/xiao_esp32s3_getting_started/)
 
+---
+<br>
 
 ![alt text](assets/xiao_with_cooling_contraption_and_gorilla_po_mount_render.png)
 
 > xiao with cooling contraption and gorilla pod mount | render
+
+1. STL Files: [cooling_contraption/stl-s](cooling_contraption/stl-s)
+2. STEP File: [xiao sense - holder.step](<cooling_contraption/xiao sense - holder.step>)
+3. Fusion 360 preview link: 👉🏼 [🌐](https://a360.co/3EEMBdH)
 
 ## Edge Impulse Studio Project setup
 
