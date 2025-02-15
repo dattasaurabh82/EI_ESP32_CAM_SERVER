@@ -1,12 +1,13 @@
 # EI_ESP32_CAM_SERVER
 
-## WIP
+## What is this?
 
 This educational tool helps reduce the time needed for capturing and labeling ESP32 camera images for TinyML training in [edgeimpulse](https://docs.edgeimpulse.com/reference). It's more efficient than the standard method of capturing and uploading single images through the [edgeimpulse data forwarder firmware](https://github.com/edgeimpulse/firmware-espressif-esp32).
 
 Instead, it creates an MJPEG stream directly from the camera and displays it on a camera-hosted frontend. This allows you to capture, label, and bulk upload images to the edgeimpulse studio—making the process more efficient than sitting there for a long time doing it manually.
 
-## ToDo
+---
+## ToDo - WIP
 
 - [x] Stabilize Stream
 - [x] Optimize Capture frame
@@ -19,29 +20,41 @@ Instead, it creates an MJPEG stream directly from the camera and displays it on 
 - [ ] [WIP] [Check detecting a Project's `Set Labelling Method`](https://forum.edgeimpulse.com/t/is-there-an-api-end-point-to-get-projects-set-labelling-method/13292?u=dattasaurabh82)
 - [ ] Feature: If not connected to wifi, first load captive portal in AP mode
 
+---
+
 ![alt text](<assets/Screenshot 2025-02-11 at 02.08.08.png>)
 
-## Tested Hardware
-
-1. [AI Thinker CAM](https://amzn.eu/d/hD7porD)
-2. [XIAO_ESP32S3](https://wiki.seeedstudio.com/xiao_esp32s3_getting_started/)
-
 ---
-<br>
 
-![alt text](assets/xiao_with_cooling_contraption_and_gorilla_po_mount_render.png)
+<details>
+   <summary> 1. Hardware</summary>
+  
+   ## Hardware Setup
+  
+   Tested on: [XIAO_ESP32S3](https://wiki.seeedstudio.com/xiao_esp32s3_getting_started/)
 
-> xiao with cooling contraption and gorilla pod mount | render
+   <br>
 
-1. STL Files: [cooling_contraption/stl-s](cooling_contraption/stl-s)
-2. STEP File: [xiao sense - holder.step](<cooling_contraption/xiao sense - holder.step>)
-3. Fusion 360 preview link: 👉🏼 [🌐](https://a360.co/3EEMBdH)
+   ![alt text](assets/xiao_with_cooling_contraption_and_gorilla_po_mount_render.png)
 
-## Edge Impulse Studio Project setup
+   > xiao with cooling contraption and gorilla pod mount | render
 
-TBD
+   1. STL Files: [cooling_contraption/stl-s](cooling_contraption/stl-s)
+   2. STEP File: [xiao sense - holder.step](<cooling_contraption/xiao sense - holder.step>)
+   3. Fusion 360 preview link: 👉🏼 [🌐](https://a360.co/3EEMBdH)
 
-## Preparation
+</details>
+
+<details>
+   <summary> 2. Edge Impulse Studio Project setup</summary>
+
+   TBD
+</details>
+
+<details>
+   <summary> 3 . Software</summary>
+
+## Software Preparation
 
 Arduino IDE version: `2.3.4`
 
@@ -193,9 +206,12 @@ ___ ESP32-CAM-WEB-SERVER - (edgeImpulse tool)___
    ⤷ HTTP server started on port 80
 ```
 
+</details>
+
+
 ---
 
-## Acknowledgement
+## Acknowledgement & Attribution
 
 ```txt
 Saurabh Datta
