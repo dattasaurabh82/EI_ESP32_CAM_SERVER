@@ -66,43 +66,17 @@ class EdgeImpulseIntegration {
         );
     }
 
-    // // Simple encryption/decryption functions
-    // encrypt(text) {
-    //     return btoa(text);  // For demo - replace with more secure encryption
-    // }
+    // Simple encryption/decryption functions
+    // ** For DEMO only It;s simple and insecure
 
-    // decrypt(encrypted) {
-    //     return atob(encrypted);  // For demo - replace with more secure decryption
-    // }
-
-    // Using a simple XOR-based encryption that doesn't rely on Web Crypto API.
-    // As we are not serving on ssl, we can keep things simple for now :)
+    // ** TBD: Using a simple XOR-based encryption that doesn't rely on Web Crypto API as we are not serving on ssl.
+    // **      But also accommodate loading of plain text config json for when files are freshly loaded form local system to esp's Little FS
     encrypt(text) {
-        // Create a simple key from timestamp and random number
-        const key = Date.now().toString() + Math.random().toString();
-        let result = '';
-        for (let i = 0; i < text.length; i++) {
-            const charCode = text.charCodeAt(i) ^ key.charCodeAt(i % key.length);
-            result += String.fromCharCode(charCode);
-        }
-        // Store both the key and encrypted text
-        return btoa(key + '|' + result);
+        return btoa(text);
     }
 
     decrypt(encrypted) {
-        try {
-            const decoded = atob(encrypted);
-            const [key, text] = decoded.split('|');
-            let result = '';
-            for (let i = 0; i < text.length; i++) {
-                const charCode = text.charCodeAt(i) ^ key.charCodeAt(i % key.length);
-                result += String.fromCharCode(charCode);
-            }
-            return result;
-        } catch (error) {
-            console.error('Decryption failed:', error);
-            return null;
-        }
+        return atob(encrypted);
     }
 
     async saveConfig() {
@@ -112,35 +86,13 @@ class EdgeImpulseIntegration {
             deviceName: document.getElementById('deviceName').value
         };
 
-        // try {
-        //     const response = await fetch('/saveConfig', {
-        //         method: 'POST',
-        //         headers: {
-        //             'Content-Type': 'application/x-www-form-urlencoded',
-        //         },
-        //         body: `config=${JSON.stringify(config)}`
-        //     });
-
-        //     if (response.ok) {
-        //         this.apiKey = config.apiKey;
-        //         this.projectId = config.projectId;
-        //         this.deviceName = config.deviceName;
-        //         alert('Configuration saved!');
-        //     } else {
-        //         alert('Failed to save configuration');
-        //     }
-        // } catch (error) {
-        //     console.error('Error saving configuration:', error);
-        //     alert('Error saving configuration');
-        // }
         try {
-            const encrypted = this.encrypt(JSON.stringify(config));
             const response = await fetch('/saveConfig', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
                 },
-                body: `config=${encrypted}`
+                body: `config=${JSON.stringify(config)}`
             });
 
             if (response.ok) {
@@ -158,41 +110,19 @@ class EdgeImpulseIntegration {
     }
 
 
-    // async loadConfig() {
-    //     try {
-    //         const response = await fetch('/loadConfig');
-    //         if (response.ok) {
-    //             const config = await response.json();
-    //             this.apiKey = config.apiKey || '';
-    //             this.projectId = config.projectId || '';
-    //             this.deviceName = config.deviceName || '';
-
-    //             // Populate UI
-    //             document.getElementById('apiKey').value = this.apiKey;
-    //             document.getElementById('projectID').value = this.projectId;
-    //             document.getElementById('deviceName').value = this.deviceName;
-    //         }
-    //     } catch (error) {
-    //         console.error('Error loading configuration:', error);
-    //     }
-    // }
     async loadConfig() {
         try {
             const response = await fetch('/loadConfig');
             if (response.ok) {
-                const encrypted = await response.text();
-                const decrypted = this.decrypt(encrypted);
-                if (decrypted) {
-                    const config = JSON.parse(decrypted);
-                    this.apiKey = config.apiKey || '';
-                    this.projectId = config.projectId || '';
-                    this.deviceName = config.deviceName || '';
+                const config = await response.json();
+                this.apiKey = config.apiKey || '';
+                this.projectId = config.projectId || '';
+                this.deviceName = config.deviceName || '';
 
-                    // Populate UI
-                    document.getElementById('apiKey').value = this.apiKey;
-                    document.getElementById('projectID').value = this.projectId;
-                    document.getElementById('deviceName').value = this.deviceName;
-                }
+                // Populate UI
+                document.getElementById('apiKey').value = this.apiKey;
+                document.getElementById('projectID').value = this.projectId;
+                document.getElementById('deviceName').value = this.deviceName;
             }
         } catch (error) {
             console.error('Error loading configuration:', error);
