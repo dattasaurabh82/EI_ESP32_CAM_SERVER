@@ -12,7 +12,7 @@ Instead, it creates an MJPEG stream directly from the camera and displays it on 
 - [x] Stabilize Stream
 - [x] Optimize Capture frame
 - [x] Integrate edge impulse upload API
-- [ ] Button to Start Stop Stream But still retain snapshot (currently it's always streaming)
+- [x] Button to Start Stop Stream But still retain snapshot (currently it's always streaming)
 - [x] Add button and counter option for automatic capture at certain delays
 - [x] Persistant saving of EI config in LittleFS.
 - [x] Beautify a bit
