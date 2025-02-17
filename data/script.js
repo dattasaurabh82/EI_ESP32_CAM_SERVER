@@ -14,28 +14,27 @@ class EdgeImpulseIntegration {
         this.setupConfigToggle();
     }
 
-    loadConfig() {
-        // Load from localStorage (encrypted)
-        const encryptedConfig = localStorage.getItem('eiConfig');
-        if (encryptedConfig) {
-            try {
-                const config = this.decrypt(encryptedConfig);
-                const parsedConfig = JSON.parse(config);
-                this.apiKey = parsedConfig.apiKey || '';
-                this.projectId = parsedConfig.projectId || '';
-                this.deviceName = parsedConfig.deviceName || '';
+    async loadConfig() {
+        try {
+            const response = await fetch('/loadConfig');
+            if (response.ok) {
+                const config = await response.json();
+                this.apiKey = config.apiKey || '';
+                this.projectId = config.projectId || '';
+                this.deviceName = config.deviceName || '';
 
                 // Populate UI
                 document.getElementById('apiKey').value = this.apiKey;
                 document.getElementById('projectID').value = this.projectId;
                 document.getElementById('deviceName').value = this.deviceName;
-            } catch (error) {
-                console.error('Error loading configuration:', error);
             }
+        } catch (error) {
+            console.error('Error loading configuration:', error);
         }
     }
 
     setupEventListeners() {
+        // document.getElementById('saveConfig').addEventListener('click', () => this.saveConfig());
         document.getElementById('saveConfig').addEventListener('click', () => this.saveConfig());
         document.getElementById('uploadToEI').addEventListener('click', () => this.uploadImages());
     }
@@ -51,22 +50,34 @@ class EdgeImpulseIntegration {
         });
     }
 
-    saveConfig() {
+    async saveConfig() {
         const config = {
             apiKey: document.getElementById('apiKey').value,
             projectId: document.getElementById('projectID').value,
             deviceName: document.getElementById('deviceName').value
         };
 
-        // Encrypt and save to localStorage
-        const encrypted = this.encrypt(JSON.stringify(config));
-        localStorage.setItem('eiConfig', encrypted);
+        try {
+            const response = await fetch('/saveConfig', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `config=${JSON.stringify(config)}`
+            });
 
-        this.apiKey = config.apiKey;
-        this.projectId = config.projectId;
-        this.deviceName = config.deviceName;
-
-        alert('Configuration saved!');
+            if (response.ok) {
+                this.apiKey = config.apiKey;
+                this.projectId = config.projectId;
+                this.deviceName = config.deviceName;
+                alert('Configuration saved!');
+            } else {
+                alert('Failed to save configuration');
+            }
+        } catch (error) {
+            console.error('Error saving configuration:', error);
+            alert('Error saving configuration');
+        }
     }
 
     // Simple encryption/decryption functions
@@ -171,19 +182,21 @@ class CameraInterface {
         this.downloadButton = document.getElementById('download');
         this.uploadButton = document.getElementById('uploadToEI')
 
+        // Auto capture elements
+        this.startAutoCaptureBtn = document.getElementById('startAutoCapture');
+        this.totalCapturesInput = document.getElementById('totalCaptures');
+
         // saved image table
         this.imageTableBody = document.getElementById('imageTableBody');
+
 
         // Image preview
         this.imageModal = document.getElementById('imageModal');
         this.modalImage = document.getElementById('modalImage');
 
-        // [Debug] Add error checking
-        if (!this.startAutoCaptureBtn || !this.totalCapturesInput) {
-            console.error('Auto capture elements not found in the DOM');
-        }
-
         this.imageCount = 0;
+        this.isAutoCapturing = false;
+        this.autoCapturePause = 2000; // 2 seconds  
         this.isAutoCapturing = false;
         this.autoCapturePause = 2000;
 
@@ -237,7 +250,7 @@ class CameraInterface {
     async toggleAutoCapture() {
         if (this.isAutoCapturing) {
             this.isAutoCapturing = false;
-            this.startAutoCaptureBtn.innerHTML = '<i class="fas fa-camera"></i> Start Capture';
+            this.startAutoCaptureBtn.innerHTML = '<i class="fas fa-camera"></i> Start Auto Capture';
             return;
         }
 
@@ -248,7 +261,7 @@ class CameraInterface {
         }
 
         this.isAutoCapturing = true;
-        this.startAutoCaptureBtn.innerHTML = '<i class="fas fa-stop"></i> Stop Capture';
+        this.startAutoCaptureBtn.innerHTML = '<i class="fas fa-stop"></i> Stop Auto Capture';
 
         let captureCount = 0;
         while (this.isAutoCapturing && captureCount < totalCaptures) {
@@ -261,7 +274,7 @@ class CameraInterface {
         }
 
         this.isAutoCapturing = false;
-        this.startAutoCaptureBtn.innerHTML = '<i class="fas fa-camera"></i> Start Capture';
+        this.startAutoCaptureBtn.innerHTML = '<i class="fas fa-camera"></i> Start Auto Capture';
     }
 
     addImageToTable(imageUrl) {
