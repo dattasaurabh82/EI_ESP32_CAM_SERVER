@@ -14,26 +14,6 @@ class EdgeImpulseIntegration {
         this.setupConfigToggle();
     }
 
-    // loadConfig() {
-    //     // Load from localStorage (encrypted)
-    //     const encryptedConfig = localStorage.getItem('eiConfig');
-    //     if (encryptedConfig) {
-    //         try {
-    //             const config = this.decrypt(encryptedConfig);
-    //             const parsedConfig = JSON.parse(config);
-    //             this.apiKey = parsedConfig.apiKey || '';
-    //             this.projectId = parsedConfig.projectId || '';
-    //             this.deviceName = parsedConfig.deviceName || '';
-
-    //             // Populate UI
-    //             document.getElementById('apiKey').value = this.apiKey;
-    //             document.getElementById('projectID').value = this.projectId;
-    //             document.getElementById('deviceName').value = this.deviceName;
-    //         } catch (error) {
-    //             console.error('Error loading configuration:', error);
-    //         }
-    //     }
-    // }
     async loadConfig() {
         try {
             const response = await fetch('/loadConfig');
@@ -70,23 +50,6 @@ class EdgeImpulseIntegration {
         });
     }
 
-    // saveConfig() {
-    //     const config = {
-    //         apiKey: document.getElementById('apiKey').value,
-    //         projectId: document.getElementById('projectID').value,
-    //         deviceName: document.getElementById('deviceName').value
-    //     };
-
-    //     // Encrypt and save to localStorage
-    //     const encrypted = this.encrypt(JSON.stringify(config));
-    //     localStorage.setItem('eiConfig', encrypted);
-
-    //     this.apiKey = config.apiKey;
-    //     this.projectId = config.projectId;
-    //     this.deviceName = config.deviceName;
-
-    //     alert('Configuration saved!');
-    // }
     async saveConfig() {
         const config = {
             apiKey: document.getElementById('apiKey').value,
