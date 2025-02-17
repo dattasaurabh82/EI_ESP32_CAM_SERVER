@@ -267,6 +267,34 @@ void setup() {
     request->send(200, "text/plain", "Images cleared (POST)");
   });
 
+  server.on("/saveConfig", HTTP_POST, [](AsyncWebServerRequest *request) {
+    if (request->hasParam("config", true)) {
+      String config = request->getParam("config", true)->value();
+      File file = LittleFS.open("/ei_config.json", "w");
+      if (file) {
+        file.print(config);
+        file.close();
+        Serial.println("  Configuration saved to LittleFS ...");
+        request->send(200, "text/plain", "Configuration saved");
+      } else {
+        Serial.println("  Failed to save configuration to LittleFS ...");
+        request->send(500, "text/plain", "Failed to save configuration");
+      }
+    } else {
+      request->send(400, "text/plain", "No configuration data");
+    }
+  });
+
+  server.on("/loadConfig", HTTP_GET, [](AsyncWebServerRequest *request) {
+    if (LittleFS.exists("/ei_config.json")) {
+      request->send(LittleFS, "/ei_config.json", "application/json");
+      Serial.println("  Configuration loaded from LittleFS ...");
+    } else {
+      Serial.println("  No configuration found in LittleFS ...");
+      request->send(404, "text/plain", "No configuration found");
+    }
+  });
+
   server.begin();
   Serial.println("Async HTTP server started on port 80");
 }
