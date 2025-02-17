@@ -18,6 +18,8 @@ Instead, it creates an MJPEG stream directly from the camera and displays it on 
 - [x] Check detecting a Project's `Set Labelling Method`](https://forum.edgeimpulse.com/t/is-there-an-api-end-point-to-get-projects-set-labelling-method/13292?u=dattasaurabh82) and set it correctly for image upload
 - [x] Beautify a bit
 - [x] Add Footer
+- [ ] Implement actions for compilation checks in Github Actions
+- [ ] Update Readme and Documentation
 - [ ] Implement gzipped method and transformations for optimizing file storage for frontend 
 - [ ] Feature (Optional): If not connected to wifi, first load captive portal in AP mode
 
