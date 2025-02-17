@@ -13,7 +13,7 @@
     --border-color: #e2e8f0;
     --hover-bg: #f1f5f9;
     --shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    
+
     /* Button Colors (Same for both themes) */
     --btn-danger: #dc3545;
     --btn-primary: #007bff;
@@ -217,7 +217,10 @@ body {
     background: var(--btn-danger);
 }
 
-#startCollecting {
+/* #startCollecting {
+    background: var(--btn-primary);
+} */
+#capture {
     background: var(--btn-primary);
 }
 
@@ -245,6 +248,31 @@ button:hover {
 button:disabled {
     background: #cccccc;
     cursor: not-allowed;
+}
+
+.auto-capture-controls {
+    display: flex;
+    gap: 12px;
+    align-items: flex-end;
+    background: var(--card-bg);
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: var(--shadow);
+    margin-bottom: 20px;
+}
+
+.auto-capture-controls .input-group {
+    max-width: 200px;
+}
+
+.auto-capture-controls button {
+    background: var(--btn-primary);
+}
+
+/* Add validation styling for number input */
+.auto-capture-controls input[type="number"]::-webkit-inner-spin-button,
+.auto-capture-controls input[type="number"]::-webkit-outer-spin-button {
+    opacity: 1;
 }
 
 /* Table Styles */

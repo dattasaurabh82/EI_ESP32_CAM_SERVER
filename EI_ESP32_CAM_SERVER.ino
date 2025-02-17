@@ -232,7 +232,7 @@ void setup() {
   initCamera();
   // 2. LittleFS init
   initLittleFS();
-  // 3. Connect to WiFi
+  // 3. Connect to WiFi/artist/3BkRu2TGd2I1uBxZKddfg1
   setupWIFIstn();
 
   // 4. Configure AsyncWebServer Routes
