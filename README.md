@@ -14,12 +14,12 @@ Instead, it creates an MJPEG stream directly from the camera and displays it on 
 - [x] Integrate edge impulse upload API
 - [x] Button to Start Stop Stream But still retain snapshot (currently it's always streaming)
 - [x] Add button and counter option for automatic capture at certain delays
-- [x] Persistant saving of EI config in LittleFS
+- [x] Persistant saving of EI config in LittleFS.
+- [x] Check detecting a Project's `Set Labelling Method`](https://forum.edgeimpulse.com/t/is-there-an-api-end-point-to-get-projects-set-labelling-method/13292?u=dattasaurabh82) and set it correctly for image upload
 - [x] Beautify a bit
 - [x] Add Footer
-- [ ] Implement gzipped method and transformations for optimizing file storage in SPIFFS
-- [ ] [WIP] [Check detecting a Project's `Set Labelling Method`](https://forum.edgeimpulse.com/t/is-there-an-api-end-point-to-get-projects-set-labelling-method/13292?u=dattasaurabh82)
-- [ ] Feature: If not connected to wifi, first load captive portal in AP mode
+- [ ] Implement gzipped method and transformations for optimizing file storage for frontend 
+- [ ] Feature (Optional): If not connected to wifi, first load captive portal in AP mode
 
 ---
 

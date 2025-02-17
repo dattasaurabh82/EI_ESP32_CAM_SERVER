@@ -104,7 +104,7 @@ class EdgeImpulseIntegration {
                 alert('Failed to save configuration');
             }
         } catch (error) {
-            console.error('Error saving configuration:', error);
+            console.error('❌ Error saving configuration:', error);
             alert('Error saving configuration');
         }
     }
@@ -125,7 +125,7 @@ class EdgeImpulseIntegration {
                 document.getElementById('deviceName').value = this.deviceName;
             }
         } catch (error) {
-            console.error('Error loading configuration:', error);
+            console.error('❌ Error loading configuration:', error);
         }
     }
 
@@ -139,6 +139,66 @@ class EdgeImpulseIntegration {
             alert('Please configure Edge Impulse settings first');
             return;
         }
+
+        // Check project's labeling method first
+        try {
+            const response = await fetch(`https://studio.edgeimpulse.com/v1/api/projects`, {
+                headers: {
+                    'x-api-key': this.apiKey
+                }
+            });
+            if (!response.ok) {
+                throw new Error('❌ Failed to fetch project details');
+            }
+            console.log("✅ Fetched project details successfully");
+            const data = await response.json();
+            const project = data.projects.find(p => p.id.toString() === this.projectId);
+
+            if (!project) {
+                alert('Project not found. Please check your Project ID.');
+                return;
+            }
+            console.log("✅ Correct Project ID established");
+            console.log("Project Labeling Method: ", project.labelingMethod);
+
+            if (project.labelingMethod !== 'single_label') {
+                // alert('Please change project labeling method to "One Label Per Data Item" in Edge Impulse project settings.');
+                // return;
+                const shouldUpdate = confirm('This project is not configured for "One Label Per Data Item". Would you like to update it automatically?');
+                if (shouldUpdate) {
+                    
+                    const updateResponse = await fetch(`https://studio.edgeimpulse.com/v1/api/${this.projectId}`, {
+                        method: 'POST',
+                        headers: {
+                            "x-api-key": this.apiKey,
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify({
+                            "labelingMethod": "single_label"
+                        }),
+                    });
+                    const data_res = await updateResponse.json();
+                    console.log(data_res);
+
+                    if (!updateResponse.ok) {
+                        alert('Failed to update project settings. Please change labeling method manually in Edge Impulse project settings.');
+                        return;
+                    }
+
+                    // Successfully updated
+                    console.log('✅ Project labeling method updated successfully');
+                } else {
+                    // User chose not to update
+                    alert('Please change project labeling method manually in Edge Impulse project settings.');
+                    return;
+                }
+            }
+        } catch (error) {
+            console.error('❌ Error checking project labeling method:', error);
+            alert('Failed to verify project settings. Please try again.');
+            return;
+        }
+
         if (!label) {
             alert('Please enter a label for the images');
             return;
@@ -167,7 +227,7 @@ class EdgeImpulseIntegration {
                 progressBar.style.width = `${(successCount / images.length) * 100}%`;
                 uploadCount.textContent = `${successCount}/${images.length}`;
             } catch (error) {
-                console.error(`Error uploading image ${i + 1}:`, error);
+                console.error(`❌ Error uploading image ${i + 1}:`, error);
             }
         }
 
@@ -193,7 +253,7 @@ class EdgeImpulseIntegration {
                 body: formData
             });
 
-            // console.log(label.trim().toLowerCase());
+            console.log("Label: ", label.trim().toLowerCase());
 
             if (!response.ok) {
                 const errorText = await response.text();
@@ -202,7 +262,7 @@ class EdgeImpulseIntegration {
 
             return response.json();
         } catch (error) {
-            console.log('Upload error details:', error);
+            console.error('❌ Upload error details:', error);
             throw error;
         }
     }
@@ -274,7 +334,7 @@ class CameraInterface {
         // ** Prevent actual form submission
         // Why? Because config panel has password type inputs and that needed to be inside a form for best practice
         document.getElementById('eiConfigForm').addEventListener('submit', (e) => {
-            e.preventDefault();  
+            e.preventDefault();
             this.saveConfig();
         });
 
@@ -304,7 +364,7 @@ class CameraInterface {
             this.streamToggleBtn.innerHTML = '<i class="fas fa-pause"></i>';
             // Check if stream loaded successfully
             this.streamImg.onload = () => {
-                console.log('Stream reloaded successfully');
+                console.log('📷 Stream reloaded successfully ✅');
                 // Remove retry button if it exists
                 const retryBtn = document.querySelector('.stream-retry-btn');
                 if (retryBtn) retryBtn.remove();
@@ -312,10 +372,10 @@ class CameraInterface {
 
             this.streamImg.onerror = () => {
                 if (attempt < retries) {
-                    console.log(`Retry attempt ${attempt}/${retries}`);
+                    console.log(`🥲 Retry attempt ${attempt}/${retries}`);
                     setTimeout(reload, 1000);  // Wait 1 second before retry
                 } else {
-                    console.error('Failed to reload stream after', retries, 'attempts');
+                    console.error('❌ Failed to reload stream after', retries, 'attempts');
 
                     // Optionally show user feedback
                     // alert('Stream reload failed. Please refresh the page.');
@@ -348,10 +408,10 @@ class CameraInterface {
                 this.lastFrame = lastFrame;
                 this.streamImg.src = lastFrame;
                 this.streamToggleBtn.innerHTML = '<i class="fas fa-play"></i>';
-                console.log('Stream stopped');
+                console.log('🛑 Stream stopped successfully! ✅');
             }
         } catch (error) {
-            console.error('Error toggling stream:', error);
+            console.error('❌ Error toggling stream:', error);
         }
     }
 
@@ -372,7 +432,7 @@ class CameraInterface {
                 this.addImageToTable(imageUrl);
             }
         } catch (error) {
-            console.error('Error capturing image:', error);
+            console.error('❌ Error capturing image:', error);
         }
     }
 
@@ -385,7 +445,7 @@ class CameraInterface {
             this.addImageToTable(imageUrl);
             this.updateButtonVisibility();
         } catch (error) {
-            console.error('Error capturing image:', error);
+            console.error('❌ Error capturing image:', error);
         }
     }
 
@@ -498,7 +558,7 @@ class CameraInterface {
             this.clearButton.style.display = 'none';
             this.downloadButton.style.display = 'none';
         } catch (error) {
-            console.error('Error clearing images:', error);
+            console.error('❌ Error clearing images:', error);
         }
     }
 
