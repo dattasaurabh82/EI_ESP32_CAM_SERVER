@@ -168,12 +168,20 @@ class CameraInterface {
         this.downloadButton = document.getElementById('download');
         this.uploadButton = document.getElementById('uploadToEI')
 
+        // Auto capture elements
+        this.startAutoCaptureBtn = document.getElementById('startAutoCapture');
+        this.totalCapturesInput = document.getElementById('totalCaptures');
+
         // saved image table
         this.imageTableBody = document.getElementById('imageTableBody');
+
         // Image preview
         this.imageModal = document.getElementById('imageModal');
         this.modalImage = document.getElementById('modalImage');
+
         this.imageCount = 0;
+        this.isAutoCapturing = false;
+        this.autoCapturePause = 2000; // 2 seconds  
 
         this.initializeStream();
         this.setupEventListeners();
@@ -206,6 +214,7 @@ class CameraInterface {
         this.imageModal.addEventListener('click', (e) => this.handleModalClick(e));
         this.downloadButton.addEventListener('click', () => this.downloadImages());
         document.addEventListener('keydown', (e) => this.handleKeyPress(e));
+        this.startAutoCaptureBtn.addEventListener('click', () => this.toggleAutoCapture());
     }
 
     async captureImage() {
@@ -219,6 +228,36 @@ class CameraInterface {
         } catch (error) {
             console.error('Error capturing image:', error);
         }
+    }
+
+    async toggleAutoCapture() {
+        if (this.isAutoCapturing) {
+            this.isAutoCapturing = false;
+            this.startAutoCaptureBtn.innerHTML = '<i class="fas fa-camera"></i> Start Capture';
+            return;
+        }
+
+        const totalCaptures = parseInt(this.totalCapturesInput.value);
+        if (!totalCaptures || totalCaptures < 1 || totalCaptures > 50) {
+            alert('Please enter a number between 1 and 50');
+            return;
+        }
+
+        this.isAutoCapturing = true;
+        this.startAutoCaptureBtn.innerHTML = '<i class="fas fa-stop"></i> Stop Capture';
+
+        let captureCount = 0;
+        while (this.isAutoCapturing && captureCount < totalCaptures) {
+            await this.captureImage();
+            captureCount++;
+
+            if (captureCount < totalCaptures) {
+                await new Promise(resolve => setTimeout(resolve, this.autoCapturePause));
+            }
+        }
+
+        this.isAutoCapturing = false;
+        this.startAutoCaptureBtn.innerHTML = '<i class="fas fa-camera"></i> Start Capture';
     }
 
     addImageToTable(imageUrl) {
