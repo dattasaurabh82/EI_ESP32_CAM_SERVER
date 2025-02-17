@@ -14,25 +14,6 @@ class EdgeImpulseIntegration {
         this.setupConfigToggle();
     }
 
-    async loadConfig() {
-        try {
-            const response = await fetch('/loadConfig');
-            if (response.ok) {
-                const config = await response.json();
-                this.apiKey = config.apiKey || '';
-                this.projectId = config.projectId || '';
-                this.deviceName = config.deviceName || '';
-
-                // Populate UI
-                document.getElementById('apiKey').value = this.apiKey;
-                document.getElementById('projectID').value = this.projectId;
-                document.getElementById('deviceName').value = this.deviceName;
-            }
-        } catch (error) {
-            console.error('Error loading configuration:', error);
-        }
-    }
-
     setupEventListeners() {
         // document.getElementById('saveConfig').addEventListener('click', () => this.saveConfig());
         document.getElementById('saveConfig').addEventListener('click', () => this.saveConfig());
@@ -50,6 +31,80 @@ class EdgeImpulseIntegration {
         });
     }
 
+
+    // First-Time Setup Key (used for encrypting data EI specific data/API key, etc. storage)
+    async generateKey() {
+        let deviceKey = localStorage.getItem('deviceKey');
+        if (!deviceKey) {
+            // Generate random key on first use
+            const randomBytes = crypto.getRandomValues(new Uint8Array(32));
+            deviceKey = Array.from(randomBytes, b => b.toString(16).padStart(2, '0')).join('');
+            localStorage.setItem('deviceKey', deviceKey);
+        }
+
+        const salt = crypto.getRandomValues(new Uint8Array(16));
+        const encoder = new TextEncoder();
+        const keyMaterial = await crypto.subtle.importKey(
+            "raw",
+            encoder.encode(deviceKey),
+            { name: "PBKDF2" },
+            false,
+            ["deriveBits", "deriveKey"]
+        );
+
+        return await crypto.subtle.deriveKey(
+            {
+                name: "PBKDF2",
+                salt: salt,
+                iterations: 100000,
+                hash: "SHA-256"
+            },
+            keyMaterial,
+            { name: "AES-GCM", length: 256 },
+            true,
+            ["encrypt", "decrypt"]
+        );
+    }
+
+    // // Simple encryption/decryption functions
+    // encrypt(text) {
+    //     return btoa(text);  // For demo - replace with more secure encryption
+    // }
+
+    // decrypt(encrypted) {
+    //     return atob(encrypted);  // For demo - replace with more secure decryption
+    // }
+
+    // Using a simple XOR-based encryption that doesn't rely on Web Crypto API.
+    // As we are not serving on ssl, we can keep things simple for now :)
+    encrypt(text) {
+        // Create a simple key from timestamp and random number
+        const key = Date.now().toString() + Math.random().toString();
+        let result = '';
+        for (let i = 0; i < text.length; i++) {
+            const charCode = text.charCodeAt(i) ^ key.charCodeAt(i % key.length);
+            result += String.fromCharCode(charCode);
+        }
+        // Store both the key and encrypted text
+        return btoa(key + '|' + result);
+    }
+
+    decrypt(encrypted) {
+        try {
+            const decoded = atob(encrypted);
+            const [key, text] = decoded.split('|');
+            let result = '';
+            for (let i = 0; i < text.length; i++) {
+                const charCode = text.charCodeAt(i) ^ key.charCodeAt(i % key.length);
+                result += String.fromCharCode(charCode);
+            }
+            return result;
+        } catch (error) {
+            console.error('Decryption failed:', error);
+            return null;
+        }
+    }
+
     async saveConfig() {
         const config = {
             apiKey: document.getElementById('apiKey').value,
@@ -57,13 +112,35 @@ class EdgeImpulseIntegration {
             deviceName: document.getElementById('deviceName').value
         };
 
+        // try {
+        //     const response = await fetch('/saveConfig', {
+        //         method: 'POST',
+        //         headers: {
+        //             'Content-Type': 'application/x-www-form-urlencoded',
+        //         },
+        //         body: `config=${JSON.stringify(config)}`
+        //     });
+
+        //     if (response.ok) {
+        //         this.apiKey = config.apiKey;
+        //         this.projectId = config.projectId;
+        //         this.deviceName = config.deviceName;
+        //         alert('Configuration saved!');
+        //     } else {
+        //         alert('Failed to save configuration');
+        //     }
+        // } catch (error) {
+        //     console.error('Error saving configuration:', error);
+        //     alert('Error saving configuration');
+        // }
         try {
+            const encrypted = this.encrypt(JSON.stringify(config));
             const response = await fetch('/saveConfig', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
                 },
-                body: `config=${JSON.stringify(config)}`
+                body: `config=${encrypted}`
             });
 
             if (response.ok) {
@@ -80,14 +157,48 @@ class EdgeImpulseIntegration {
         }
     }
 
-    // Simple encryption/decryption functions
-    encrypt(text) {
-        return btoa(text);  // For demo - replace with more secure encryption
+
+    // async loadConfig() {
+    //     try {
+    //         const response = await fetch('/loadConfig');
+    //         if (response.ok) {
+    //             const config = await response.json();
+    //             this.apiKey = config.apiKey || '';
+    //             this.projectId = config.projectId || '';
+    //             this.deviceName = config.deviceName || '';
+
+    //             // Populate UI
+    //             document.getElementById('apiKey').value = this.apiKey;
+    //             document.getElementById('projectID').value = this.projectId;
+    //             document.getElementById('deviceName').value = this.deviceName;
+    //         }
+    //     } catch (error) {
+    //         console.error('Error loading configuration:', error);
+    //     }
+    // }
+    async loadConfig() {
+        try {
+            const response = await fetch('/loadConfig');
+            if (response.ok) {
+                const encrypted = await response.text();
+                const decrypted = this.decrypt(encrypted);
+                if (decrypted) {
+                    const config = JSON.parse(decrypted);
+                    this.apiKey = config.apiKey || '';
+                    this.projectId = config.projectId || '';
+                    this.deviceName = config.deviceName || '';
+
+                    // Populate UI
+                    document.getElementById('apiKey').value = this.apiKey;
+                    document.getElementById('projectID').value = this.projectId;
+                    document.getElementById('deviceName').value = this.deviceName;
+                }
+            }
+        } catch (error) {
+            console.error('Error loading configuration:', error);
+        }
     }
 
-    decrypt(encrypted) {
-        return atob(encrypted);  // For demo - replace with more secure decryption
-    }
 
     async uploadImages() {
         const images = document.querySelectorAll('.preview-image');
@@ -305,6 +416,10 @@ class CameraInterface {
         deleteBtn.className = 'delete-btn';
         deleteBtn.addEventListener('click', () => this.deleteRow(row));
         deleteCell.appendChild(deleteBtn);
+
+        // Auto scroll to bottom
+        const tableContainer = this.imageTableBody.closest('.table-container');
+        tableContainer.scrollTop = tableContainer.scrollHeight;
 
         this.imageCount++;
         this.updateButtonVisibility();

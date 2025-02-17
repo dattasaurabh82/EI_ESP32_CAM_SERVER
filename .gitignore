@@ -9,3 +9,6 @@ build/
 # IDE specific files
 *.swp
 .idea/
+
+# EI specific
+data/ei_config.json
