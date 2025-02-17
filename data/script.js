@@ -213,6 +213,9 @@ class CameraInterface {
     constructor() {
         // Stream frame
         this.streamImg = document.getElementById('streamImg');
+        this.streamToggleBtn = document.getElementById('streamToggle');
+        this.isStreaming = true;
+        this.lastFrame = null;
 
         // Buttons
         this.startButton = document.getElementById('startCollecting');
@@ -242,6 +245,7 @@ class CameraInterface {
         this.autoCapturePause = 2000;
 
         this.initializeStream();
+        this.setupStreamControl();
         this.setupEventListeners();
 
         // Initialize Edge Impulse integration
@@ -273,6 +277,47 @@ class CameraInterface {
         this.downloadButton.addEventListener('click', () => this.downloadImages());
         document.addEventListener('keydown', (e) => this.handleKeyPress(e));
         this.startAutoCaptureBtn.addEventListener('click', () => this.toggleAutoCapture());
+    }
+
+    async toggleStream() {
+        try {
+            const response = await fetch('/toggleStream', { method: 'POST' });
+            const state = await response.text();
+            this.isStreaming = state === 'streaming';
+
+            if (this.isStreaming) {
+                // Resume stream
+                this.streamImg.src = "/stream";
+                this.streamToggleBtn.innerHTML = '<i class="fas fa-pause"></i>';
+            } else {
+                // Capture last frame before stopping
+                const lastFrame = await this.captureFrame();
+                this.lastFrame = lastFrame;
+                this.streamImg.src = lastFrame;
+                this.streamToggleBtn.innerHTML = '<i class="fas fa-play"></i>';
+            }
+        } catch (error) {
+            console.error('Error toggling stream:', error);
+        }
+    }
+
+    async captureFrame() {
+        const response = await fetch('/capture');
+        const blob = await response.blob();
+        return URL.createObjectURL(blob);
+    }
+
+    async captureImage() {
+        try {
+            if (!this.isStreaming && this.lastFrame) {
+                this.addImageToTable(this.lastFrame);
+            } else {
+                const imageUrl = await this.captureFrame();
+                this.addImageToTable(imageUrl);
+            }
+        } catch (error) {
+            console.error('Error capturing image:', error);
+        }
     }
 
     async captureImage() {

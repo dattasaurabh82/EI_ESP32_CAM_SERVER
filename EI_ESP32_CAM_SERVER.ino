@@ -16,11 +16,18 @@
 
 AsyncWebServer server(80);  // Single server instance
 
+bool isStreamActive = true;
+
+
 // ======== Non-blocking MJPEG Stream ========
 void handleMjpeg(AsyncWebServerRequest *request) {
   AsyncWebServerResponse *response = request->beginChunkedResponse(
     "multipart/x-mixed-replace; boundary=frame",
     [](uint8_t *buffer, size_t maxLen, size_t index) -> size_t {
+      if (!isStreamActive) {
+        return 0;  // Return 0 to stop streaming
+      }
+
       camera_fb_t *fb = esp_camera_fb_get();
       if (!fb) return 0;
 
@@ -251,7 +258,13 @@ void setup() {
     request->send(LittleFS, "/ei-labeling-guide.png", "image/png");
   });
 
-  // Stream endpoint
+  // Stream endpoints
+  server.on("/toggleStream", HTTP_POST, [](AsyncWebServerRequest *request) {
+    isStreamActive = !isStreamActive;
+    Serial.printf("Stream state: %s\n", isStreamActive ? "Active" : "Paused");
+    request->send(200, "text/plain", isStreamActive ? "streaming" : "paused");
+  });
+
   server.on("/stream", HTTP_GET, handleMjpeg);
 
   // Capture endpoint

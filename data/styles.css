@@ -92,6 +92,33 @@ body {
     padding: 10px;
 }
 
+stream-wrapper {
+    position: relative;
+    display: inline-block;  /* Contains the image and overlay */
+}
+
+.stream-toggle-btn {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(0, 0, 0, 0.6);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.3s;
+}
+
+.stream-toggle-btn:hover {
+    background: rgba(0, 0, 0, 0.8);
+}
+
 #streamImg {
     width: 220px;
     height: 220px;
