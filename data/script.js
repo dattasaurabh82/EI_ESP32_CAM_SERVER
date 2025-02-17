@@ -163,11 +163,7 @@ class CameraInterface {
         this.streamImg = document.getElementById('streamImg');
 
         // Buttons
-        // this.startButton = document.getElementById('startCollecting');
-        this.startButton = document.getElementById('capture');
-
-        this.isAutoCapturing = false;
-        this.autoCapturePause = 2000; // 2 seconds
+        this.startButton = document.getElementById('startCollecting');
         this.startAutoCaptureBtn = document.getElementById('startAutoCapture');
         this.totalCapturesInput = document.getElementById('totalCaptures');
 
@@ -181,7 +177,15 @@ class CameraInterface {
         // Image preview
         this.imageModal = document.getElementById('imageModal');
         this.modalImage = document.getElementById('modalImage');
+
+        // [Debug] Add error checking
+        if (!this.startAutoCaptureBtn || !this.totalCapturesInput) {
+            console.error('Auto capture elements not found in the DOM');
+        }
+
         this.imageCount = 0;
+        this.isAutoCapturing = false;
+        this.autoCapturePause = 2000;
 
         this.initializeStream();
         this.setupEventListeners();

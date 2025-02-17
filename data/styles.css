@@ -217,10 +217,7 @@ body {
     background: var(--btn-danger);
 }
 
-/* #startCollecting {
-    background: var(--btn-primary);
-} */
-#capture {
+#startCollecting {
     background: var(--btn-primary);
 }
 
