@@ -92,9 +92,10 @@ body {
     padding: 10px;
 }
 
-stream-wrapper {
+.stream-wrapper {
     position: relative;
-    display: inline-block;  /* Contains the image and overlay */
+    display: inline-block;
+    /* Contains the image and overlay */
 }
 
 .stream-toggle-btn {
@@ -116,6 +117,27 @@ stream-wrapper {
 }
 
 .stream-toggle-btn:hover {
+    background: rgba(0, 0, 0, 0.8);
+}
+
+.stream-retry-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: rgba(0, 0, 0, 0.6);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+}
+
+.stream-retry-btn:hover {
     background: rgba(0, 0, 0, 0.8);
 }
 

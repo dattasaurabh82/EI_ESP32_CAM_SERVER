@@ -279,6 +279,53 @@ class CameraInterface {
         this.startAutoCaptureBtn.addEventListener('click', () => this.toggleAutoCapture());
     }
 
+    setupStreamControl() {
+        this.streamToggleBtn.addEventListener('click', () => this.toggleStream());
+    }
+
+    async reloadStream(retries = 3) {
+        let attempt = 0;
+        const reload = () => {
+            attempt++;
+
+            // Clear existing stream
+            this.streamImg.src = '';
+            // Add timestamp to prevent caching
+            const timestamp = new Date().getTime();
+            this.streamImg.src = `/stream?t=${timestamp}`;
+            // Update button
+            this.streamToggleBtn.innerHTML = '<i class="fas fa-pause"></i>';
+            // Check if stream loaded successfully
+            this.streamImg.onload = () => {
+                console.log('Stream reloaded successfully');
+                // Remove retry button if it exists
+                const retryBtn = document.querySelector('.stream-retry-btn');
+                if (retryBtn) retryBtn.remove();
+            };
+
+            this.streamImg.onerror = () => {
+                if (attempt < retries) {
+                    console.log(`Retry attempt ${attempt}/${retries}`);
+                    setTimeout(reload, 1000);  // Wait 1 second before retry
+                } else {
+                    console.error('Failed to reload stream after', retries, 'attempts');
+
+                    // Optionally show user feedback
+                    // alert('Stream reload failed. Please refresh the page.');
+
+                    // Add retry button
+                    const retryBtn = document.createElement('button');
+                    retryBtn.className = 'stream-retry-btn';
+                    retryBtn.innerHTML = '<i class="fas fa-sync"></i>';
+                    retryBtn.onclick = () => this.reloadStream(3);
+                    this.streamImg.parentElement.appendChild(retryBtn);
+                }
+            };
+        };
+
+        reload();
+    }
+
     async toggleStream() {
         try {
             const response = await fetch('/toggleStream', { method: 'POST' });
@@ -287,19 +334,21 @@ class CameraInterface {
 
             if (this.isStreaming) {
                 // Resume stream
-                this.streamImg.src = "/stream";
-                this.streamToggleBtn.innerHTML = '<i class="fas fa-pause"></i>';
+                this.reloadStream(3);  // Try 3 times
             } else {
                 // Capture last frame before stopping
                 const lastFrame = await this.captureFrame();
                 this.lastFrame = lastFrame;
                 this.streamImg.src = lastFrame;
                 this.streamToggleBtn.innerHTML = '<i class="fas fa-play"></i>';
+                console.log('Stream stopped');
             }
         } catch (error) {
             console.error('Error toggling stream:', error);
         }
     }
+
+
 
     async captureFrame() {
         const response = await fetch('/capture');
