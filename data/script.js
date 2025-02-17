@@ -271,6 +271,13 @@ class CameraInterface {
     }
 
     setupEventListeners() {
+        // ** Prevent actual form submission
+        // Why? Because config panel has password type inputs and that needed to be inside a form for best practice
+        document.getElementById('eiConfigForm').addEventListener('submit', (e) => {
+            e.preventDefault();  
+            this.saveConfig();
+        });
+
         this.startButton.addEventListener('click', () => this.captureImage());
         this.clearButton.addEventListener('click', () => this.clearAllImages());
         this.imageModal.addEventListener('click', (e) => this.handleModalClick(e));

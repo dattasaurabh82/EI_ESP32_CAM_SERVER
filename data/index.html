@@ -20,30 +20,28 @@
 
         <div class="config-panel" style="display: none;">
             <div class="config-section">
-                <div class="config-row main-config">
-                    <div class="input-group">
-                        <label for="apiKey">API Key</label>
-                        <input type="password" id="apiKey" placeholder="Enter Edge Impulse API Key"
-                            class="config-input">
+                <form id="eiConfigForm" onsubmit="return false;">
+                    <div class="config-row main-config">
+                        <div class="input-group">
+                            <label for="apiKey">API Key</label>
+                            <input type="password" id="apiKey" placeholder="Enter Edge Impulse API Key"
+                                class="config-input">
+                        </div>
+                        <div class="input-group">
+                            <label for="projectID">Project ID</label>
+                            <input type="text" id="projectID" placeholder="Enter Project ID" class="config-input">
+                        </div>
+                        <div class="input-group">
+                            <label for="deviceName">Device Name</label>
+                            <input type="text" id="deviceName" placeholder="Enter Device Name" class="config-input">
+                        </div>
+                        <div class="input-group button-group">
+                            <button id="saveConfig" type="button" class="config-btn">Save Configuration</button>
+                        </div>
                     </div>
-                    <div class="input-group">
-                        <label for="projectID">Project ID</label>
-                        <input type="text" id="projectID" placeholder="Enter Project ID" class="config-input">
-                    </div>
-                    <div class="input-group">
-                        <label for="deviceName">Device Name</label>
-                        <input type="text" id="deviceName" placeholder="Enter Device Name" class="config-input">
-                    </div>
-                    <div class="input-group button-group">
-                        <button id="saveConfig" class="config-btn">Save Configuration</button>
-                    </div>
-                </div>
+                </form>
             </div>
         </div>
-
-        <!-- <div class="stream-container">
-            <img id="streamImg" alt="Camera Stream">
-        </div> -->
 
         <div class="stream-container">
             <div class="stream-wrapper">
