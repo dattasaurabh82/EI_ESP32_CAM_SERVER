@@ -225,7 +225,7 @@ ___ ESP32-CAM-WEB-SERVER - (edgeImpulse tool)___
 ---
 
 <details>
-   <summary> 4 . [BONUS] TResting GA locally</summary>
+   <summary> 4 . [BONUS] Testing Github Actions workflow, locally</summary>
 
 ### Prerequisites
 
