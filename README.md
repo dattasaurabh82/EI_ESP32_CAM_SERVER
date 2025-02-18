@@ -18,7 +18,7 @@ Instead, it creates an MJPEG stream directly from the camera and displays it on 
 - [x] Check detecting a Project's `Set Labelling Method`](https://forum.edgeimpulse.com/t/is-there-an-api-end-point-to-get-projects-set-labelling-method/13292?u=dattasaurabh82) and set it correctly for image upload
 - [x] Beautify a bit
 - [x] Add Footer
-- [ ] Implement actions for compilation checks in Github Actions
+- [x] Implement actions for compilation checks in Github Actions
 - [ ] Update Readme and Documentation
 - [ ] Implement gzipped method and transformations for optimizing file storage for frontend 
 - [ ] Feature (Optional): If not connected to wifi, first load captive portal in AP mode
@@ -75,7 +75,7 @@ We need to upload our files (html, css. js, etc. for the frontend) to esp-32 via
 1. Go to the [releases](https://github.com/earlephilhower/arduino-littlefs-upload/releases) page and click the `.vsix` file to download.
 2. Move the file to Plugins Directory
 
-   ```bash
+   ç
    # Find the .arduinoIDE directory
    cd ~/.arduinoIDE/
    pwd
@@ -211,8 +211,53 @@ ___ ESP32-CAM-WEB-SERVER - (edgeImpulse tool)___
 
 </details>
 
-
 ---
+
+<details>
+   <summary> 4 . [BONUS] TResting GA locally</summary>
+
+### Prerequisites
+
+- Install Docker Desktop for Mac
+- Install act using Homebrew:
+
+   ```bash
+   brew install act
+   ```
+
+### Running Tests
+
+From your project root directory, run:
+
+```bash
+act -P ubuntu-latest=ghcr.io/catthehacker/ubuntu:act-latest --container-architecture linux/amd64 -v
+```
+
+> Note: The `-v` flag enables verbose output for better debugging.
+
+### Testing Specific Events
+
+Test push event:
+
+```bash
+act push
+```
+
+Test manual workflow trigger:
+
+```bash
+act workflow_dispatch
+```
+
+### Troubleshooting
+
+- If you see warnings about Apple M-series chip, ensure you're using the `--container-architecture linux/amd64` flag
+- If Docker isn't running, you'll need to start Docker Desktop first
+- Use `-v` flag for verbose output when debugging issues
+
+For more information about act, visit the [nektos/act](https://github.com/nektos/act) repository.
+
+</details>
 
 ## Acknowledgement & Attribution
 

@@ -3,6 +3,8 @@
 #include <ESPAsyncWebServer.h>
 #include <LittleFS.h>
 
+#define CONFIG_LITTLEFS_CACHE_SIZE 512
+
 #include "credentials.h"
 #include "camera_init.h"
 
