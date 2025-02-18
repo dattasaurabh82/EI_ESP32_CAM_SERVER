@@ -86,7 +86,7 @@ We need to upload our files (html, css. js, etc. for the frontend) to esp-32 via
 1. Go to the [releases](https://github.com/earlephilhower/arduino-littlefs-upload/releases) page and click the `.vsix` file to download.
 2. Move the file to Plugins Directory
 
-   ç
+   ```bash
    # Find the .arduinoIDE directory
    cd ~/.arduinoIDE/
    pwd
