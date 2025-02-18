@@ -33,6 +33,8 @@ Instead, it creates an MJPEG stream directly from the camera and displays it on 
    <summary> 1. Hardware</summary>
   
    ## Hardware Setup
+
+   The XIAO_ESP32S3 gets very hot when streaming MJPEG as stated [here](https://wiki.seeedstudio.com/xiao_esp32s3_camera_usage/#project-ii-video-streaming)
   
    Tested on: [XIAO_ESP32S3](https://wiki.seeedstudio.com/xiao_esp32s3_getting_started/)
 
