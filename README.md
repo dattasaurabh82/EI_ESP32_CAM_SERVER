@@ -270,6 +270,8 @@ For more information about act, visit the [nektos/act](https://github.com/nektos
 
 </details>
 
+---
+
 ## Acknowledgement & Attribution
 
 ```txt
