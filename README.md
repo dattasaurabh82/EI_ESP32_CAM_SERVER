@@ -1,5 +1,16 @@
 # EI_ESP32_CAM_SERVER
 
+| Repo | CI status |
+| --- | --- |
+| CI on [dattazigzag repo](https://github.com/dattazigzag/EI_ESP32_CAM_SERVER) | [![Arduino CI](https://github.com/dattazigzag/EI_ESP32_CAM_SERVER/actions/workflows/arduino-ci.yml/badge.svg)](https://github.com/dattazigzag/EI_ESP32_CAM_SERVER/actions/workflows/arduino-ci.yml) |
+| CI on [dattasaurabh82 repo](https://github.com/dattasaurabh82/EI_ESP32_CAM_SERVER) | [![Arduino CI](https://github.com/dattasaurabh82/EI_ESP32_CAM_SERVER/actions/workflows/arduino-ci.yml/badge.svg)](https://github.com/dattasaurabh82/EI_ESP32_CAM_SERVER/actions/workflows/arduino-ci.yml) |
+
+
+
+<!-- Arduino CI on dattazigzag repo: [![Arduino CI](https://github.com/dattazigzag/EI_ESP32_CAM_SERVER/actions/workflows/arduino-ci.yml/badge.svg)](https://github.com/dattazigzag/EI_ESP32_CAM_SERVER/actions/workflows/arduino-ci.yml)
+
+Arduino CI on dattasaurabh82 repo:[![dattasaurabh82](https://github.com/dattasaurabh82/EI_ESP32_CAM_SERVER/actions/workflows/arduino-ci.yml/badge.svg)](https://github.com/dattasaurabh82/EI_ESP32_CAM_SERVER/actions/workflows/arduino-ci.yml) -->
+
 ## What is this?
 
 This educational tool helps reduce the time needed for capturing and labeling ESP32 camera images for TinyML training in [edgeimpulse](https://docs.edgeimpulse.com/reference). It's more efficient than the standard method of capturing and uploading single images through the [edgeimpulse data forwarder firmware](https://github.com/edgeimpulse/firmware-espressif-esp32).
@@ -18,9 +29,9 @@ Instead, it creates an MJPEG stream directly from the camera and displays it on 
 - [x] Check detecting a Project's `Set Labelling Method`](https://forum.edgeimpulse.com/t/is-there-an-api-end-point-to-get-projects-set-labelling-method/13292?u=dattasaurabh82) and set it correctly for image upload
 - [x] Beautify a bit
 - [x] Add Footer
-- [ ] Implement actions for compilation checks in Github Actions
+- [x] Implement actions for compilation checks in Github Actions
+- [ ] Implement gzipped method and transformations for optimizing file storage for frontend
 - [ ] Update Readme and Documentation
-- [ ] Implement gzipped method and transformations for optimizing file storage for frontend 
 - [ ] Feature (Optional): If not connected to wifi, first load captive portal in AP mode
 
 ---
@@ -213,6 +224,53 @@ ___ ESP32-CAM-WEB-SERVER - (edgeImpulse tool)___
 
 </details>
 
+---
+
+<details>
+   <summary> 4 . [BONUS] Testing Github Actions workflow, locally</summary>
+
+### Prerequisites
+
+- Install Docker Desktop for Mac
+- Install act using Homebrew:
+
+   ```bash
+   brew install act
+   ```
+
+### Running Tests
+
+From your project root directory, run:
+
+```bash
+act -P ubuntu-latest=ghcr.io/catthehacker/ubuntu:act-latest --container-architecture linux/amd64 -v
+```
+
+> Note: The `-v` flag enables verbose output for better debugging.
+
+### Testing Specific Events
+
+Test push event:
+
+```bash
+act push
+```
+
+Test manual workflow trigger:
+
+```bash
+act workflow_dispatch
+```
+
+### Troubleshooting
+
+- If you see warnings about Apple M-series chip, ensure you're using the `--container-architecture linux/amd64` flag
+- If Docker isn't running, you'll need to start Docker Desktop first
+- Use `-v` flag for verbose output when debugging issues
+
+For more information about act, visit the [nektos/act](https://github.com/nektos/act) repository.
+
+</details>
 
 ---
 
