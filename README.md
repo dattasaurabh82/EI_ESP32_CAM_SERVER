@@ -30,8 +30,8 @@ Instead, it creates an MJPEG stream directly from the camera and displays it on 
 - [x] Beautify a bit
 - [x] Add Footer
 - [x] Implement actions for compilation checks in Github Actions
+- [ ] Implement gzipped method and transformations for optimizing file storage for frontend
 - [ ] Update Readme and Documentation
-- [ ] Implement gzipped method and transformations for optimizing file storage for frontend 
 - [ ] Feature (Optional): If not connected to wifi, first load captive portal in AP mode
 
 ---
