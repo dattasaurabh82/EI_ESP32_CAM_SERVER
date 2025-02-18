@@ -30,9 +30,9 @@ Instead, it creates an MJPEG stream directly from the camera and displays it on 
 - [x] Beautify a bit
 - [x] Add Footer
 - [x] Implement actions for compilation checks in Github Actions
-- [ ] Implement gzipped method and transformations for optimizing file storage for frontend
-- [ ] Update Readme and Documentation
+- [x] Update Readme and Documentation
 - [ ] Feature (Optional): If not connected to wifi, first load captive portal in AP mode
+- [ ] Implement gzipped method and transformations for optimizing file storage for frontend
 
 ---
 
@@ -44,28 +44,71 @@ Instead, it creates an MJPEG stream directly from the camera and displays it on 
    <summary> 1. Hardware</summary>
   
    ## Hardware Setup
-
-   The XIAO_ESP32S3 gets very hot when streaming MJPEG as stated [here](https://wiki.seeedstudio.com/xiao_esp32s3_camera_usage/#project-ii-video-streaming)
   
    Tested on: [XIAO_ESP32S3](https://wiki.seeedstudio.com/xiao_esp32s3_getting_started/)
 
    <br>
 
+   > The XIAO_ESP32S3 gets very hot when streaming MJPEG as stated [here](https://wiki.seeedstudio.com/xiao_esp32s3_camera_usage/#project-ii-video-streaming)
+
+   ![alt text](<assets/Screenshot 2025-02-18 at 23.54.35.png>)
+
+   So I added a beefy cooper heat sink used in raspberry PIs and not the cheap aluminium ones and thought maybe I should just give it some air 💨
+
+   ![alt text](<assets/Screenshot 2025-02-18 at 23.56.44.png>)
+
+   __But then how do I put it in as I like things to be organized and in place?__
+
+   So, I designed a cooling contraption for better air flow ...
+   And, additionally it holds everything together and also has a modular gorilla arm screw adapter.
+
+   ![alt text](<assets/Screenshot 2025-02-19 at 00.02.28.png>)
+
+   __Before__ turning __ON__ the fans
+
+   ![alt text](<assets/Screenshot 2025-02-19 at 00.06.46.png>)
+
+   __After__ turning __ON__ the fans
+
+   ![alt text](<assets/Screenshot 2025-02-19 at 00.07.25.png>)
+
+   Two points to note here:
+   
+   1. The OV5640 camera also gets 🥵.
+
+      ![alt text](<assets/Screenshot 2025-02-19 at 00.13.18.png>)
+   
+      > !! Plan to fix that in next iteration
+   
+   2. The fan power is not drawn form the same VBUS that powers the XIAO_ESP32S3 but has a separate source, so that the performance of XIAO_ESP32S3 is not affected.
+   
+      > Yes that means you need a separate cable if you do not want to fry your XIAO_ESP32S3.
+
+      ![alt text](<assets/Screenshot 2025-02-19 at 00.19.43.png>)
+
+      > My quick & dirty elegant solution
+
+---
+
+### xiao with cooling contraption and gorilla pod mount
+
    ![alt text](assets/xiao_with_cooling_contraption_and_gorilla_po_mount_render.png)
 
-   > xiao with cooling contraption and gorilla pod mount | render
-
-   1. STL Files: [cooling_contraption/stl-s](cooling_contraption/stl-s)
-   2. STEP File: [xiao sense - holder.step](<cooling_contraption/xiao sense - holder.step>)
-   3. Fusion 360 preview link: 👉🏼 [🌐](https://a360.co/3EEMBdH)
+   3. STL Files: [cooling_contraption/stl-s](cooling_contraption/stl-s)
+   4. STEP File: [xiao sense - holder.step](<cooling_contraption/xiao sense - holder.step>)
+   5. Fusion 360 preview link: 👉🏼 [🌐](https://a360.co/3EEMBdH)
 
 </details>
+
+---
 
 <details>
    <summary> 2. Edge Impulse Studio Project setup</summary>
 
    TBD
 </details>
+
+---
 
 <details>
    <summary> 3 . Software</summary>
