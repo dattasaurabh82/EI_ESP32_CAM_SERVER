@@ -275,6 +275,10 @@ ___ ESP32-CAM-WEB-SERVER - (edgeImpulse tool)___
 ### Prerequisites
 
 - Install Docker Desktop for Mac
+- Make sure socket is accessible
+
+   ![alt text](<assets/Screenshot 2025-02-19 at 01.00.14.png>)
+
 - Install act using Homebrew:
 
    ```bash
