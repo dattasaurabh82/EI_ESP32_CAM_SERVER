@@ -12,3 +12,5 @@ build/
 
 # EI specific
 data/ei_config.json
+
+*.bin
