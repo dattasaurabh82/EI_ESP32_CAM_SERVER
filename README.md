@@ -94,9 +94,7 @@ Instead, it creates an MJPEG stream directly from the camera and displays it on 
 
    ![alt text](assets/xiao_with_cooling_contraption_and_gorilla_po_mount_render.png)
 
-   3. STL Files: [cooling_contraption/stl-s](cooling_contraption/stl-s)
-   4. STEP File: [xiao sense - holder.step](<cooling_contraption/xiao sense - holder.step>)
-   5. Fusion 360 preview link: 👉🏼 [🌐](https://a360.co/3EEMBdH)
+   > Fusion 360 preview and file Download link: 👉🏼 [🌐](https://a360.co/3EEMBdH)
 
 </details>
 
