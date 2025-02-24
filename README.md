@@ -30,6 +30,7 @@ Instead, it creates an MJPEG stream directly from the camera and displays it on 
 - [x] Beautify a bit
 - [x] Add Footer
 - [x] Implement actions for compilation checks in Github Actions
+- [x] LittleFS File Sys packing and serving both firmware bin and file sys bin from web uploader based repo ver update.
 - [x] Update Readme and Documentation
 - [ ] Feature (Optional): If not connected to wifi, first load captive portal in AP mode
 - [ ] Implement gzipped method and transformations for optimizing file storage for frontend
