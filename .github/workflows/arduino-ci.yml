@@ -1,9 +1,14 @@
 name: Build
 
+# on:
+#   push:
+#     branches: [ main ]
+#   workflow_dispatch:
+
 on:
   push:
-    branches: [ main ]
-  workflow_dispatch:
+    tags:
+      - 'v[0-9]+.[0-9]+.[0-9]+*'
 
 jobs:
   build:
@@ -11,6 +16,34 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
+
+    # Install build dependencies
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y cmake build-essential
+    
+    # Build mklittlefs
+    - name: Build mklittlefs
+      run: |
+        git clone --recursive https://github.com/earlephilhower/mklittlefs.git
+        cd mklittlefs
+        make dist
+        sudo cp mklittlefs /usr/local/bin/
+        cd ..
+        mklittlefs --help
+
+    # Make firmware and other build dir
+    - name: Make build directory
+      run: |
+        rm -rf build
+        mkdir -p build
+    
+    # Create LittleFS binary
+    - name: Create LittleFS binary
+      run: |
+        mklittlefs -c data -p 256 -b 4096 -s 1572864 build/filesystem.littlefs.bin
+        mklittlefs -l -d 5 build/filesystem.littlefs.bin
     
     - name: Setup Arduino CLI
       run: |
@@ -39,7 +72,115 @@ jobs:
         echo 'const char* password = "TEST_PASSWORD";' >> credentials.h
         echo '#endif' >> credentials.h
     
+    - name: Clean and re-create binary directory
+      run: |
+        echo "Build started at: $(date)" > build/build_info.txt
+        echo "Git commit: ${{ github.sha }}" >> build/build_info.txt
+        echo "Version: ${{ github.ref_name }}" >> build/build_info.txt
+    
     - name: Compile Sketch
       run: |
         export PATH="$HOME/arduino-cli:$PATH"
-        arduino-cli compile --fqbn "esp32:esp32:XIAO_ESP32S3:USBMode=hwcdc,CDCOnBoot=default,MSCOnBoot=default,DFUOnBoot=default,UploadMode=default,CPUFreq=240,FlashMode=qio,FlashSize=8M,PartitionScheme=default_8MB,DebugLevel=none,PSRAM=opi,LoopCore=1,EventsCore=1,UploadSpeed=921600,JTAGAdapter=default" . -v
+        arduino-cli compile \
+        --fqbn "esp32:esp32:XIAO_ESP32S3:USBMode=hwcdc,CDCOnBoot=default,MSCOnBoot=default,DFUOnBoot=default,UploadMode=default,CPUFreq=240,FlashMode=qio,FlashSize=8M,PartitionScheme=default_8MB,DebugLevel=none,PSRAM=opi,LoopCore=1,EventsCore=1,EraseFlash=none,UploadSpeed=921600,JTAGAdapter=default" \
+        --output-dir build . -v 2>&1 | tee build/build_log.txt
+    
+    - name: Verify binary files
+      run: |
+        cd build
+        for file in "EI_ESP32_CAM_SERVER.ino.bin" "EI_ESP32_CAM_SERVER.ino.merged.bin"; do
+          if [ ! -f "$file" ]; then
+            echo "ERROR: Required file $file not found!"
+            exit 1
+          fi
+        done
+        ls -la
+        cd ..
+    
+    - name: Rename binary files
+      run: |
+        cd build
+        for f in *.ino.*; do 
+          if [ -f "$f" ]; then
+            mv "$f" "${f/.ino./\.}"
+            echo "Renamed: $f → ${f/.ino./\.}"
+          fi
+        done
+        cp EI_ESP32_CAM_SERVER.merged.bin "EI_ESP32_CAM_SERVER.merged-${GITHUB_REF_NAME}.bin"
+        echo "Renamed and created a copy of the binary with version: ${GITHUB_REF_NAME}"
+        cp filesystem.littlefs.bin "filesystem.littlefs-${GITHUB_REF_NAME}.bin"
+        echo "Renamed and created a copy of the LittleFS file sys binary with version: ${GITHUB_REF_NAME}"
+        ls -la
+        cd ..
+    
+    - name: Commit and push binary files in the repository too
+      run: |
+        git config --global user.name "GitHub Actions Bot"
+        git config --global user.email "actions@github.com"
+        git fetch origin
+        git checkout main
+        # Debug: Print current directory and files
+        pwd
+        ls -la
+        # Force add all files in binary directory
+        git add -f build/
+        if git diff --staged --quiet; then
+          echo "No changes to commit"
+          exit 0
+        fi
+        # Debug: Show what's being committed
+        git status
+        git commit -m "Add compiled firmware binaries for version ${GITHUB_REF_NAME}"
+        git push origin main || exit 1
+        git push origin :refs/tags/${GITHUB_REF_NAME} || true
+        git tag -d ${GITHUB_REF_NAME} || true
+        git tag ${GITHUB_REF_NAME}
+        git push origin ${GITHUB_REF_NAME}
+    
+    - name: Create firmware ZIP
+      run: | 
+        zip -r firmwares.zip build/*
+        ls -la
+        pwd
+    
+    - name: Generate Release Notes
+      run: |
+        {
+          echo "## XIAO ESP32-S3 Firmware Release ${{ github.ref_name }}"
+          echo "### Build Information"
+          echo "- Build Date: $(date)"
+          echo "- Commit: ${{ github.sha }}"
+          echo "- Builder: ${{ github.actor }}"
+          echo ""
+          echo "### All compiled firmware binary and other files"
+          echo "- firmwares.zip contains:"
+          cd binary
+          for file in *.*; do
+            if [ "$file" != "build_log.txt" ]; then
+              size=$(ls -l "$file" | awk '{print $5}')
+              echo "  - $file ($size bytes)"
+            fi
+          done
+          cd ..
+          echo "### Main firmware binary"
+          echo "- build/EI_ESP32_CAM_SERVER.merged.bin"
+          echo "### LittleFS FileSys binary"
+          echo "- build/filesystem.littlefs.bin"
+          echo ""
+        } > release_notes.md
+        pwd
+        ls -la
+        cat release_notes.md
+  
+    - name: Create Release
+      uses: softprops/action-gh-release@v1
+      with:
+        files: | 
+          firmware.zip
+          build/EI_ESP32_CAM_SERVER.merged-${{ github.ref_name }}.bin
+          build/filesystem.littlefs-${{ github.ref_name }}.bin
+        body_path: release_notes.md
+        draft: false
+        prerelease: ${{ contains(github.ref_name, '-') }}
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
