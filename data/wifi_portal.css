@@ -347,3 +347,33 @@
 [data-theme="dark"] .wifi-status-message.success {
     background-color: rgba(40, 167, 69, 0.2);
 }
+
+
+/* Font Awesome fallback icons */
+.wifi-modal .fas {
+    display: inline-block;
+    font-style: normal;
+    font-variant: normal;
+    text-rendering: auto;
+    line-height: 1;
+}
+
+.wifi-modal .fa-wifi::before {
+    content: "📶";
+}
+
+.wifi-modal .fa-sync-alt::before {
+    content: "🔄";
+}
+
+.wifi-modal .fa-eye::before {
+    content: "👁";
+}
+
+.wifi-modal .fa-eye-slash::before {
+    content: "👁🗨";
+}
+
+.wifi-modal .fa-spinner::before {
+    content: "⏳";
+}
