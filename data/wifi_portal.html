@@ -1,75 +1,66 @@
-<!-- WiFi Configuration Modal HTML -->
-<div id="wifiModal" class="wifi-modal">
-    <div class="wifi-modal-content">
-        <div class="wifi-modal-header">
-            <h2><i class="fas fa-wifi"></i> WiFi Configuration</h2>
-            <p class="wifi-subtitle">Connect to a WiFi network</p>
+<div class="wifi-modal-content">
+    <div class="wifi-modal-header">
+        <h2>WiFi Configuration</h2>
+        <p class="wifi-subtitle">Connect to a WiFi network</p>
+    </div>
+
+    <div class="wifi-modal-body">
+        <div id="wifiStatusMessage" class="wifi-status-message"></div>
+
+        <div class="wifi-network-list">
+            <div class="wifi-list-header">
+                <span>Available Networks</span>
+                <button id="refreshNetworks" class="refresh-btn" title="Refresh Networks">
+                    Refresh
+                </button>
+            </div>
+            <div id="networkListContainer" class="network-list-container">
+                <div class="network-loading">
+                    <span>Scanning for networks...</span>
+                </div>
+            </div>
         </div>
 
-        <div class="wifi-modal-body">
-            <div id="wifiStatusMessage" class="wifi-status-message"></div>
-
-            <div class="wifi-network-list">
-                <div class="wifi-list-header">
-                    <span>Available Networks</span>
-                    <button id="refreshNetworks" class="refresh-btn" title="Refresh Networks">
-                        <i class="fas fa-sync-alt"></i>
+        <div id="networkConnectForm" class="network-connect-form" style="display: none;">
+            <div class="form-group">
+                <label for="selectedNetwork">Network:</label>
+                <input type="text" id="selectedNetwork" readonly>
+            </div>
+            <div class="form-group password-group">
+                <label for="networkPassword">Password:</label>
+                <div class="password-input-container">
+                    <input type="password" id="networkPassword" placeholder="Enter WiFi password">
+                    <button id="togglePassword" class="toggle-password-btn">
+                        Show
                     </button>
                 </div>
-                <div id="networkListContainer" class="network-list-container">
-                    <div class="network-loading">
-                        <i class="fas fa-spinner fa-spin"></i>
-                        <span>Scanning for networks...</span>
-                    </div>
-                </div>
             </div>
-
-            <div id="networkConnectForm" class="network-connect-form" style="display: none;">
-                <div class="form-group">
-                    <label for="selectedNetwork">Network:</label>
-                    <input type="text" id="selectedNetwork" readonly>
-                </div>
-                <div class="form-group password-group">
-                    <label for="networkPassword">Password:</label>
-                    <div class="password-input-container">
-                        <input type="password" id="networkPassword" placeholder="Enter WiFi password">
-                        <button id="togglePassword" class="toggle-password-btn">
-                            <i class="fas fa-eye"></i>
-                        </button>
-                    </div>
-                </div>
-                <div class="form-actions">
-                    <button id="cancelConnect" class="cancel-btn">Cancel</button>
-                    <button id="connectNetwork" class="connect-btn">Connect</button>
-                </div>
+            <div class="form-actions">
+                <button id="cancelConnect" class="cancel-btn">Cancel</button>
+                <button id="connectNetwork" class="connect-btn">Connect</button>
             </div>
         </div>
+    </div>
 
-        <div id="connectionProgress" class="connection-progress" style="display: none;">
-            <div class="progress-spinner">
-                <i class="fas fa-spinner fa-spin"></i>
-            </div>
-            <div class="progress-text">
-                <p>Connecting to <span id="connectingNetwork"></span>...</p>
-                <p class="progress-note">This may take up to 10 seconds</p>
-            </div>
+    <div id="connectionProgress" class="connection-progress" style="display: none;">
+        <div class="progress-text">
+            <p>Connecting to <span id="connectingNetwork"></span>...</p>
+            <p class="progress-note">This may take up to 10 seconds</p>
+        </div>
+    </div>
+
+    <div id="connectionResult" class="connection-result" style="display: none;">
+        <div id="successResult" class="result-success" style="display: none;">
+            <p>Successfully connected to <span id="connectedNetwork"></span></p>
+            <p class="ip-address">IP Address: <span id="deviceIP"></span></p>
+            <p class="result-note">Your device will reconnect to the internet. This popup will close.</p>
+            <button id="closeSuccess" class="close-result-btn">Close</button>
         </div>
 
-        <div id="connectionResult" class="connection-result" style="display: none;">
-            <div id="successResult" class="result-success" style="display: none;">
-                <i class="fas fa-check-circle"></i>
-                <p>Successfully connected to <span id="connectedNetwork"></span></p>
-                <p class="ip-address">IP Address: <span id="deviceIP"></span></p>
-                <p class="result-note">You may need to reconnect to your regular WiFi network.</p>
-                <button id="closeSuccess" class="close-result-btn">Close</button>
-            </div>
-
-            <div id="failureResult" class="result-failure" style="display: none;">
-                <i class="fas fa-times-circle"></i>
-                <p>Failed to connect to <span id="failedNetwork"></span></p>
-                <p class="result-note">Please check the password and try again.</p>
-                <button id="tryAgain" class="try-again-btn">Try Again</button>
-            </div>
+        <div id="failureResult" class="result-failure" style="display: none;">
+            <p>Failed to connect to <span id="failedNetwork"></span></p>
+            <p class="result-note">Please check the password and try again.</p>
+            <button id="tryAgain" class="try-again-btn">Try Again</button>
         </div>
     </div>
 </div>

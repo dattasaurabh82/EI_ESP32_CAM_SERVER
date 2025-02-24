@@ -18,8 +18,8 @@
 #define DNS_PORT 53
 
 // Timeout configuration
-#define CONNECTION_TIMEOUT 10000  // 10 seconds to attempt connection
-#define SCAN_TIMEOUT 10000        // 10 seconds to scan networks
+#define CONNECTION_TIMEOUT 6000  // 6 seconds to attempt connection
+#define SCAN_TIMEOUT 6000        // 6 seconds to scan networks
 
 // Credentials file
 #define WIFI_CREDENTIALS_FILE "/wifi_credentials.json"
@@ -194,6 +194,10 @@ public:
     dnsServer.start(DNS_PORT, "*", AP_IP);
 
     apMode = true;
+  }
+
+  void setAPMode(bool mode) {
+    apMode = mode;
   }
 
   // Add new credentials and save

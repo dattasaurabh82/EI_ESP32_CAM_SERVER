@@ -1,5 +1,28 @@
 class WifiManager {
     constructor() {
+        // Try to initialize immediately, but have a fallback
+        if (document.getElementById('networkListContainer')) {
+            this.init();
+        } else {
+            // Set up a mutation observer to detect when our elements are added to the DOM
+            const observer = new MutationObserver((mutations, obs) => {
+                if (document.getElementById('networkListContainer')) {
+                    this.init();
+                    obs.disconnect(); // Stop observing once we find our element
+                }
+            });
+            // Start observing the document with the configured parameters
+            observer.observe(document.body, { childList: true, subtree: true });
+        }
+    }
+
+    init() {
+        this.initializeElements();
+        this.setupEventListeners();
+        this.checkWifiMode();
+    }
+
+    initializeElements() {
         // Main elements
         this.modal = document.getElementById('wifiModal');
         this.networkList = document.getElementById('networkListContainer');
@@ -33,9 +56,9 @@ class WifiManager {
         this.checkConnectionTimer = null;
 
         this.isAPMode = false;
-        this.setupEventListeners();
-        this.checkWifiMode();
     }
+
+
 
     setupEventListeners() {
         // Refresh button
@@ -86,10 +109,11 @@ class WifiManager {
     }
 
     scanNetworks() {
+        console.log('Starting network scan...');
+
         // Show loading state
         this.networkList.innerHTML = `
             <div class="network-loading">
-                <i class="fas fa-spinner fa-spin"></i>
                 <span>Scanning for networks...</span>
             </div>
         `;
@@ -103,12 +127,23 @@ class WifiManager {
         // Request network scan
         fetch('/wifi/scan')
             .then(response => {
+                console.log('Scan request sent, status:', response.status);
                 if (!response.ok) {
                     throw new Error('Network scan failed');
                 }
+                console.log('Setting timer to fetch networks in 5 seconds');
+                // Display status message
+                this.networkList.innerHTML = `
+                    <div class="network-loading">
+                        <span>Scan in progress... (waiting 5s)</span>
+                    </div>
+                `;
 
                 // Wait for scan to complete (it takes a few seconds)
-                this.scanTimer = setTimeout(() => this.fetchNetworks(), 5000);
+                this.scanTimer = setTimeout(() => {
+                    console.log('Fetching scan results now');
+                    this.fetchNetworks();
+                }, 5000);
             })
             .catch(error => {
                 console.error('Scan error:', error);
@@ -117,14 +152,17 @@ class WifiManager {
     }
 
     fetchNetworks() {
+        console.log('Attempting to fetch networks...');
         fetch('/wifi/networks')
             .then(response => {
+                console.log('Networks response status:', response.status);
                 if (!response.ok) {
                     throw new Error('Failed to fetch networks');
                 }
                 return response.json();
             })
             .then(networks => {
+                console.log('Networks received:', networks);
                 this.displayNetworks(networks);
             })
             .catch(error => {
@@ -153,9 +191,6 @@ class WifiManager {
         networks.forEach(network => {
             html += `
                 <div class="network-item" data-ssid="${network}">
-                    <div class="network-icon">
-                        <i class="fas fa-wifi"></i>
-                    </div>
                     <div class="network-name">${network}</div>
                 </div>
             `;
@@ -210,16 +245,29 @@ class WifiManager {
         // Reset password field
         this.passwordInput.value = '';
         this.passwordInput.type = 'password';
-        this.togglePasswordBtn.innerHTML = '<i class="fas fa-eye"></i>';
+        // this.togglePasswordBtn.innerHTML = '<i class="fas fa-eye"></i>';
+        this.togglePasswordBtn.textContent = 'Show';
     }
 
+    // OLD
+    // togglePasswordVisibility() {
+    //     if (this.passwordInput.type === 'password') {
+    //         this.passwordInput.type = 'text';
+    //         this.togglePasswordBtn.innerHTML = '<i class="fas fa-eye-slash"></i>';
+    //     } else {
+    //         this.passwordInput.type = 'password';
+    //         this.togglePasswordBtn.innerHTML = '<i class="fas fa-eye"></i>';
+    //     }
+    // }
+
+    // NEW
     togglePasswordVisibility() {
         if (this.passwordInput.type === 'password') {
             this.passwordInput.type = 'text';
-            this.togglePasswordBtn.innerHTML = '<i class="fas fa-eye-slash"></i>';
+            this.togglePasswordBtn.textContent = 'Hide';
         } else {
             this.passwordInput.type = 'password';
-            this.togglePasswordBtn.innerHTML = '<i class="fas fa-eye"></i>';
+            this.togglePasswordBtn.textContent = 'Show';
         }
     }
 
@@ -310,6 +358,18 @@ class WifiManager {
             });
     }
 
+    // OLD
+    // showConnectionSuccess(ssid, ip) {
+    //     this.connectionProgress.style.display = 'none';
+    //     this.connectionResult.style.display = 'block';
+    //     this.successResult.style.display = 'block';
+
+    //     this.connectedNetworkSpan.textContent = ssid;
+    //     this.deviceIPSpan.textContent = ip;
+    // }
+
+    // NEW
+    // After connection success, to stop AP mode on the ESP32 and redirect to the new IP
     showConnectionSuccess(ssid, ip) {
         this.connectionProgress.style.display = 'none';
         this.connectionResult.style.display = 'block';
@@ -317,6 +377,27 @@ class WifiManager {
 
         this.connectedNetworkSpan.textContent = ssid;
         this.deviceIPSpan.textContent = ip;
+
+        // Add event listener to close button to stop AP mode and redirect
+        this.closeSuccessBtn.addEventListener('click', () => {
+            // Stop AP mode on the server
+            fetch('/wifi/stopAP', { method: 'POST' })
+                .then(() => {
+                    console.log('AP mode stopped');
+                    // Redirect to new IP address after a delay
+                    setTimeout(() => {
+                        if (ip && ip !== 'unknown (check router)') {
+                            window.location.href = `http://${ip}`;
+                        } else {
+                            this.closeModal();
+                        }
+                    }, 1000);
+                })
+                .catch(error => {
+                    console.error('Error stopping AP mode:', error);
+                    this.closeModal();
+                });
+        });
     }
 
     showConnectionFailure(ssid) {
@@ -335,9 +416,15 @@ class WifiManager {
 }
 
 // Initialize WiFi manager when DOM is loaded
-document.addEventListener('DOMContentLoaded', () => {
-    // Check if WiFi modal elements exist before initializing
-    if (document.getElementById('wifiModal')) {
-        window.wifiManager = new WifiManager();
-    }
-});
+// document.addEventListener('DOMContentLoaded', () => {
+//     // Check if WiFi modal elements exist before initializing
+//     if (document.getElementById('wifiModal')) {
+//         window.wifiManager = new WifiManager();
+//     }
+// });
+if (document.getElementById('wifiModal')) {
+    window.wifiManager = new WifiManager();
+    console.log('WiFi manager initialized');
+} else {
+    console.error('WiFi modal not found when initializing manager');
+}

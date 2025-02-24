@@ -212,7 +212,7 @@ void setup() {
   initCamera();
   // 2. LittleFS init
   initLittleFS();
-  // 3. Connect to WiFi
+  // 3. Connect to Wi Fi
   setupWIFIstn();
 
   // 4. Configure AsyncWebServer Routes
@@ -360,6 +360,15 @@ void setup() {
     String output;
     serializeJson(doc, output);
     request->send(200, "application/json", output);
+  });
+
+  server.on("/wifi/stopAP", HTTP_POST, [](AsyncWebServerRequest *request) {
+    // Respond first, then stop AP mode
+    request->send(200, "text/plain", "Stopping AP mode");
+    Serial.println("  Exiting AP MODE ...");
+    // Schedule AP mode stop after response is sent
+    WiFi.softAPdisconnect(true);
+    wifiManager.setAPMode(false);
   });
 
   server.begin();
