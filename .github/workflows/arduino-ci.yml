@@ -137,10 +137,11 @@ jobs:
           git status
           git commit -m "Add compiled firmware binaries for version ${GITHUB_REF_NAME}"
           git push origin main || exit 1
-          git push origin :refs/tags/${GITHUB_REF_NAME} || true
-          git tag -d ${GITHUB_REF_NAME} || true
+          # Handle tag operations with error catching
+          git push all :refs/tags/${GITHUB_REF_NAME} || echo "Warning: Failed to delete tag from some remotes - continuing..."
+          git tag -d ${GITHUB_REF_NAME} || echo "Warning: Failed to delete local tag - continuing..."
           git tag ${GITHUB_REF_NAME}
-          git push origin ${GITHUB_REF_NAME}
+          git push all ${GITHUB_REF_NAME} || echo "Warning: Failed to push tag to some remotes - continuing..."
 
       - name: Create firmware ZIP
         run: |
