@@ -32,13 +32,13 @@ jobs:
 
       - name: Get latest tag version
         run: |
-          # Check if any tags exist
-          if git tag > /dev/null 2>&1; then
-            LATEST_TAG=$(git describe --tags --abbrev=0)
-            echo "Found tag: ${LATEST_TAG}"
-          else
+          # Try to get the latest tag
+          LATEST_TAG=$(git tag --sort=-v:refname | head -n 1 || echo "")
+          if [ -z "$LATEST_TAG" ]; then
             LATEST_TAG="v0.0.1"  # Default if no tags
             echo "No tags found, using default: ${LATEST_TAG}"
+          else
+            echo "Found tag: ${LATEST_TAG}"
           fi
           echo "VERSION=${LATEST_TAG}" >> $GITHUB_ENV
 
@@ -114,8 +114,8 @@ jobs:
           # 2. Update firmware link
           sed -i "s|<a href=\"\">XIAO ESP32 CAM server firmware</a>|<a href=\"${REPO_URL}/releases/download/${{ env.VERSION }}/EI_ESP32_CAM_SERVER.merged-${{ env.VERSION }}.bin\">XIAO ESP32 CAM server firmware</a>|g" webflasher/index.html
           # 3. Update filesystem binary link
-          filesystem.littlefs-v0.0.1.bin
-          sed -i "s|<a[[:space:]]*href=\"\">filesystem.littlefs.bin</a>|<a href=\"${REPO_URL}/releases/download/${{ env.VERSION }}/firmware/filesystem.littlefs-${{ env.VERSION }}.bin\">filesystem.littlefs.bin</a>|g" webflasher/index.html
+          # 3. Update filesystem binary link
+          sed -i "s|<a[[:space:]]*href=\"\">filesystem.littlefs.bin</a>|<a href=\"${REPO_URL}/releases/download/${{ env.VERSION }}/filesystem.littlefs-${{ env.VERSION }}.bin\">filesystem.littlefs.bin</a>|g" webflasher/index.html
           echo "Updated index.html file:"
           cat webflasher/index.html
 
