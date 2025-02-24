@@ -158,42 +158,6 @@
 
     <!-- WiFi Portal -->
     <div id="wifiModal" class="wifi-modal"></div>
-    <!-- Worked -->
-    <!-- <script>
-        // Load WiFi portal HTML dynamically
-        fetch('/wifi_portal.html')
-            .then(response => response.text())
-            .then(html => {
-                document.getElementById('wifiModal').innerHTML = html;
-                console.log('Portal HTML loaded', html.length, 'bytes');
-
-                // Only initialize WiFi manager after HTML is loaded
-                const script = document.createElement('script');
-                script.src = 'wifi_portal.js';
-                script.onload = function () {
-                    console.log('WiFi manager script loaded');
-                    // Give it a moment to initialize
-                    setTimeout(() => {
-                        if (window.wifiManager) {
-                            console.log('wifiManager initialized, triggering scan');
-                            window.wifiManager.scanNetworks();
-                        } else {
-                            console.log('wifiManager still not available after script load');
-                            // Fallback - try creating it directly
-                            if (typeof WifiManager === 'function') {
-                                console.log('Creating wifiManager manually');
-                                window.wifiManager = new WifiManager();
-                                window.wifiManager.scanNetworks();
-                            }
-                        }
-                    }, 3000);
-                };
-                document.body.appendChild(script);
-            })
-            .catch(error => {
-                console.error('Error loading WiFi portal HTML:', error);
-            });
-    </script> -->
     <script>
         // Load WiFi portal HTML and initialize manager
         fetch('/wifi_portal.html')
@@ -220,68 +184,6 @@
                 console.error('Error setting up WiFi portal:', error);
             });
     </script>
-
-    <!-- Debugging code -->
-    <!-- <script>
-        console.log('Page loaded');
-        // Check if we're in AP mode
-        fetch('/wifi/mode')
-            .then(response => response.json())
-            .then(data => {
-                console.log('AP Mode:', data.apMode);
-                if (data.apMode) {
-                    const modal = document.getElementById('wifiModal');
-                    if (modal) {
-                        console.log('Modal element found');
-                    } else {
-                        console.log('Modal element not found');
-                    }
-                }
-            })
-            .catch(error => {
-                console.error('Error checking mode:', error);
-            });
-        // Check if HTML was loaded
-        setTimeout(() => {
-            if (modal && modal.innerHTML.includes('wifi-modal-content')) {
-                console.log('Portal HTML loaded successfully');
-            } else {
-                console.log('Portal HTML not loaded properly');
-            }
-        }, 1000);
-    </script> -->
-
-    <!-- Test Button for WiFi scanning -->
-    <!-- <button
-        style="position:fixed;top:10px;right:10px;z-index:10000;background:#007bff;color:white;padding:8px 12px;border:none;border-radius:4px;"
-        onclick="console.log('Manual scan triggered'); fetch('/wifi/scan').then(() => { console.log('Scan started'); setTimeout(() => fetch('/wifi/networks').then(r => r.json()).then(networks => { console.log('Networks:', networks); displayNetworks(networks); }), 5000); });">
-        Trigger WiFi Scan
-    </button> -->
-    <!-- Debugging code -->
-    <!-- 
-    <script>
-        // Simple function to display networks in the UI
-        function displayNetworks(networks) {
-            const container = document.getElementById('networkListContainer');
-            if (!container) {
-                console.error('Network list container not found');
-                return;
-            }
-
-            if (!networks || networks.length === 0) {
-                container.innerHTML = '<div style="padding:15px;text-align:center;">No networks found</div>';
-                return;
-            }
-
-            let html = '';
-            networks.forEach(network => {
-                html += `<div style="padding:10px;border-bottom:1px solid #eee;cursor:pointer;">${network}</div>`;
-            });
-
-            container.innerHTML = html;
-            console.log('Networks displayed in UI');
-        }
-    </script> -->
 </body>
 
 </html>
