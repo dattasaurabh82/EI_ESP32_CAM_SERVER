@@ -100,7 +100,6 @@ jobs:
           sed -i "s|VERSION_PLACEHOLDER|${{ env.VERSION }}|g" webflasher/index.html
           sed -i "s|href=\"\"|href=\"https://github.com/${FIRMWARE_REPO}/tree/main\"|" webflasher/index.html
           sed -i "s|href=\".*filesystem.littlefs.bin\"*|href=\"https://github.com/${FILESYSTEM_REPO}/tree/main/firmware/filesystem.littlefs.bin\"|" webflasher/index.html
-          
           echo "Updated index.html file:"
           cat webflasher/index.html
 
