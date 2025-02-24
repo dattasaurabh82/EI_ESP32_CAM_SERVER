@@ -12,6 +12,7 @@ permissions:
   pages: write
   id-token: write
 
+# Allow only one concurrent deployment
 concurrency:
   group: "pages"
   cancel-in-progress: true
@@ -27,14 +28,19 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          fetch-depth: 0 # Need full history for tags
 
       - name: Get latest tag version
         run: |
-          LATEST_TAG=$(git describe --tags --abbrev=0)
+          # Check if any tags exist
+          if git tag > /dev/null 2>&1; then
+            LATEST_TAG=$(git describe --tags --abbrev=0)
+            echo "Found tag: ${LATEST_TAG}"
+          else
+            LATEST_TAG="v0.0.1"  # Default if no tags
+            echo "No tags found, using default: ${LATEST_TAG}"
+          fi
           echo "VERSION=${LATEST_TAG}" >> $GITHUB_ENV
-          echo "Using latest tag: ${LATEST_TAG}"
-          echo ""
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
@@ -60,7 +66,7 @@ jobs:
           cp build/filesystem.littlefs.bin webflasher/firmware/
           ls -la webflasher/firmware/
           echo ""
-      
+
       # Install build dependencies
       - name: Install dependencies
         run: |
@@ -76,7 +82,7 @@ jobs:
           sudo cp mklittlefs /usr/local/bin/
           cd ..
           mklittlefs --help
-      
+
       - name: Debug firmware files
         run: |
           echo "Checking copied LittleFS binary contents:"
@@ -88,18 +94,27 @@ jobs:
 
       - name: Update version in manifest.json and index.html
         env:
-          FIRMWARE_REPO: "dattasaurabh82/EI_ESP32_CAM_SERVER"
-          FILESYSTEM_REPO: "dattazigzag/EI_ESP32_CAM_SERVER"
+          REPO_URL: ${{ github.server_url }}/${{ github.repository }}
         run: |
+          echo "Current VERSION: ${{ env.VERSION }}"
+          echo "Current REPO_URL: ${REPO_URL}"
           # Update manifest.json
           echo "Updated manifest.json file:"
           sed -i "s/\"version\": \"[^\"]*\"/\"version\": \"${{ env.VERSION }}\"/" webflasher/manifest.json
           cat webflasher/manifest.json
           echo ""
-          # Update index.html with version and different repo links
-          sed -i "s|VERSION_PLACEHOLDER|${{ env.VERSION }}|g" webflasher/index.html
-          sed -i "s|href=\"\"|href=\"https://github.com/${FIRMWARE_REPO}/tree/main\"|" webflasher/index.html
-          sed -i "s|href=\".*filesystem.littlefs.bin\"*|href=\"https://github.com/${FILESYSTEM_REPO}/tree/main/firmware/filesystem.littlefs.bin\"|" webflasher/index.html
+          # Update index.html
+          # 1. Update version number
+          if [[ ! -z "${{ env.VERSION }}" ]]; then
+            sed -i "s|<span class=\"firmware-version\">.*</span>|<span class=\"firmware-version\">${{ env.VERSION }}</span>|g" webflasher/index.html
+          else
+            echo "Warning: Version is empty, using fallback"
+            sed -i "s|<span class=\"firmware-version\">.*</span>|<span class=\"firmware-version\">v0.0.1</span>|g" webflasher/index.html
+          fi
+          # 2. Update firmware link
+          sed -i "s|<a href=\"\">XIAO ESP32 CAM server firmware</a>|<a href=\"${REPO_URL}/tree/main\">XIAO ESP32 CAM server firmware</a>|g" webflasher/index.html
+          # 3. Update filesystem binary link
+          sed -i "s|<a href=\"\">filesystem.littlefs.bin</a>|<a href=\"${REPO_URL}/tree/main/firmware/filesystem.littlefs.bin\">filesystem.littlefs.bin</a>|g" webflasher/index.html
           echo "Updated index.html file:"
           cat webflasher/index.html
 
