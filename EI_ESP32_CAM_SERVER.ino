@@ -217,37 +217,10 @@ void setup() {
 
   // 4. Configure AsyncWebServer Routes
   // Static files
-
-  // OLD
-  // server.on("/", HTTP_GET, [](AsyncWebServerRequest *request) {
-  //   request->send(LittleFS, "/index.html", "text/html");
-  //   Serial.println("Client has tried to access ...");
-  // });
-
-  // NEW
   server.on("/", HTTP_GET, [](AsyncWebServerRequest *request) {
-    AsyncWebServerResponse *response = request->beginResponse(LittleFS, "/index.html", "text/html");
-    response->addHeader("Cache-Control", "no-cache, no-store, must-revalidate");
-    request->send(response);
+    request->send(LittleFS, "/index.html", "text/html");
+    Serial.println("Client has tried to access ...");
   });
-
-  // New start ---
-  server.on("/fontawesome/css/all.min.css", HTTP_GET, [](AsyncWebServerRequest *request) {
-    request->send(LittleFS, "/fontawesome/css/all.min.css", "text/css");
-  });
-  server.on("/fontawesome/webfonts/fa-solid-900.woff2", HTTP_GET, [](AsyncWebServerRequest *request) {
-    request->send(LittleFS, "/fontawesome/webfonts/fa-solid-900.woff2", "font/woff2");
-  });
-  server.on("/fontawesome/webfonts/fa-brands-400.woff2", HTTP_GET, [](AsyncWebServerRequest *request) {
-    request->send(LittleFS, "/fontawesome/webfonts/fa-brands-400.woff2", "font/woff2");
-  });
-  server.on("/fontawesome/webfonts/fa-brands-400.ttf", HTTP_GET, [](AsyncWebServerRequest *request) {
-    request->send(LittleFS, "/fontawesome/webfonts/fa-brands-400.ttf", "font/ttf");
-  });
-  server.on("/jszip.min.js", HTTP_GET, [](AsyncWebServerRequest *request) {
-    request->send(LittleFS, "/jszip.min.js", "application/javascript");
-  });
-  // New End ---
 
   server.on("/styles.css", HTTP_GET, [](AsyncWebServerRequest *request) {
     request->send(LittleFS, "/styles.css", "text/css");
@@ -255,9 +228,9 @@ void setup() {
   server.on("/script.js", HTTP_GET, [](AsyncWebServerRequest *request) {
     request->send(LittleFS, "/script.js", "application/javascript");
   });
-  server.on("/ei-labeling-guide.png", HTTP_GET, [](AsyncWebServerRequest *request) {
-    request->send(LittleFS, "/ei-labeling-guide.png", "image/png");
-  });
+  // server.on("/ei-labeling-guide.png", HTTP_GET, [](AsyncWebServerRequest *request) {
+  //   request->send(LittleFS, "/ei-labeling-guide.png", "image/png");
+  // });
 
   // WiFi Portal files
   server.on("/wifi_portal.html", HTTP_GET, [](AsyncWebServerRequest *request) {

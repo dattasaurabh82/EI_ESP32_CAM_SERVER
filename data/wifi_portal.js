@@ -1,50 +1,40 @@
 class WifiManager {
     constructor() {
-        // Add initialization check
-        if (!document.getElementById('wifiModal')) return;
-
         // Main elements
-        this.loadPortalHTML().then(() => {
-            this.modal = document.getElementById('wifiModal');
-            this.networkList = document.getElementById('networkListContainer');
-            this.connectForm = document.getElementById('networkConnectForm');
-            this.statusMessage = document.getElementById('wifiStatusMessage');
-            this.connectionProgress = document.getElementById('connectionProgress');
-            this.connectionResult = document.getElementById('connectionResult');
-            this.successResult = document.getElementById('successResult');
-            this.failureResult = document.getElementById('failureResult');
+        this.modal = document.getElementById('wifiModal');
+        this.networkList = document.getElementById('networkListContainer');
+        this.connectForm = document.getElementById('networkConnectForm');
+        this.statusMessage = document.getElementById('wifiStatusMessage');
+        this.connectionProgress = document.getElementById('connectionProgress');
+        this.connectionResult = document.getElementById('connectionResult');
+        this.successResult = document.getElementById('successResult');
+        this.failureResult = document.getElementById('failureResult');
 
-            // Form elements
-            this.selectedNetworkInput = document.getElementById('selectedNetwork');
-            this.passwordInput = document.getElementById('networkPassword');
-            this.togglePasswordBtn = document.getElementById('togglePassword');
+        // Form elements
+        this.selectedNetworkInput = document.getElementById('selectedNetwork');
+        this.passwordInput = document.getElementById('networkPassword');
+        this.togglePasswordBtn = document.getElementById('togglePassword');
 
-            // Result elements
-            this.connectingNetworkSpan = document.getElementById('connectingNetwork');
-            this.connectedNetworkSpan = document.getElementById('connectedNetwork');
-            this.failedNetworkSpan = document.getElementById('failedNetwork');
-            this.deviceIPSpan = document.getElementById('deviceIP');
+        // Result elements
+        this.connectingNetworkSpan = document.getElementById('connectingNetwork');
+        this.connectedNetworkSpan = document.getElementById('connectedNetwork');
+        this.failedNetworkSpan = document.getElementById('failedNetwork');
+        this.deviceIPSpan = document.getElementById('deviceIP');
 
-            // Button elements
-            this.refreshBtn = document.getElementById('refreshNetworks');
-            this.cancelBtn = document.getElementById('cancelConnect');
-            this.connectBtn = document.getElementById('connectNetwork');
-            this.closeSuccessBtn = document.getElementById('closeSuccess');
-            this.tryAgainBtn = document.getElementById('tryAgain');
+        // Button elements
+        this.refreshBtn = document.getElementById('refreshNetworks');
+        this.cancelBtn = document.getElementById('cancelConnect');
+        this.connectBtn = document.getElementById('connectNetwork');
+        this.closeSuccessBtn = document.getElementById('closeSuccess');
+        this.tryAgainBtn = document.getElementById('tryAgain');
 
-            this.selectedSSID = '';
-            this.scanTimer = null;
-            this.checkConnectionTimer = null;
+        this.selectedSSID = '';
+        this.scanTimer = null;
+        this.checkConnectionTimer = null;
 
-            this.isAPMode = false;
-            this.setupEventListeners();
-            this.checkWifiMode();
-        });
-    }
-
-    async loadPortalHTML() {
-        const response = await fetch('/wifi_portal.html');
-        document.getElementById('wifiModal').innerHTML = await response.text();
+        this.isAPMode = false;
+        this.setupEventListeners();
+        this.checkWifiMode();
     }
 
     setupEventListeners() {
