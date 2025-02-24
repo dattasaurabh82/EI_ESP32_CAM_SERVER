@@ -90,18 +90,18 @@ jobs:
           git clone https://github.com/ESP32Async/AsyncTCP.git
           git clone https://github.com/ESP32Async/ESPAsyncWebServer.git
 
-      - name: Create credentials file for C I
-        env:
-          WIFI_SSID: ${{ secrets.SSID }}
-          WIFI_PASSWORD: ${{ secrets.PWD }}
-        run: |
-          echo '#ifndef CREDENTIALS_H' > credentials.h
-          echo '#define CREDENTIALS_H' >> credentials.h
-          # echo 'const char* ssid = "TEST_SSID";' >> credentials.h
-          # echo 'const char* password = "TEST_PASSWORD";' >> credentials.h
-          echo 'const char* ssid = "'${WIFI_SSID}'";' >> credentials.h
-          echo 'const char* password = "'${WIFI_PASSWORD}'";' >> credentials.h
-          echo '#endif' >> credentials.h
+      # - name: Create credentials file for CI
+      #   env:
+      #     WIFI_SSID: ${{ secrets.SSID }}
+      #     WIFI_PASSWORD: ${{ secrets.PWD }}
+      #   run: |
+      #     echo '#ifndef CREDENTIALS_H' > credentials.h
+      #     echo '#define CREDENTIALS_H' >> credentials.h
+      #     # echo 'const char* ssid = "TEST_SSID";' >> credentials.h
+      #     # echo 'const char* password = "TEST_PASSWORD";' >> credentials.h
+      #     echo 'const char* ssid = "'${WIFI_SSID}'";' >> credentials.h
+      #     echo 'const char* password = "'${WIFI_PASSWORD}'";' >> credentials.h
+      #     echo '#endif' >> credentials.h
 
       - name: Clean and re-create binary directory
         run: |
