@@ -10,10 +10,26 @@ on:
     tags:
       - "v[0-9]+.[0-9]+.[0-9]+*"
 
-jobs:
-  build:
-    runs-on: ubuntu-latest
+permissions:
+  contents: write
 
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Validate tag format
+        run: |
+          if [[ ! ${{ github.ref_name }} =~ ^v[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9]+)?$ ]]; then
+            echo "Invalid tag format. Use: v1.2.3 or v1.2.3-beta"
+            exit 1
+          fi
+  build:
+    needs: validate
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
