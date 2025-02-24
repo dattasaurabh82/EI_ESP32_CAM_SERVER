@@ -198,7 +198,7 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           files: |
-            firmware.zip
+            firmwares.zip
             build/EI_ESP32_CAM_SERVER.merged-${{ github.ref_name }}.bin
             build/filesystem.littlefs-${{ github.ref_name }}.bin
           body_path: release_notes.md
