@@ -104,11 +104,22 @@ class WifiManager {
     closeModal() {
         this.modal.style.display = 'none';
         // Clear any pending timers
-        if (this.scanTimer) clearTimeout(this.scanTimer);
-        if (this.checkConnectionTimer) clearTimeout(this.checkConnectionTimer);
+        if (this.scanTimer) {
+            clearTimeout(this.scanTimer);
+            this.scanTimer = null;
+        }
+        if (this.checkConnectionTimer) {
+            clearTimeout(this.checkConnectionTimer);
+        }
     }
 
     scanNetworks() {
+        // Clear any existing timer
+        if (this.scanTimer) {
+            clearTimeout(this.scanTimer);
+            this.scanTimer = null;
+        }
+
         console.log('Starting network scan...');
 
         // Show loading state
@@ -245,22 +256,9 @@ class WifiManager {
         // Reset password field
         this.passwordInput.value = '';
         this.passwordInput.type = 'password';
-        // this.togglePasswordBtn.innerHTML = '<i class="fas fa-eye"></i>';
         this.togglePasswordBtn.textContent = 'Show';
     }
 
-    // OLD
-    // togglePasswordVisibility() {
-    //     if (this.passwordInput.type === 'password') {
-    //         this.passwordInput.type = 'text';
-    //         this.togglePasswordBtn.innerHTML = '<i class="fas fa-eye-slash"></i>';
-    //     } else {
-    //         this.passwordInput.type = 'password';
-    //         this.togglePasswordBtn.innerHTML = '<i class="fas fa-eye"></i>';
-    //     }
-    // }
-
-    // NEW
     togglePasswordVisibility() {
         if (this.passwordInput.type === 'password') {
             this.passwordInput.type = 'text';
@@ -346,7 +344,6 @@ class WifiManager {
     checkInternetConnection(ssid) {
         // If the device successfully connected to WiFi, it might have a new IP
         // This function checks if we now have internet access (which would indicate success)
-
         fetch('https://www.google.com', { mode: 'no-cors', cache: 'no-store' })
             .then(() => {
                 // If we can reach Google, we probably have internet now
@@ -358,17 +355,7 @@ class WifiManager {
             });
     }
 
-    // OLD
-    // showConnectionSuccess(ssid, ip) {
-    //     this.connectionProgress.style.display = 'none';
-    //     this.connectionResult.style.display = 'block';
-    //     this.successResult.style.display = 'block';
-
-    //     this.connectedNetworkSpan.textContent = ssid;
-    //     this.deviceIPSpan.textContent = ip;
-    // }
-
-    // NEW
+    // NEW: TBT
     // After connection success, to stop AP mode on the ESP32 and redirect to the new IP
     showConnectionSuccess(ssid, ip) {
         this.connectionProgress.style.display = 'none';
@@ -415,16 +402,18 @@ class WifiManager {
     }
 }
 
-// Initialize WiFi manager when DOM is loaded
-// document.addEventListener('DOMContentLoaded', () => {
-//     // Check if WiFi modal elements exist before initializing
-//     if (document.getElementById('wifiModal')) {
-//         window.wifiManager = new WifiManager();
-//     }
-// });
-if (document.getElementById('wifiModal')) {
+// OLD: Worked Before ...
+// if (document.getElementById('wifiModal')) {
+//     window.wifiManager = new WifiManager();
+//     console.log('WiFi manager initialized');
+// } else {
+//     console.error('WiFi modal not found when initializing manager');
+// }
+
+// NEW: Initialize immediately since we're loaded after the DOM is ready
+try {
     window.wifiManager = new WifiManager();
-    console.log('WiFi manager initialized');
-} else {
-    console.error('WiFi modal not found when initializing manager');
+    console.log('WiFi manager initialized successfully');
+} catch (err) {
+    console.error('Failed to initialize WiFi manager:', err);
 }

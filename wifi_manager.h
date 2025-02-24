@@ -8,8 +8,9 @@
 #include <LittleFS.h>
 
 // AP mode configuration
-#define AP_SSID "ESP32-CAM-Setup"
-#define AP_PASSWORD "setupcamera"  // Empty string for open network or set a password
+#define AP_SSID "XIAO_ESP32_CAM"
+#define AP_PASSWORD ""  // Empty string for open network or set a password
+
 #define AP_IP IPAddress(192, 168, 4, 1)
 #define AP_GATEWAY IPAddress(192, 168, 4, 1)
 #define AP_SUBNET IPAddress(255, 255, 255, 0)
@@ -19,7 +20,7 @@
 
 // Timeout configuration
 #define CONNECTION_TIMEOUT 6000  // 6 seconds to attempt connection
-#define SCAN_TIMEOUT 6000        // 6 seconds to scan networks
+#define SCAN_TIMEOUT 5000        // 6 seconds to scan networks
 
 // Credentials file
 #define WIFI_CREDENTIALS_FILE "/wifi_credentials.json"
