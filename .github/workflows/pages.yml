@@ -1,0 +1,63 @@
+name: Deploy webflasher to GitHub Pages
+
+on:
+  workflow_dispatch:
+  workflow_run:
+    workflows: ["Build"]
+    types:
+      - completed # This will trigger when a release is published
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Allow only one concurrent deployment
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Need full history for tags
+
+      - name: Get latest tag version
+        run: |
+          LATEST_TAG=$(git describe --tags --abbrev=0)
+          echo "VERSION=${LATEST_TAG}" >> $GITHUB_ENV
+          echo "Using latest tag: ${LATEST_TAG}"
+          echo ""
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+
+      - name: Prepare deployment files
+        run: |
+          echo "Current Files:"
+          tree webflasher/
+          echo ""
+          # Delete old firmware directory in webflasher
+          echo "Deleting old firmware dir ..."
+          rm -rf webflasher/firmware
+          tree webflasher/
+          echo ""
+          # Create firmware directory in webflasher
+          echo "Deleting old firmware dir ..."
+          mkdir -p webflasher/firmware
+          tree webflasher/
+          echo ""
+          # Copy the latest binary files
+          echo "Copying latest firmwar from build/ to webflasher/firmware/"
+          cp build/EI_ESP32_CAM_SERVER.merged.bin webflasher/firmware/
+          cp build/filesystem.littlefs.bin webflasher/firmware/
+          ls -la webflasher/firmware/
+          echo ""
