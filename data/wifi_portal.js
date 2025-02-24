@@ -365,25 +365,26 @@ class WifiManager {
         this.connectedNetworkSpan.textContent = ssid;
         this.deviceIPSpan.textContent = ip;
 
+        // Stop AP mode on the server
+        fetch('/wifi/stopAP', { method: 'POST' })
+            .then(() => {
+                console.log('AP mode stopped');
+            })
+            .catch(error => {
+                console.error('Error stopping AP mode:', error);
+                this.closeModal();
+            });
+
         // Add event listener to close button to stop AP mode and redirect
         this.closeSuccessBtn.addEventListener('click', () => {
-            // Stop AP mode on the server
-            fetch('/wifi/stopAP', { method: 'POST' })
-                .then(() => {
-                    console.log('AP mode stopped');
-                    // Redirect to new IP address after a delay
-                    setTimeout(() => {
-                        if (ip && ip !== 'unknown (check router)') {
-                            window.location.href = `http://${ip}`;
-                        } else {
-                            this.closeModal();
-                        }
-                    }, 1000);
-                })
-                .catch(error => {
-                    console.error('Error stopping AP mode:', error);
+            // Redirect to new IP address after a delay
+            setTimeout(() => {
+                if (ip && ip !== 'unknown (check router)') {
+                    window.location.href = `http://${ip}`;
+                } else {
                     this.closeModal();
-                });
+                }
+            }, 1000);
         });
     }
 
