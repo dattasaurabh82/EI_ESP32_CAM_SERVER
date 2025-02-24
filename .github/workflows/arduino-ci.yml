@@ -59,6 +59,11 @@ jobs:
         run: |
           rm -rf build
           mkdir -p build
+      
+      # Create ei_config
+      - name: Create dummy ei_config.json
+        run: |
+          cp data/ei_config.template.json data/ei_config.json
 
       # Create LittleFS binary
       - name: Create LittleFS binary

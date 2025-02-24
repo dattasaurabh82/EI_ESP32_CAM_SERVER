@@ -60,6 +60,31 @@ jobs:
           cp build/filesystem.littlefs.bin webflasher/firmware/
           ls -la webflasher/firmware/
           echo ""
+      
+      # Install build dependencies
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y cmake build-essential
+
+      # Build mklittlefs
+      - name: Build mklittlefs
+        run: |
+          git clone --recursive https://github.com/earlephilhower/mklittlefs.git
+          cd mklittlefs
+          make dist
+          sudo cp mklittlefs /usr/local/bin/
+          cd ..
+          mklittlefs --help
+      
+      - name: Debug firmware files
+        run: |
+          echo "Checking copied LittleFS binary contents:"
+          mklittlefs -l -d 5 webflasher/firmware/filesystem.littlefs.bin
+          echo "Checking firmware directory contents and sizes:"
+          ls -la webflasher/firmware/
+          echo "MD5 checksums of binaries:"
+          md5sum webflasher/firmware/*.bin
 
       - name: Update version in manifest.json and index.html
         run: |
