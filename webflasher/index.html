@@ -1,12 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
+
+<head>
     <meta charset="utf-8" />
     <title>XIAO ESP32 CAM server firmware installer</title>
-    <meta
-      name="description"
-      content="Easily allow users to install ESP32-S3 firmware and webserver files from the web."
-    />
+    <meta name="description"
+        content="Easily allow users to install ESP32-S3 firmware and webserver files from the web." />
     <meta name="viewport" content="width=device-width" />
     <meta name="color-scheme" content="dark light" />
     <!-- Add favicon links -->
@@ -14,28 +13,35 @@
     <!-- Existing styles -->
     <link rel="stylesheet" href="assets/css/styles.css">
     <script type="module" src="https://unpkg.com/esp-web-tools/dist/web/install-button.js?module"></script>
-  </head>
-  <body>
+</head>
+
+<body>
     <div class="content">
-      <span class="header-signature">
-        <!-- <img src="assets/logo_black_jennyfer.png" alt="logo" class="signature-img"> -->
-        <!-- <img src="assets/sig_logo.png" alt="logo" class="signature-img"> -->
-      </span>
-      <h3>ESP firmware flasher</h3>
-      <p>
-        Firmware: <a href="https://github.com/dattasaurabh82/EI_ESP32_CAM_SERVER/tree/main">XIAO ESP32 CAM server firmware</a> (Version: <span class="firmware-version">VERSION_PLACEHOLDER</span>)
-      </p>
-      <p>
+        <span class="header-signature">
+            <!-- <img src="assets/logo_black_jennyfer.png" alt="logo" class="signature-img"> -->
+            <!-- <img src="assets/sig_logo.png" alt="logo" class="signature-img"> -->
+        </span>
+        <h3>ESP firmware flasher</h3>
+        <p>
+            Firmware: <a href="">XIAO ESP32 CAM server firmware</a>
+            (Version: <span class="firmware-version">v1.0.0</span>)
+        </p>
+        <p>
+            File System Binary: <a
+                href="">filesystem.littlefs.bin</a>
+        </p>
         Module: <span class="module-type">ESP32-S3</span>
-      </p>
-      
-      <p class="button-row" align="left">
-        <esp-web-install-button></esp-web-install-button>
-      </p>
+        </p>
+
+        <p class="button-row" align="left">
+            <esp-web-install-button></esp-web-install-button>
+        </p>
     </div>
     <div class="footer">
-      Installer powered by <a href="https://esphome.github.io/esp-web-tools/">ESP Web Tools</a>. Customized for the project by <a href="https://github.com/dattasaurabh82">Saurabh Datta</a>
+        Installer powered by <a href="https://esphome.github.io/esp-web-tools/">ESP Web Tools</a>. Customized for the
+        project by <a href="https://github.com/dattasaurabh82">Saurabh Datta</a>
     </div>
     <script src="assets/js/main.js"></script>
-  </body>
+</body>
+
 </html>
