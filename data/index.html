@@ -158,7 +158,7 @@
 
     <!-- WiFi Portal -->
     <div id="wifiModal" class="wifi-modal"></div>
-    <script>
+    <!-- <script>
         // Load WiFi portal HTML and initialize manager
         fetch('/wifi_portal.html')
             .then(response => {
@@ -178,6 +178,24 @@
                         console.error('WiFi manager not initialized');
                     }
                 };
+                document.body.appendChild(script);
+            })
+            .catch(error => {
+                console.error('Error setting up WiFi portal:', error);
+            });
+    </script> -->
+    <script>
+        // Load WiFi portal HTML and initialize manager
+        fetch('/wifi_portal.html')
+            .then(response => {
+                if (!response.ok) throw new Error('Failed to load WiFi portal HTML');
+                return response.text();
+            })
+            .then(html => {
+                document.getElementById('wifiModal').innerHTML = html;
+                // Load the WiFi manager script
+                const script = document.createElement('script');
+                script.src = 'wifi_portal.js';
                 document.body.appendChild(script);
             })
             .catch(error => {
