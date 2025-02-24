@@ -176,7 +176,7 @@ jobs:
             echo ""
             echo "### All compiled firmware binary and other files"
             echo "- firmwares.zip contains:"
-            cd binary
+            cd build
             for file in *.*; do
               if [ "$file" != "build_log.txt" ]; then
                 size=$(ls -l "$file" | awk '{print $5}')
