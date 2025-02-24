@@ -114,7 +114,8 @@ jobs:
           # 2. Update firmware link
           sed -i "s|<a href=\"\">XIAO ESP32 CAM server firmware</a>|<a href=\"${REPO_URL}/tree/main\">XIAO ESP32 CAM server firmware</a>|g" webflasher/index.html
           # 3. Update filesystem binary link
-          sed -i "s|<a href=\"\">filesystem.littlefs.bin</a>|<a href=\"${REPO_URL}/tree/main/firmware/filesystem.littlefs.bin\">filesystem.littlefs.bin</a>|g" webflasher/index.html
+          # 3. Update filesystem binary link - fixed to match multiline format
+          sed -i "s|<a[[:space:]]*href=\"\">filesystem.littlefs.bin</a>|<a href=\"${REPO_URL}/tree/main/firmware/filesystem.littlefs.bin\">filesystem.littlefs.bin</a>|g" webflasher/index.html
           echo "Updated index.html file:"
           cat webflasher/index.html
 
