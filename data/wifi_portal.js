@@ -83,7 +83,7 @@ class WifiManager {
                 this.isAPMode = data.apMode;
                 if (this.isAPMode) {
                     this.openModal();
-                    this.scanNetworks();
+                    this.scanNetworks(); // Only scan when in AP mode
                 }
             })
             .catch(error => {
