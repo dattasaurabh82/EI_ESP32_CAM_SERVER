@@ -1,11 +1,10 @@
-#include <WiFi.h>
 #include <AsyncTCP.h>
 #include <ESPAsyncWebServer.h>
-#include <LittleFS.h>
+#include <ArduinoJson.h>
 
 #define CONFIG_LITTLEFS_CACHE_SIZE 512
 
-#include "credentials.h"
+#include "wifi_manager.h"
 #include "camera_init.h"
 
 #ifdef CAMERA_MODEL_XIAO_ESP32S3
@@ -17,9 +16,13 @@
 
 
 AsyncWebServer server(80);  // Single server instance
+WifiManager wifiManager;    // Create WiFi manager instance
 
-bool isStreamActive = true;
+bool isStreamActive = true;  // Flag to track Streaming State status
+bool isConnecting = false;   // Flag to track WiFi connection status
 
+String lastConnectionSSID = "";
+String lastConnectionPassword = "";
 
 // ======== Non-blocking MJPEG Stream ========
 void handleMjpeg(AsyncWebServerRequest *request) {
@@ -171,48 +174,16 @@ void initLittleFS() {
 
 
 void setupWIFIstn() {
-  Serial.println("\n3. Checking WiFi Status:");
-  Serial.printf("   Connecting to SSID: %s ", ssid);
+  Serial.println("\n3. WiFi Manager Initialization:");
 
-  uint8_t attempts = 0;
-  const uint8_t max_attempts = 20;  // 10 seconds maximum
+  // Initialize the WiFi manager
+  wifiManager.begin();
 
-  WiFi.begin(ssid, password);
-  while (WiFi.status() != WL_CONNECTED && attempts < max_attempts) {
-    delay(500);
-    Serial.print(".");
-    attempts++;
+  // Try to connect to saved networks first
+  if (!wifiManager.connectToSavedNetworks()) {
+    // If no saved networks or connection fails, start AP mode
+    wifiManager.startAPMode();
   }
-
-  if (WiFi.status() == WL_CONNECTED) {
-    Serial.println(" ✓ Connected!");
-
-    Serial.println("\n   Network Info:");
-    Serial.println("   ------------");
-    Serial.printf("   ⤷ IP Address: %s\n", WiFi.localIP().toString().c_str());
-    Serial.printf("   ⤷ Subnet Mask: %s\n", WiFi.subnetMask().toString().c_str());
-    Serial.printf("   ⤷ Gateway: %s\n", WiFi.gatewayIP().toString().c_str());
-    Serial.printf("   ⤷ DNS: %s\n", WiFi.dnsIP().toString().c_str());
-    Serial.printf("   ⤷ MAC Address: %s\n", WiFi.macAddress().c_str());
-
-    Serial.println("\n   Signal Info:");
-    Serial.println("   -----------");
-    Serial.printf("   ⤷ RSSI: %d dBm\n", WiFi.RSSI());
-    Serial.printf("   ⤷ Channel: %ld\n", WiFi.channel());
-    Serial.printf("   ⤷ TX Power: %d dBm\n", WiFi.getTxPower());
-
-    Serial.println("\n   Connection Info:");
-    Serial.println("   ---------------");
-    Serial.printf("   ⤷ SSID: %s\n", WiFi.SSID().c_str());
-    Serial.printf("   ⤷ Connection Time: %u ms\n", attempts * 500);
-  } else {
-    Serial.println(" ✗ Failed!");
-    Serial.println("   ❌ Fatal Error: WiFi connection failed");
-    Serial.println("   Please check credentials and router status");
-    return;
-  }
-
-  Serial.println();
 }
 
 
@@ -241,7 +212,7 @@ void setup() {
   initCamera();
   // 2. LittleFS init
   initLittleFS();
-  // 3. Connect to WiFi/artist/3BkRu2TGd2I1uBxZKddfg1
+  // 3. Connect to WiFi
   setupWIFIstn();
 
   // 4. Configure AsyncWebServer Routes
@@ -258,6 +229,19 @@ void setup() {
   });
   server.on("/ei-labeling-guide.png", HTTP_GET, [](AsyncWebServerRequest *request) {
     request->send(LittleFS, "/ei-labeling-guide.png", "image/png");
+  });
+
+  // WiFi Portal files
+  server.on("/wifi_portal.html", HTTP_GET, [](AsyncWebServerRequest *request) {
+    request->send(LittleFS, "/wifi_portal.html", "text/html");
+  });
+
+  server.on("/wifi_portal.css", HTTP_GET, [](AsyncWebServerRequest *request) {
+    request->send(LittleFS, "/wifi_portal.css", "text/css");
+  });
+
+  server.on("/wifi_portal.js", HTTP_GET, [](AsyncWebServerRequest *request) {
+    request->send(LittleFS, "/wifi_portal.js", "application/javascript");
   });
 
   // Stream endpoints
@@ -310,9 +294,77 @@ void setup() {
     }
   });
 
+  // WiFi Manager API endpoints
+  server.on("/wifi/mode", HTTP_GET, [](AsyncWebServerRequest *request) {
+    JsonDocument doc;
+    doc["apMode"] = wifiManager.isAPMode();
+    String output;
+    serializeJson(doc, output);
+    request->send(200, "application/json", output);
+  });
+
+  server.on("/wifi/scan", HTTP_GET, [](AsyncWebServerRequest *request) {
+    wifiManager.scanNetworks();
+    request->send(200, "text/plain", "Scan started");
+  });
+
+  server.on("/wifi/networks", HTTP_GET, [](AsyncWebServerRequest *request) {
+    if (wifiManager.isScanComplete()) {
+      request->send(200, "application/json", wifiManager.getNetworkListJson());
+    } else {
+      request->send(202, "text/plain", "Scan in progress");
+    }
+  });
+
+  // server.on("/wifi/connect", HTTP_POST, [](AsyncWebServerRequest *request) {
+  //   String ssid, password;
+  //   if (request->hasParam("ssid", true) && request->hasParam("password", true)) {
+  //     ssid = request->getParam("ssid", true)->value();
+  //     password = request->getParam("password", true)->value();
+
+  //     // Start connection process (non-blocking)
+  //     isConnecting = true;
+
+  //     // We need to respond to the client before attempting connection
+  //     request->send(200, "text/plain", "Connection attempt started");
+
+  //     // Connection attempt will be handled in the loop() function
+  //   } else {
+  //     request->send(400, "text/plain", "Missing parameters");
+  //   }
+  // });
+  server.on("/wifi/connect", HTTP_POST, [](AsyncWebServerRequest *request) {
+    if (request->hasParam("ssid", true) && request->hasParam("password", true)) {
+      lastConnectionSSID = request->getParam("ssid", true)->value();
+      lastConnectionPassword = request->getParam("password", true)->value();
+
+      // Start connection process (non-blocking)
+      isConnecting = true;
+      // We need to respond to the client before attempting connection
+      request->send(200, "text/plain", "Connection attempt started");
+      // Connection attempt will be handled in the loop() function
+    } else {
+      request->send(400, "text/plain", "Missing parameters");
+    }
+  });
+
+  server.on("/wifi/status", HTTP_GET, [](AsyncWebServerRequest *request) {
+    JsonDocument doc;
+    doc["connected"] = (WiFi.status() == WL_CONNECTED);
+    doc["connecting"] = isConnecting;
+    if (WiFi.status() == WL_CONNECTED) {
+      doc["ip"] = WiFi.localIP().toString();
+      doc["ssid"] = WiFi.SSID();
+    }
+    String output;
+    serializeJson(doc, output);
+    request->send(200, "application/json", output);
+  });
+
   server.begin();
   Serial.println("Async HTTP server started on port 80");
 }
+
 
 void loop() {
   // Monitor HEAP and PSRAM USAGE and apply a more aggressive restart control
@@ -322,6 +374,44 @@ void loop() {
     Serial.printf("Free Heap: %lu bytes\n\n", ESP.getFreeHeap());
     Serial.println("Low memory: Restarting\n");
     ESP.restart();
+  }
+
+  // Handle WiFi connection requests (non-blocking)
+  if (isConnecting) {
+    static String pendingSSID;
+    static String pendingPassword;
+    static unsigned long connectionStartTime = 0;
+    static bool connectionInitiated = false;
+
+    if (!connectionInitiated) {
+      // Store the pending connection parameters
+      pendingSSID = lastConnectionSSID;  // Use global variables set in the handler
+      pendingPassword = lastConnectionPassword;
+      connectionStartTime = millis();
+      connectionInitiated = true;
+
+      // Attempt connection
+      bool result = wifiManager.connectToNetwork(pendingSSID, pendingPassword);
+
+      if (result) {
+        Serial.println("Connection successful!");
+      } else {
+        Serial.println("Connection failed!");
+      }
+
+      isConnecting = false;
+      connectionInitiated = false;
+    } else if (millis() - connectionStartTime > 15000) {
+      // Timeout after 15 seconds
+      isConnecting = false;
+      connectionInitiated = false;
+      Serial.println("Connection attempt timed out");
+    }
+  }
+
+  // Process DNS in AP mode - needs to run every loop iteration, not just during connection
+  if (wifiManager.isAPMode()) {
+    wifiManager.processDNS();
   }
 
   delay(100);

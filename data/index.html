@@ -8,6 +8,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="styles.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.7.1/jszip.min.js"></script>
+
+    <link rel="stylesheet" href="wifi_portal.css">
 </head>
 
 <body>
@@ -153,6 +155,289 @@
             </a>
         </div>
     </footer>
+
+    <!-- WiFi Portal -->
+    <div id="wifiModal" class="wifi-modal"></div>
+    <script>
+        // Debug function - add a visible message to the page
+        function showDebug(message) {
+            // Create debug element if it doesn't exist
+            let debug = document.getElementById('debugInfo');
+            if (!debug) {
+                debug = document.createElement('div');
+                debug.id = 'debugInfo';
+                debug.style.cssText = 'position:fixed;bottom:0;left:0;background:#fff;color:#000;padding:10px;z-index:9999;max-height:200px;overflow:auto;';
+                document.body.appendChild(debug);
+            }
+            debug.innerHTML += message + '<br>';
+        }
+
+        // Check AP mode first
+        fetch('/wifi/mode')
+            .then(response => response.json())
+            .then(data => {
+                showDebug('AP Mode: ' + data.apMode);
+                if (data.apMode) {
+                    loadPortal();
+                }
+            })
+            .catch(error => {
+                showDebug('Error checking AP mode: ' + error.message);
+                // Fallback - assume AP mode if on 192.168.4.1
+                if (window.location.hostname === '192.168.4.1') {
+                    showDebug('Assuming AP mode based on IP');
+                    loadPortal();
+                }
+            });
+
+        // Load portal with minimal dependencies
+        function loadPortal() {
+            fetch('/wifi_portal.html')
+                .then(response => response.text())
+                .then(html => {
+                    showDebug('Portal HTML loaded');
+                    document.getElementById('wifiModal').innerHTML = html;
+
+                    // Basic styling with no Font Awesome dependency
+                    const styleEl = document.createElement('style');
+                    styleEl.textContent = `
+                    .wifi-modal { display: block; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; }
+                    .wifi-modal-content { background: white; margin: 50px auto; padding: 20px; width: 80%; max-width: 500px; border-radius: 8px; }
+                    .network-item { padding: 10px; border-bottom: 1px solid #ddd; cursor: pointer; }
+                    .network-item:hover { background: #eee; }
+                    button { padding: 8px 16px; margin: 5px; background: #0078d7; color: white; border: none; border-radius: 4px; cursor: pointer; }
+                    input { padding: 8px; margin: 5px 0; width: 100%; box-sizing: border-box; }
+                    .password-input-container { position: relative; }
+                    .toggle-password-btn { position: absolute; right: 0; top: 0; padding: 8px; }
+                    .network-loading, .connection-progress, .connection-result { text-align: center; padding: 20px; }
+                `;
+                    document.head.appendChild(styleEl);
+
+                    // Minimal manual initialization instead of using the full wifi_portal.js
+                    setupWifiPortal();
+                })
+                .catch(error => {
+                    showDebug('Error loading portal: ' + error.message);
+                });
+        }
+
+        // Setup portal without requiring wifi_portal.js
+        function setupWifiPortal() {
+            showDebug('Setting up WiFi portal');
+
+            // Get elements
+            const modal = document.getElementById('wifiModal');
+            const networkList = document.getElementById('networkListContainer');
+            const refreshBtn = document.getElementById('refreshNetworks');
+            const connectForm = document.getElementById('networkConnectForm');
+
+            // Setup network scanning
+            if (refreshBtn) {
+                refreshBtn.innerText = 'Refresh Networks'; // Text instead of icon
+                refreshBtn.addEventListener('click', scanNetworks);
+            }
+
+            // Initial scan
+            scanNetworks();
+
+            function scanNetworks() {
+                if (networkList) {
+                    networkList.innerHTML = '<div class="network-loading">Scanning for networks...</div>';
+                }
+
+                fetch('/wifi/scan')
+                    .then(response => {
+                        if (!response.ok) throw new Error('Scan failed');
+
+                        // Wait for scan to complete
+                        setTimeout(fetchNetworks, 5000);
+                    })
+                    .catch(error => {
+                        showDebug('Scan error: ' + error.message);
+                        if (networkList) {
+                            networkList.innerHTML = '<div>Error scanning: ' + error.message + '</div>';
+                        }
+                    });
+            }
+
+            function fetchNetworks() {
+                fetch('/wifi/networks')
+                    .then(response => response.json())
+                    .then(networks => {
+                        showDebug('Networks found: ' + networks.length);
+
+                        if (!networkList) return;
+
+                        if (!networks || networks.length === 0) {
+                            networkList.innerHTML = '<div>No networks found</div>';
+                            return;
+                        }
+
+                        let html = '';
+                        networks.forEach(network => {
+                            html += `<div class="network-item" data-ssid="${network}">${network}</div>`;
+                        });
+
+                        networkList.innerHTML = html;
+
+                        // Add click events
+                        const items = networkList.querySelectorAll('.network-item');
+                        items.forEach(item => {
+                            item.addEventListener('click', () => {
+                                const ssid = item.getAttribute('data-ssid');
+                                selectNetwork(ssid);
+                            });
+                        });
+                    })
+                    .catch(error => {
+                        showDebug('Fetch error: ' + error.message);
+                        if (networkList) {
+                            networkList.innerHTML = '<div>Error fetching networks: ' + error.message + '</div>';
+                        }
+                    });
+            }
+
+            function selectNetwork(ssid) {
+                showDebug('Selected: ' + ssid);
+
+                const selectedInput = document.getElementById('selectedNetwork');
+                const passwordInput = document.getElementById('networkPassword');
+                const connectBtn = document.getElementById('connectNetwork');
+
+                if (selectedInput) selectedInput.value = ssid;
+                if (passwordInput) passwordInput.value = '';
+                if (connectForm) connectForm.style.display = 'block';
+                if (passwordInput) passwordInput.focus();
+
+                if (connectBtn) {
+                    connectBtn.onclick = () => connectToNetwork(ssid, passwordInput ? passwordInput.value : '');
+                }
+            }
+
+            function connectToNetwork(ssid, password) {
+                showDebug('Connecting to: ' + ssid);
+
+                const connectionProgress = document.getElementById('connectionProgress');
+                if (connectionProgress) {
+                    connectionProgress.style.display = 'block';
+                }
+                if (connectForm) {
+                    connectForm.style.display = 'none';
+                }
+
+                // Build form data
+                const data = new URLSearchParams();
+                data.append('ssid', ssid);
+                data.append('password', password);
+
+                // Send request
+                fetch('/wifi/connect', {
+                    method: 'POST',
+                    body: data,
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    }
+                })
+                    .then(response => {
+                        if (!response.ok) throw new Error('Connection request failed');
+
+                        // Check status periodically
+                        checkConnectionStatus(ssid);
+                    })
+                    .catch(error => {
+                        showDebug('Connection error: ' + error.message);
+                        showConnectionFailure(ssid);
+                    });
+            }
+
+            function checkConnectionStatus(ssid) {
+                fetch('/wifi/status')
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.connected) {
+                            showConnectionSuccess(ssid, data.ip);
+                        } else if (data.connecting) {
+                            // Still connecting, check again in 1 second
+                            setTimeout(() => checkConnectionStatus(ssid), 1000);
+                        } else {
+                            showConnectionFailure(ssid);
+                        }
+                    })
+                    .catch(error => {
+                        showDebug('Status check error: ' + error.message);
+                        // If we can't reach the device, it might be changing IP
+                        setTimeout(() => checkInternetConnection(ssid), 2000);
+                    });
+            }
+
+            function checkInternetConnection(ssid) {
+                // Try to reach Google (with no-cors to prevent CORS issues)
+                fetch('https://www.google.com', { mode: 'no-cors', cache: 'no-store' })
+                    .then(() => {
+                        showConnectionSuccess(ssid, 'unknown (check router)');
+                    })
+                    .catch(() => {
+                        showConnectionFailure(ssid);
+                    });
+            }
+
+            function showConnectionSuccess(ssid, ip) {
+                showDebug('Connection successful! IP: ' + ip);
+
+                const connectionProgress = document.getElementById('connectionProgress');
+                const connectionResult = document.getElementById('connectionResult');
+                const successResult = document.getElementById('successResult');
+
+                if (connectionProgress) connectionProgress.style.display = 'none';
+                if (connectionResult) connectionResult.style.display = 'block';
+                if (successResult) {
+                    successResult.style.display = 'block';
+
+                    // Update text
+                    const connectedSpan = document.getElementById('connectedNetwork');
+                    const ipSpan = document.getElementById('deviceIP');
+                    if (connectedSpan) connectedSpan.textContent = ssid;
+                    if (ipSpan) ipSpan.textContent = ip;
+
+                    // Close button
+                    const closeBtn = document.getElementById('closeSuccess');
+                    if (closeBtn) {
+                        closeBtn.onclick = () => {
+                            modal.style.display = 'none';
+                        };
+                    }
+                }
+            }
+
+            function showConnectionFailure(ssid) {
+                showDebug('Connection failed for: ' + ssid);
+
+                const connectionProgress = document.getElementById('connectionProgress');
+                const connectionResult = document.getElementById('connectionResult');
+                const failureResult = document.getElementById('failureResult');
+
+                if (connectionProgress) connectionProgress.style.display = 'none';
+                if (connectionResult) connectionResult.style.display = 'block';
+                if (failureResult) {
+                    failureResult.style.display = 'block';
+
+                    // Update text
+                    const failedSpan = document.getElementById('failedNetwork');
+                    if (failedSpan) failedSpan.textContent = ssid;
+
+                    // Try again button
+                    const tryAgainBtn = document.getElementById('tryAgain');
+                    if (tryAgainBtn) {
+                        tryAgainBtn.onclick = () => {
+                            if (connectionResult) connectionResult.style.display = 'none';
+                            if (failureResult) failureResult.style.display = 'none';
+                            scanNetworks();
+                        };
+                    }
+                }
+            }
+        }
+    </script>
 </body>
 
 </html>
