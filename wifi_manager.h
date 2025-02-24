@@ -19,8 +19,8 @@
 #define DNS_PORT 53
 
 // Timeout configuration
-#define CONNECTION_TIMEOUT 6000  // 6 seconds to attempt connection
-#define SCAN_TIMEOUT 5000        // 6 seconds to scan networks
+#define CONNECTION_TIMEOUT 5000  // 5 seconds to attempt connection
+#define SCAN_TIMEOUT 5000        // 5 seconds to scan networks
 
 // Credentials file
 #define WIFI_CREDENTIALS_FILE "/wifi_credentials.json"
