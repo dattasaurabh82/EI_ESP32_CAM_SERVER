@@ -46,7 +46,7 @@ _In a nutshell_
 
 ![alt text](<assets/Slide 16_9 - 2.png>)
 
-<div style="width: 50%">
+<div style="width: 80%">
   <img src="assets/ScreenRecording2025-02-25at22.24.14-ezgif.com-video-to-gif-converter.gif" width="100%" alt="Image description">
   <p align="center"><em>Configuring wifi from the Web UI</em></p>
 </div>
@@ -61,12 +61,18 @@ _In a nutshell_
 2. Multiple WiFi networks can be stored and persist between reboots, allowing seamless use across different locations without reconfiguring.
 3. Stream can be started, stopped, and snapshots can be captured even while streaming is paused.
 4. Supports both single snapshots and automatic multiple image capture.
-5. Images can be labeled and downloaded in groups for manual upload to Edge Impulse, if preferred.
-6. Uploads directly to Edge Impulse through the Web UI (the core purpose of this project). Edge Impulse API credentials persist between reboots.
-7. Automatically updates Edge Impulse project settings for object detection if needed.
-8. Images are stored in the browser session rather than Flash or RAM.
-9.  Features an attractive UI with both light and dark modes.
-10. UI is easily modifiable through HTML and CSS updates, though re-flashing is required. See instructions below.
+
+<div style="width: 80%">
+  <img src="assets/Screen Recording 2025-02-25 at 22.57.31.gif" width="100%" alt="Image description">
+  <p align="center"><em>Demo of the above 2 points</em></p>
+</div>
+
+1. Images can be labeled and downloaded in groups for manual upload to Edge Impulse, if preferred.
+2. Uploads directly to Edge Impulse through the Web UI (the core purpose of this project). Edge Impulse API credentials persist between reboots.
+3. Automatically updates Edge Impulse project settings for object detection if needed.
+4. Images are stored in the browser session rather than Flash or RAM.
+5.  Features an attractive UI with both light and dark modes.
+6.  UI is easily modifiable through HTML and CSS updates, though re-flashing is required. See instructions below.
 
 ---
 
