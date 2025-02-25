@@ -9,7 +9,16 @@
 
 ## What is this?
 
-![alt text](<assets/Screenshot 2025-02-11 at 02.08.08.png>)
+<table>
+  <tr>
+    <td width="50%"><img src="assets/Screenshot 2025-02-11 at 02.08.08.png" width="100%" alt="First image"></td>
+    <td width="50%"><img src="assets/PXL_20250224_233042468.PORTRAIT.jpg" width="100%" alt="Second image"></td>
+  </tr>
+  <tr>
+    <td width="50%" align="center"><em>ESP self-hosted web UI</em></td>
+    <td width="50%" align="center"><em>Xiao esp32-s3 with fan contraption</em></td>
+  </tr>
+</table>
 
 This educational tool helps reduce the time needed for capturing and labeling ESP32 camera images for TinyML training in [edgeimpulse](https://docs.edgeimpulse.com/reference). It's more efficient than the standard method of capturing and uploading single images through the [edgeimpulse data forwarder firmware](https://github.com/edgeimpulse/firmware-espressif-esp32).
 
