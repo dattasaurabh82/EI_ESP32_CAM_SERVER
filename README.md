@@ -15,6 +15,12 @@ This educational tool helps reduce the time needed for capturing and labeling ES
 
 Instead, it creates an MJPEG stream directly from the camera and displays it on a camera-hosted frontend. This allows you to capture, label, and bulk upload images to the edgeimpulse studio—making the process more efficient than sitting there for a long time doing it manually.
 
+## What triggered this development?
+
+In a nutshell
+
+1. WIP
+
 ## Advantages
 
 In a nutshell
