@@ -46,10 +46,10 @@ _In a nutshell_
 
 ![alt text](<assets/Slide 16_9 - 2.png>)
 
-<div style="width: 60%">
-  <img src="assets/ScreenRecording2025-02-25at22.24.14-ezgif.com-video-to-gif-converter.gif" width="100%" alt="Image description">
-  <p align="center"><em>Configuring wifi from the Web UI</em></p>
-</div>
+<p align="center">
+  <img src="assets/ScreenRecording2025-02-25at22.24.14-ezgif.com-video-to-gif-converter.gif" width="75%" alt="Image description"><br>
+  <em>Configuring wifi from the Web UI</em>
+</p>
 
 > It will automatically show up, i.e. the ESP will go to AP mode and provide this captive portal like experience, if it fails to connect to any wifi from it's memory (or if the wifi memory doesn't exist yet)
 
@@ -62,10 +62,10 @@ _In a nutshell_
 3. Stream can be started, stopped, and snapshots can be captured even while streaming is paused.
 4. Supports both single snapshots and automatic multiple image capture.
 
-<div style="width: 60%">
-  <img src="assets/Screen Recording 2025-02-25 at 22.57.31.gif" width="100%" alt="Image description">
-  <p align="center"><em>Demo of the above 2 points</em></p>
-</div>
+<p align="center">
+  <img src="assets/Screen Recording 2025-02-25 at 22.57.31.gif" width="75%" alt="Image description"><br>
+  <em>Configuring wifi from the Web UI</em>
+</p>
 
 1. Images can be labeled and downloaded in groups for manual upload to Edge Impulse, if preferred.
 2. Uploads directly to Edge Impulse through the Web UI (the core purpose of this project). Edge Impulse API credentials persist between reboots.
