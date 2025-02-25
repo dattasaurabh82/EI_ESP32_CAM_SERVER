@@ -173,7 +173,7 @@ So, I created a webflasher(hosted by [zigzag repo](https://dattazigzag.github.io
 So, I created a [web-based flasher tool](webflasher) (hosted on both [zigzag repo](https://dattazigzag.github.io/EI_ESP32_CAM_SERVER/) and [my personal repo](https://dattasaurabh82.github.io/EI_ESP32_CAM_SERVER/)) as part of the project. A website with all the necessary binary files and correct flashing settings, allowing you to connect your XIAO ESP32-S3 and flash everything directly from your browser—no Arduino IDE / Terminal or Platform IO setup needed! 😘
 
 <video controls src="assets/webflashing.mp4" title="Title"></video>
-![Web flashing demonstration](https://user-images.githubusercontent.com/dattasaurabh82/EI_ESP32_CAM_SERVER/assets/issue-number/webflashing.mp4)
+
 
 > **Notes**:
 >
