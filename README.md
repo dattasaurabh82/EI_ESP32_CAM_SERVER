@@ -103,7 +103,7 @@ Instead, it creates an MJPEG stream directly from the camera and displays it on 
 <details>
    <summary> 2. Edge Impulse Studio Project setup</summary>
 
-   <br><br>
+   <br>
 
    1. Create an edge Impulse Project for `Object Detection`
    2. Give it a suitable name
@@ -125,7 +125,30 @@ Instead, it creates an MJPEG stream directly from the camera and displays it on 
 <details>
    <summary> 3 . Software</summary>
 
-## Arduino IDE compile and upload method
+# The Easy way
+
+🤔 Since this project aims to simplify and speed up image data collection for Edge Impulse, I thought it would be better if users didn't need to set up a development environment at this early stage. 
+
+The goal is to eliminate friction by removing the need for any development environment setup—even for simple tasks like configuring WiFi settings 😁
+
+> After completing the machine learning training in Edge Impulse, you will need to download and use the model/library according to your own context and then you have to program...
+
+So, I created a webflasher(hosted by [zigzag repo](https://dattazigzag.github.io/EI_ESP32_CAM_SERVER/) and hosted by my [own repo](https://dattasaurabh82.github.io/EI_ESP32_CAM_SERVER/)) as part of the project that exposes a website, hosting necessary binary files and is set to correct flashing settings, where you can go, connect your xiaoesp32-s3 and flash everything necessary from the browser itself without having to open Arduino IDE. 😘
+
+So, I created a [web-based flasher tool](webflasher) (hosted on both [zigzag repo](https://dattazigzag.github.io/EI_ESP32_CAM_SERVER/) and [my personal repo](https://dattasaurabh82.github.io/EI_ESP32_CAM_SERVER/)) as part of the project.
+
+The tool provides a website with all the necessary binary files and correct flashing settings, allowing you to connect your XIAO ESP32-S3 and flash everything directly from your browser—no Arduino IDE / Terminal or Platform IO setup needed! 😘
+
+>__Notes__:
+>
+>1. Although if you want to know how it all works, follow the ... [Arduino IDE compile and upload method](#arduino-ide-compile-and-upload-method) and or [cmdline compile and upload methods](#cmdline-compile-and-upload-methods)
+>
+>2. Post flashing, you can also setup Wifi Credentials (Persistent across boots)
+>
+>3. Two Github Action CI/CD pipelines accomplish them. You can learn more about them [here](.github/workflows), if you are keen on the Github Actions Pipeline that compiles and create releases of binaries and also updates the webflasher.
+
+
+# Arduino IDE compile and upload method
 
 Arduino IDE version: `2.3.4`
 
@@ -257,7 +280,7 @@ ___ ESP32-CAM-WEB-SERVER - (edgeImpulse tool)___
 Async HTTP server started on port 80
 ```
 
-## cmdline compile and upload methods
+# cmdline compile and upload methods
 
 Let's say you just want to edit some basic html features and do not want to change any firmware settings and as a result do not want to go through the whole arduino IDE setup.
 
