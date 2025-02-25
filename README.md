@@ -15,9 +15,13 @@ This educational tool helps reduce the time needed for capturing and labeling ES
 
 Instead, it creates an MJPEG stream directly from the camera and displays it on a camera-hosted frontend. This allows you to capture, label, and bulk upload images to the edgeimpulse studio—making the process more efficient than sitting there for a long time doing it manually.
 
+## Advantages
+
+1. WIP
+
 ---
 
-## ToDo - WIP
+## ToDo / WIP
 
 - [x] Stabilize Stream
 - [x] Optimize Capture frame
@@ -31,7 +35,7 @@ Instead, it creates an MJPEG stream directly from the camera and displays it on 
 - [x] Implement actions for compilation checks in Github Actions
 - [x] LittleFS File Sys packing and serving both firmware bin and file sys bin from web uploader based repo ver update.
 - [x] Implement: If not connected to wifi, first load captive portal in AP mode
-- [ ] [WIP]: Update Readme and Documentation (Remaining webflasher update)
+- [x] Update Readme and Documentation (Remaining webflasher update)
 - [ ] [Optional]: Implement gzipped method and transformations for optimizing file storage for frontend
 
 ---
@@ -138,6 +142,8 @@ So, I created a webflasher(hosted by [zigzag repo](https://dattazigzag.github.io
 So, I created a [web-based flasher tool](webflasher) (hosted on both [zigzag repo](https://dattazigzag.github.io/EI_ESP32_CAM_SERVER/) and [my personal repo](https://dattasaurabh82.github.io/EI_ESP32_CAM_SERVER/)) as part of the project.
 
 The tool provides a website with all the necessary binary files and correct flashing settings, allowing you to connect your XIAO ESP32-S3 and flash everything directly from your browser—no Arduino IDE / Terminal or Platform IO setup needed! 😘
+
+<video controls src="assets/webflashing.mp4" title="Title"></video>
 
 >__Notes__:
 >
