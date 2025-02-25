@@ -19,7 +19,7 @@ _In a nutshell_
 2. The Edge Impulse [data uploader firmware's](https://docs.edgeimpulse.com/docs/edge-ai-hardware/mcu/espressif-esp32) image upload method uses [WebSerial API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Serial_API) and can be seen directly in the studio. But the process to capture each single image is slow. While it offers a good browser-based experience and eliminates the need for a data forwarding middleware, [compiling the latest firmware (for custom board other ESP-EYE)](https://github.com/edgeimpulse/firmware-espressif-esp32) remains challenging for beginners.
 3. [EloquentEsp32cam](https://eloquentarduino.com/posts/esp32-cam-object-detection) is nice and closer what I was looking for. Also it hosts the web ui in packed binary format so everything is c and one upload works. But the trade off is that the Web UI modification is not straight forward and the image transfer is also a multi step process requiring one to download labelled images first and then upload to edge impulse manually.
 
-   <div style="display: flex; flex-direction: row; gap: 20px;">
+   <!-- <div style="display: flex; flex-direction: row; gap: 20px;">
    <div style="flex: 1; text-align: center;">
       <img src="assets/EloqUI.png" alt="First image description" style="width: 100%; max-width: 400px;">
       <p><em>EloquentEsp32cam Web UI for capture and download. <br>Courtesy: Author</em></p>
@@ -28,7 +28,11 @@ _In a nutshell_
       <img src="assets/manual_upload_process.png" alt="Second image description" style="width: 100%; max-width: 400px;">
       <p><em>Manual uploading process to Edge Impulse studio<br>Courtsey: <a href= https://gravatar.com/mjrovai> Marcelo Rovai</a></em></p>
    </div>
-   </div>
+   </div> -->
+
+   | ![EloquentEsp32cam Web UI](assets/EloqUI.png) | ![Manual Upload Process](assets/manual_upload_process.png) |
+   |:-------------------------------------------:|:----------------------------------------------------------:|
+   | *EloquentEsp32cam Web UI for capture and download. <br>Courtesy: Author* | *Manual uploading process to Edge Impulse studio<br>Courtesy: [Marcelo Rovai](https://gravatar.com/mjrovai)* |
 
 ## What this project overcomes
 
