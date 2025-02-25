@@ -71,11 +71,12 @@ _In a nutshell_
 6. Uploads directly to Edge Impulse through the Web UI (the core purpose of this project). Edge Impulse API credentials persist between reboots.
 7. Automatically updates Edge Impulse project settings for object detection if needed.
 
-<video controls src="assets/Screen Recording 2025-02-25 at 23.09.52.mp4" title="Title"></video>
 
-8. Images are stored in the browser session rather than Flash or RAM.
-9.  Features an attractive UI with both light and dark modes.
-10. UI is easily modifiable through HTML and CSS updates, though re-flashing is required. See instructions below.
+![alt text](assets/ScreenRecording2025-02-25at23.09.52.gif)
+
+1. Images are stored in the browser session rather than Flash or RAM.
+2.  Features an attractive UI with both light and dark modes.
+3.  UI is easily modifiable through HTML and CSS updates, though re-flashing is required. See instructions below.
 
 ---
 
@@ -172,8 +173,7 @@ So, I created a webflasher(hosted by [zigzag repo](https://dattazigzag.github.io
 
 So, I created a [web-based flasher tool](webflasher) (hosted on both [zigzag repo](https://dattazigzag.github.io/EI_ESP32_CAM_SERVER/) and [my personal repo](https://dattasaurabh82.github.io/EI_ESP32_CAM_SERVER/)) as part of the project. A website with all the necessary binary files and correct flashing settings, allowing you to connect your XIAO ESP32-S3 and flash everything directly from your browser—no Arduino IDE / Terminal or Platform IO setup needed! 😘
 
-<video controls src="assets/webflashing.mp4" title="Title"></video>
-
+![alt text](assets/webflashing.gif)
 
 > **Notes**:
 >
