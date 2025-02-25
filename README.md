@@ -30,7 +30,9 @@ _In a nutshell_
    </div>
    </div>
 
-## Advantages
+## What this project overcomes
+
+### Advantages over other solution for image data capture
 
 _In a nutshell_
 
