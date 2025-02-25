@@ -1,8 +1,8 @@
 # EI_ESP32_CAM_SERVER
 
-| Repo | CI status |
-| --- | --- |
-| CI on [dattazigzag repo](https://github.com/dattazigzag/EI_ESP32_CAM_SERVER) | [![Arduino CI](https://github.com/dattazigzag/EI_ESP32_CAM_SERVER/actions/workflows/arduino-ci.yml/badge.svg)](https://github.com/dattazigzag/EI_ESP32_CAM_SERVER/actions/workflows/arduino-ci.yml) |
+| Repo                                                                               | CI status                                                                                                                                                                                                 |
+| ---------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| CI on [dattazigzag repo](https://github.com/dattazigzag/EI_ESP32_CAM_SERVER)       | [![Arduino CI](https://github.com/dattazigzag/EI_ESP32_CAM_SERVER/actions/workflows/arduino-ci.yml/badge.svg)](https://github.com/dattazigzag/EI_ESP32_CAM_SERVER/actions/workflows/arduino-ci.yml)       |
 | CI on [dattasaurabh82 repo](https://github.com/dattasaurabh82/EI_ESP32_CAM_SERVER) | [![Arduino CI](https://github.com/dattasaurabh82/EI_ESP32_CAM_SERVER/actions/workflows/arduino-ci.yml/badge.svg)](https://github.com/dattasaurabh82/EI_ESP32_CAM_SERVER/actions/workflows/arduino-ci.yml) |
 
 <!-- Arduino CI on dattazigzag repo: [![Arduino CI](https://github.com/dattazigzag/EI_ESP32_CAM_SERVER/actions/workflows/arduino-ci.yml/badge.svg)](https://github.com/dattazigzag/EI_ESP32_CAM_SERVER/actions/workflows/arduino-ci.yml)
@@ -17,15 +17,26 @@ Instead, it creates an MJPEG stream directly from the camera and displays it on 
 
 ## What triggered this development?
 
-In a nutshell
+_In a nutshell_
 
 1. The Method to upload images via [edge-impulse-data-forwarder](https://docs.edgeimpulse.com/docs/tools/edge-impulse-cli/cli-data-forwarder) requires an intermediary computer. [While collecting and sending accelerometer and audio data is straightforward](https://docs.edgeimpulse.com/docs/tools/edge-impulse-cli/cli-data-forwarder), there's no simple example showing how to convert image data into a byte stream array. Though it's possible to do this manually (by capturing an image and converting it into a serializable byte stream), this functionality isn't readily available and requires significant programming effort, depending on your embedded systems expertise.
-2. The Method to Upload images via edge-impulse data uploader firmware is slow although it uses latest webserial api, giving good browser based experience and mitigating the need of a data forwarding middle agent. Also, compiling latest firmware is not very beginner friendly ...
-3. Eloquent ESP is nice and closer what I was looking for but the UI modification is not straight forward and the image transfer is also a multi step process requiring to download first.  
+2. The Edge Impulse [data uploader firmware's](https://docs.edgeimpulse.com/docs/edge-ai-hardware/mcu/espressif-esp32) image upload method uses [WebSerial API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Serial_API) and can be seen directly in the studio. But the process to capture each single image is slow. While it offers a good browser-based experience and eliminates the need for a data forwarding middleware, [compiling the latest firmware (for custom board other ESP-EYE)](https://github.com/edgeimpulse/firmware-espressif-esp32) remains challenging for beginners.
+3. [EloquentEsp32cam](https://eloquentarduino.com/posts/esp32-cam-object-detection) is nice and closer what I was looking for. Also it hosts the web ui in packed binary format so everything is c and one upload works. But the trade off is that the Web UI modification is not straight forward and the image transfer is also a multi step process requiring one to download labelled images first and then upload to edge impulse manually.
+
+   <div style="display: flex; flex-direction: row; gap: 20px;">
+   <div style="flex: 1; text-align: center;">
+      <img src="assets/EloqUI.png" alt="First image description" style="width: 100%; max-width: 400px;">
+      <p><em>EloquentEsp32cam Web UI for capture and download. <br>Courtesy: Author</em></p>
+   </div>
+   <div style="flex: 1; text-align: center;">
+      <img src="assets/manual_upload_process.png" alt="Second image description" style="width: 100%; max-width: 400px;">
+      <p><em>Manual uploading process to Edge Impulse studio<br>Courtsey: <a href= https://gravatar.com/mjrovai> Marcelo Rovai</a></em></p>
+   </div>
+   </div>
 
 ## Advantages
 
-In a nutshell
+_In a nutshell_
 
 1. WIP
 
@@ -63,52 +74,52 @@ In a nutshell
 
    <br>
 
-   > The XIAO_ESP32S3 gets very hot when streaming MJPEG as stated [here](https://wiki.seeedstudio.com/xiao_esp32s3_camera_usage/#project-ii-video-streaming)
+> The XIAO_ESP32S3 gets very hot when streaming MJPEG as stated [here](https://wiki.seeedstudio.com/xiao_esp32s3_camera_usage/#project-ii-video-streaming)
 
-   ![alt text](<assets/Screenshot 2025-02-18 at 23.54.35.png>)
+![alt text](<assets/Screenshot 2025-02-18 at 23.54.35.png>)
 
-   So I added a beefy cooper heat sink used in raspberry PIs and not the cheap aluminium ones and thought maybe I should just give it some air 💨
+So I added a beefy cooper heat sink used in raspberry PIs and not the cheap aluminium ones and thought maybe I should just give it some air 💨
 
-   ![alt text](<assets/Screenshot 2025-02-18 at 23.56.44.png>)
+![alt text](<assets/Screenshot 2025-02-18 at 23.56.44.png>)
 
-   __But then how do I put it in as I like things to be organized and in place?__
+**But then how do I put it in as I like things to be organized and in place?**
 
-   So, I designed a cooling contraption for better air flow ...
-   And, additionally it holds everything together and also has a modular gorilla arm screw adapter.
+So, I designed a cooling contraption for better air flow ...
+And, additionally it holds everything together and also has a modular gorilla arm screw adapter.
 
-   ![alt text](<assets/Screenshot 2025-02-19 at 00.02.28.png>)
+![alt text](<assets/Screenshot 2025-02-19 at 00.02.28.png>)
 
-   __Before__ turning __ON__ the fans
+**Before** turning **ON** the fans
 
-   ![alt text](<assets/Screenshot 2025-02-19 at 00.06.46.png>)
+![alt text](<assets/Screenshot 2025-02-19 at 00.06.46.png>)
 
-   __After__ turning __ON__ the fans
+**After** turning **ON** the fans
 
-   ![alt text](<assets/Screenshot 2025-02-19 at 00.07.25.png>)
+![alt text](<assets/Screenshot 2025-02-19 at 00.07.25.png>)
 
-   Two points to note here:
-   
-   1. The OV5640 camera also gets 🥵.
+Two points to note here:
 
-      ![alt text](<assets/Screenshot 2025-02-19 at 00.13.18.png>)
-   
-      > !! Plan to fix that in next iteration
-   
-   2. The fan power is not drawn form the same VBUS that powers the XIAO_ESP32S3 but has a separate source, so that the performance of XIAO_ESP32S3 is not affected.
-   
-      > Yes that means you need a separate cable if you do not want to fry your XIAO_ESP32S3.
+1.  The OV5640 camera also gets 🥵.
 
-      ![alt text](<assets/Screenshot 2025-02-19 at 00.19.43.png>)
+    ![alt text](<assets/Screenshot 2025-02-19 at 00.13.18.png>)
 
-      > My quick & dirty elegant solution
+    > !! Plan to fix that in next iteration
+
+2.  The fan power is not drawn form the same VBUS that powers the XIAO_ESP32S3 but has a separate source, so that the performance of XIAO_ESP32S3 is not affected.
+
+    > Yes that means you need a separate cable if you do not want to fry your XIAO_ESP32S3.
+
+    ![alt text](<assets/Screenshot 2025-02-19 at 00.19.43.png>)
+
+    > My quick & dirty elegant solution
 
 ---
 
 ### xiao with cooling contraption and gorilla pod mount
 
-   ![alt text](assets/xiao_with_cooling_contraption_and_gorilla_po_mount_render.png)
+![alt text](assets/xiao_with_cooling_contraption_and_gorilla_po_mount_render.png)
 
-   > Fusion 360 preview and file Download link: 👉🏼 [🌐](https://a360.co/3EEMBdH)
+> Fusion 360 preview and file Download link: 👉🏼 [🌐](https://a360.co/3EEMBdH)
 
 </details>
 
@@ -119,18 +130,18 @@ In a nutshell
 
    <br>
 
-   1. Create an edge Impulse Project for `Object Detection`
-   2. Give it a suitable name
+1.  Create an edge Impulse Project for `Object Detection`
+2.  Give it a suitable name
 
-      ![alt text](<assets/Screen Recording 2025-02-25 at 15.15.50.gif>)
+    ![alt text](<assets/Screen Recording 2025-02-25 at 15.15.50.gif>)
 
-   3. Note the Project ID and keep it safe somewhere. We will need that later to automatically upload images from the xiao esp32S3
+3.  Note the Project ID and keep it safe somewhere. We will need that later to automatically upload images from the xiao esp32S3
 
-      ![alt text](<assets/Screen Recording 2025-02-25 at 15.16.07.gif>)
+    ![alt text](<assets/Screen Recording 2025-02-25 at 15.16.07.gif>)
 
-   4. Note the Project's API Key. We will need that later to automatically upload images from the xiao esp32S3
+4.  Note the Project's API Key. We will need that later to automatically upload images from the xiao esp32S3
 
-      ![alt text](<assets/Screen Recording 2025-02-25 at 15.16.53.gif>)
+    ![alt text](<assets/Screen Recording 2025-02-25 at 15.16.53.gif>)
 
 </details>
 
@@ -141,7 +152,7 @@ In a nutshell
 
 # The Easy way
 
-🤔 Since this project aims to simplify and speed up image data collection for Edge Impulse, I thought it would be better if users didn't need to set up a development environment at this early stage. 
+🤔 Since this project aims to simplify and speed up image data collection for Edge Impulse, I thought it would be better if users didn't need to set up a development environment at this early stage.
 
 The goal is to eliminate friction by removing the need for any development environment setup—even for simple tasks like configuring WiFi settings 😁
 
@@ -153,14 +164,13 @@ So, I created a [web-based flasher tool](webflasher) (hosted on both [zigzag rep
 
 <video controls src="assets/webflashing.mp4" title="Title"></video>
 
->__Notes__:
+> **Notes**:
 >
->1. Although if you want to know how it all works, follow the ... [Arduino IDE compile and upload method](#arduino-ide-compile-and-upload-method) and or [cmdline compile and upload methods](#cmdline-compile-and-upload-methods)
+> 1.  Although if you want to know how it all works, follow the ... [Arduino IDE compile and upload method](#arduino-ide-compile-and-upload-method) and or [cmdline compile and upload methods](#cmdline-compile-and-upload-methods)
 >
->2. Post flashing, you can also setup Wifi Credentials (Persistent across boots)
+> 2.  Post flashing, you can also setup Wifi Credentials (Persistent across boots)
 >
->3. Two Github Action CI/CD pipelines accomplish them. You can learn more about them [here](.github/workflows), if you are keen on the Github Actions Pipeline that compiles and create releases of binaries and also updates the webflasher.
-
+> 3.  Two Github Action CI/CD pipelines accomplish them. You can learn more about them [here](.github/workflows), if you are keen on the Github Actions Pipeline that compiles and create releases of binaries and also updates the webflasher.
 
 # Arduino IDE compile and upload method
 
@@ -192,7 +202,7 @@ We need to upload our files (html, css. js, etc. for the frontend) to esp-32 via
    cp arduino-littlefs-upload-x.x.x.vsix ~/.arduinoIDE/plugins/
    ```
 
-3. Quit & reopen Arduino IDE. __Note:__ Sometimes you might have to restart the mac
+3. Quit & reopen Arduino IDE. **Note:** Sometimes you might have to restart the mac
 4. Pressing `CMD` + `SHIFT` + `P`, will open commands palette of Arduino IDE
 5. Type in `Upload LittleFS` and the full command (`Upload LittleFS to Pico/ESP8266/ESP32`) will show up. Hit `ENTER`
 6. All the contents from [`data/`](data/) will now be transferred to the fs of ESP32
@@ -240,7 +250,7 @@ After successful upload, you should see something like this
 ___ ESP32-CAM-WEB-SERVER - (edgeImpulse tool)___
 
 1. Checking Camera Status:
-   Initializing camera... 
+   Initializing camera...
     [camera_init.h] PSRAM found ...
 ✓ Success
 
@@ -328,10 +338,12 @@ If that is the case, below are your compilation and update options.
 
 4. Install `mklittlefs`. This is used to produce a packed binary of all the front-end files that can be flashed later. NOte: if suing the Arduino IDE, then we use a IDE plugin. Check it our 👉🏼 [file upload instructions](#file-upload---for-frontend) for more details.
    <br><br>
+
    > Prerequisite for this step: Make sure you have cmake, build essentials etc. ready and configured.
-   > 
+   >
    > 🔔 Don't worry as if and when the build command for `mklittlefs` fails, you will know what to install.
-   <br><br>
+   > <br><br>
+
    ```bash
    git clone --recursive https://github.com/earlephilhower/mklittlefs.git
    cd mklittlefs
@@ -339,7 +351,7 @@ If that is the case, below are your compilation and update options.
    sudo cp mklittlefs /usr/local/bin/
 
    # source your env if needed
-   
+
    mklittlefs --help
    ```
 
@@ -362,7 +374,6 @@ If that is the case, below are your compilation and update options.
    ├── wifi_portal.html
    └── wifi_portal.js
    ```
-
 
 6. Create a packed binary of all the front-end files of `data/`
 
@@ -417,14 +428,14 @@ If that is the case, below are your compilation and update options.
    build/filesystem.littlefs.bin
    ```
 
->Notes
+> Notes
 >
->1. `--flash_mode` is `qio` for flashing firmware and `--flash_mode` is `dio` for flashing packed frontend binary
+> 1.  `--flash_mode` is `qio` for flashing firmware and `--flash_mode` is `dio` for flashing packed frontend binary
 >
->2. And, how do we know the __exact location__ in flash (`0x670000`) where the front end code goes?
-> Well, we know it from the Arduino IDE. When we used the IDE plugin, we saw the output ...
+> 2.  And, how do we know the **exact location** in flash (`0x670000`) where the front end code goes?
+>     Well, we know it from the Arduino IDE. When we used the IDE plugin, we saw the output ...
 >
->     ![alt text](<assets/Screenshot 2025-02-25 at 14.17.52.png>)
+>         ![alt text](<assets/Screenshot 2025-02-25 at 14.17.52.png>)
 
 </details>
 
