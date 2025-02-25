@@ -19,7 +19,7 @@ Instead, it creates an MJPEG stream directly from the camera and displays it on 
 
 In a nutshell
 
-1. The Method to Upload images via edge-impulse data forwarder is slow + needs an intermediary computer
+1. The Method to upload images via [edge-impulse-data-forwarder](https://docs.edgeimpulse.com/docs/tools/edge-impulse-cli/cli-data-forwarder) requires an intermediary computer. [While collecting and sending accelerometer and audio data is straightforward](https://docs.edgeimpulse.com/docs/tools/edge-impulse-cli/cli-data-forwarder), there's no simple example showing how to convert image data into a byte stream array. Though it's possible to do this manually (by capturing an image and converting it into a serializable byte stream), this functionality isn't readily available and requires significant programming effort, depending on your embedded systems expertise.
 2. The Method to Upload images via edge-impulse data uploader firmware is slow although it uses latest webserial api, giving good browser based experience and mitigating the need of a data forwarding middle agent. Also, compiling latest firmware is not very beginner friendly ...
 3. Eloquent ESP is nice and closer what I was looking for but the UI modification is not straight forward and the image transfer is also a multi step process requiring to download first.  
 
