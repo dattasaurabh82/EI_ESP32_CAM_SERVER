@@ -1,13 +1,9 @@
 # EI_ESP32_CAM_SERVER
 
-| Repo                                                                               | CI status                                                                                                                                                                                                 |
-| ---------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| CI on [dattazigzag repo](https://github.com/dattazigzag/EI_ESP32_CAM_SERVER)       | [![Arduino CI](https://github.com/dattazigzag/EI_ESP32_CAM_SERVER/actions/workflows/arduino-ci.yml/badge.svg)](https://github.com/dattazigzag/EI_ESP32_CAM_SERVER/actions/workflows/arduino-ci.yml)       |
+| Repo | CI status |
+|------|-----------|
+| CI on [dattazigzag repo](https://github.com/dattazigzag/EI_ESP32_CAM_SERVER) | [![Arduino CI](https://github.com/dattazigzag/EI_ESP32_CAM_SERVER/actions/workflows/arduino-ci.yml/badge.svg)](https://github.com/dattazigzag/EI_ESP32_CAM_SERVER/actions/workflows/arduino-ci.yml) |
 | CI on [dattasaurabh82 repo](https://github.com/dattasaurabh82/EI_ESP32_CAM_SERVER) | [![Arduino CI](https://github.com/dattasaurabh82/EI_ESP32_CAM_SERVER/actions/workflows/arduino-ci.yml/badge.svg)](https://github.com/dattasaurabh82/EI_ESP32_CAM_SERVER/actions/workflows/arduino-ci.yml) |
-
-<!-- Arduino CI on dattazigzag repo: [![Arduino CI](https://github.com/dattazigzag/EI_ESP32_CAM_SERVER/actions/workflows/arduino-ci.yml/badge.svg)](https://github.com/dattazigzag/EI_ESP32_CAM_SERVER/actions/workflows/arduino-ci.yml)
-
-Arduino CI on dattasaurabh82 repo:[![dattasaurabh82](https://github.com/dattasaurabh82/EI_ESP32_CAM_SERVER/actions/workflows/arduino-ci.yml/badge.svg)](https://github.com/dattasaurabh82/EI_ESP32_CAM_SERVER/actions/workflows/arduino-ci.yml) -->
 
 ## What is this?
 
@@ -38,7 +34,16 @@ _In a nutshell_
 
 _In a nutshell_
 
-1. WIP
+1. WiFi configuration is flexible - users can set it up after compiling since the code logic accommodates this.
+2. Multiple WiFi networks can be stored and persist between reboots, allowing seamless use across different locations without reconfiguring.
+3. Stream can be started, stopped, and snapshots can be captured even while streaming is paused.
+4. Supports both single snapshots and automatic multiple image capture.
+5. Images can be labeled and downloaded in groups for manual upload if preferred.
+6. Uploads directly to Edge Impulse through the Web UI (the core purpose of this project). Edge Impulse API credentials persist between reboots.
+7. Automatically updates Edge Impulse project settings for object detection if needed.
+8. Images are stored in the browser session rather than Flash or RAM.
+9. Features an attractive UI with both light and dark modes.
+10. UI is easily modifiable through HTML and CSS updates, though re-flashing is required. See instructions below.
 
 ---
 
