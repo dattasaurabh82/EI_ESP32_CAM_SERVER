@@ -5,8 +5,6 @@
 | CI on [dattazigzag repo](https://github.com/dattazigzag/EI_ESP32_CAM_SERVER) | [![Arduino CI](https://github.com/dattazigzag/EI_ESP32_CAM_SERVER/actions/workflows/arduino-ci.yml/badge.svg)](https://github.com/dattazigzag/EI_ESP32_CAM_SERVER/actions/workflows/arduino-ci.yml) |
 | CI on [dattasaurabh82 repo](https://github.com/dattasaurabh82/EI_ESP32_CAM_SERVER) | [![Arduino CI](https://github.com/dattasaurabh82/EI_ESP32_CAM_SERVER/actions/workflows/arduino-ci.yml/badge.svg)](https://github.com/dattasaurabh82/EI_ESP32_CAM_SERVER/actions/workflows/arduino-ci.yml) |
 
-
-
 <!-- Arduino CI on dattazigzag repo: [![Arduino CI](https://github.com/dattazigzag/EI_ESP32_CAM_SERVER/actions/workflows/arduino-ci.yml/badge.svg)](https://github.com/dattazigzag/EI_ESP32_CAM_SERVER/actions/workflows/arduino-ci.yml)
 
 Arduino CI on dattasaurabh82 repo:[![dattasaurabh82](https://github.com/dattasaurabh82/EI_ESP32_CAM_SERVER/actions/workflows/arduino-ci.yml/badge.svg)](https://github.com/dattasaurabh82/EI_ESP32_CAM_SERVER/actions/workflows/arduino-ci.yml) -->
@@ -18,6 +16,7 @@ This educational tool helps reduce the time needed for capturing and labeling ES
 Instead, it creates an MJPEG stream directly from the camera and displays it on a camera-hosted frontend. This allows you to capture, label, and bulk upload images to the edgeimpulse studio—making the process more efficient than sitting there for a long time doing it manually.
 
 ---
+
 ## ToDo - WIP
 
 - [x] Stabilize Stream
@@ -104,7 +103,21 @@ Instead, it creates an MJPEG stream directly from the camera and displays it on 
 <details>
    <summary> 2. Edge Impulse Studio Project setup</summary>
 
-   TBD
+   <br><br>
+
+   1. Create an edge Impulse Project for `Object Detection`
+   2. Give it a suitable name
+
+      ![alt text](<assets/Screen Recording 2025-02-25 at 15.15.50.gif>)
+
+   3. Note the Project ID and keep it safe somewhere. We will need that later to automatically upload images from the xiao esp32S3
+
+      ![alt text](<assets/Screen Recording 2025-02-25 at 15.16.07.gif>)
+
+   4. Note the Project's API Key. We will need that later to automatically upload images from the xiao esp32S3
+
+      ![alt text](<assets/Screen Recording 2025-02-25 at 15.16.53.gif>)
+
 </details>
 
 ---
@@ -186,15 +199,18 @@ Our default web server is on port `80` defined in `WebServer server(80);` in our
 After successful upload, you should see something like this
 
 ```txt
+
 ___ ESP32-CAM-WEB-SERVER - (edgeImpulse tool)___
 
 1. Checking Camera Status:
-   Initializing camera... ✓ Success
+   Initializing camera... 
+    [camera_init.h] PSRAM found ...
+✓ Success
 
    Camera Details:
    --------------
    Resolution: 1x1
-   Quality: 10
+   Quality: 30
    Brightness: 0
    Contrast: 0
    Saturation: 0
@@ -205,8 +221,8 @@ ___ ESP32-CAM-WEB-SERVER - (edgeImpulse tool)___
    Memory Info:
    -----------
    PSRAM: Available ✓
-   Free PSRAM: 4184412 bytes
-   Total PSRAM: 4194304 bytes
+   Free PSRAM: 8381488 bytes
+   Total PSRAM: 8388608 bytes
 
 
 2. Checking LittleFS Status:
@@ -214,40 +230,31 @@ ___ ESP32-CAM-WEB-SERVER - (edgeImpulse tool)___
 
    Storage Info:
    ------------
-   Total space: 896 KB
-   Used space: 20 KB
-   Free space: 876 KB
+   Total space: 1536 KB
+   Used space: 84 KB
+   Free space: 1452 KB
 
    Files in storage:
    ---------------
-   • index.html                941 bytes
-   • script.js                3038 bytes
-   • styles.css               1426 bytes
+   • ei_config.json            157 bytes
+   • ei_config.template.json       63 bytes
+   • index.html               7400 bytes
+   • script.js               23188 bytes
+   • styles.css               8816 bytes
+   • wifi_portal.css          5264 bytes
+   • wifi_portal.html         2934 bytes
+   • wifi_portal.js          14857 bytes
 
 
-3. Checking WiFi Status:
-   Connecting to SSID: :) .. ✓ Connected!
+3. WiFi Manager Initialization:
 
-   Network Info:
-   ------------
-   ⤷ IP Address: 192.168.1.172
-   ⤷ Subnet Mask: 255.255.255.0
-   ⤷ Gateway: 192.168.1.1
-   ⤷ DNS: 192.168.1.1
-   ⤷ MAC Address: 24:0A:C4:EF:F5:30
-
-   Signal Info:
-   -----------
-   ⤷ RSSI: -60 dBm
-   ⤷ Channel: 1
-   ⤷ TX Power: 78 dBm
-
-   Connection Info:
-   ---------------
-   ⤷ SSID: :)
-   ⤷ Connection Time: 1000 ms
-
-   ⤷ HTTP server started on port 80
+3. WiFi Manager Initialization:
+   ⚠ No WiFi credentials file found
+   ⚠ No saved WiFi networks found
+   Starting AP Mode for configuration
+   ✓ AP started with SSID: XIAO_ESP32_CAM
+   ✓ IP Address: 192.168.4.1
+Async HTTP server started on port 80
 ```
 
 ## cmdline compile and upload methods
@@ -282,10 +289,12 @@ If that is the case, below are your compilation and update options.
    arduino-cli core update-index
    ```
 
-4. Install `mklittlefs`. This is used to produce a packed binary of all the front-end files that can be flashed later.
-
-   > Make sure you have cmake, build essentials etc. ready and configured
-
+4. Install `mklittlefs`. This is used to produce a packed binary of all the front-end files that can be flashed later. NOte: if suing the Arduino IDE, then we use a IDE plugin. Check it our 👉🏼 [file upload instructions](#file-upload---for-frontend) for more details.
+   <br><br>
+   > Prerequisite for this step: Make sure you have cmake, build essentials etc. ready and configured.
+   > 
+   > 🔔 Don't worry as if and when the build command for `mklittlefs` fails, you will know what to install.
+   <br><br>
    ```bash
    git clone --recursive https://github.com/earlephilhower/mklittlefs.git
    cd mklittlefs
