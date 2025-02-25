@@ -263,7 +263,7 @@ If that is the case, below are your compilation and update options.
    2. Information source 2: [here](https://docs.espressif.com/projects/esptool/en/latest/esp32/index.html#quick-start)
    3. Information source 3: [here](https://tasmota.github.io/docs/Esptool/)
 2. Make sure to install `arduino-cli`
-3. After `arduino-cli` has been installed, install esp32 core, and library dependencies
+3. After `arduino-cli` has been installed, install esp32 core, and library dependencies. Instructions 👉🏼 [here](https://github.com/arduino/arduino-cli)
 
    ```bash
    # install esp32 core and boards
