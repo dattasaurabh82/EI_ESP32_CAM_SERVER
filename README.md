@@ -17,6 +17,8 @@ Instead, it creates an MJPEG stream directly from the camera and displays it on 
 
 ## Advantages
 
+In a nutshell
+
 1. WIP
 
 ---
@@ -427,7 +429,7 @@ Saurabh Datta
 zigzag.is
 Feb 2025
 datta@zigzag.is
-hi@dattasaurabh,com
+hi@dattasaurabh.com
 ```
 
 ---
