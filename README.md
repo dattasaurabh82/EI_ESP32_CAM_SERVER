@@ -67,12 +67,15 @@ _In a nutshell_
   <em>Configuring wifi from the Web UI</em>
 </p>
 
-1. Images can be labeled and downloaded in groups for manual upload to Edge Impulse, if preferred.
-2. Uploads directly to Edge Impulse through the Web UI (the core purpose of this project). Edge Impulse API credentials persist between reboots.
-3. Automatically updates Edge Impulse project settings for object detection if needed.
-4. Images are stored in the browser session rather than Flash or RAM.
-5.  Features an attractive UI with both light and dark modes.
-6.  UI is easily modifiable through HTML and CSS updates, though re-flashing is required. See instructions below.
+5. Images can be labeled and downloaded in groups for manual upload to Edge Impulse, if preferred.
+6. Uploads directly to Edge Impulse through the Web UI (the core purpose of this project). Edge Impulse API credentials persist between reboots.
+7. Automatically updates Edge Impulse project settings for object detection if needed.
+
+<video controls src="assets/Screen Recording 2025-02-25 at 23.09.52.mp4" title="Title"></video>
+
+8. Images are stored in the browser session rather than Flash or RAM.
+9.  Features an attractive UI with both light and dark modes.
+10. UI is easily modifiable through HTML and CSS updates, though re-flashing is required. See instructions below.
 
 ---
 
