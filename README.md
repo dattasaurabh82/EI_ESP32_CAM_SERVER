@@ -154,8 +154,10 @@ Pick a esp32 camera module based on the [camera_pins.h](camera_pins.h) and use o
 
 ```c++
 // Define camera model before including camera_pins.h
-// e.g.: We are using cheap AI Thinker Cam
-#define CAMERA_MODEL_AI_THINKER 1
+// e.g.: We are using XIAO_ESP32S3
+
+// #define CAMERA_MODEL_AI_THINKER 1
+#define CAMERA_MODEL_XIAO_ESP32S3 1
 ```
 
 Most of the camera settings doesn't need to be changed but sometimes you may need to flip the camera frame vertically or horizontally. In that case [camera_init.h](camera_init.h) find the section
