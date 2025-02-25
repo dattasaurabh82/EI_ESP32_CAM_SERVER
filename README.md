@@ -28,9 +28,9 @@ Instead, it creates an MJPEG stream directly from the camera and displays it on 
 
 _In a nutshell_
 
-1. The Method to upload images via [edge-impulse-data-forwarder](https://docs.edgeimpulse.com/docs/tools/edge-impulse-cli/cli-data-forwarder) requires an intermediary computer. [While collecting and sending accelerometer and audio data is straightforward](https://docs.edgeimpulse.com/docs/tools/edge-impulse-cli/cli-data-forwarder), there's no simple example showing how to convert image data into a byte stream array. Though it's possible to do this manually (by capturing an image and converting it into a serializable byte stream), this functionality isn't readily available and requires significant programming effort, depending on your embedded systems expertise.
-2. The Edge Impulse [data uploader firmware's](https://docs.edgeimpulse.com/docs/edge-ai-hardware/mcu/espressif-esp32) image upload method uses [WebSerial API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Serial_API) and can be seen directly in the studio. But the process to capture each single image is slow. While it offers a good browser-based experience and eliminates the need for a data forwarding middleware, [compiling the latest firmware (for custom board other ESP-EYE)](https://github.com/edgeimpulse/firmware-espressif-esp32) remains challenging for beginners.
-3. [EloquentEsp32cam](https://eloquentarduino.com/posts/esp32-cam-object-detection) is nice and closer what I was looking for. Also it hosts the web ui in packed binary format so everything is c and one upload works. But the trade off is that the Web UI modification is not straight forward and the image transfer is also a multi step process requiring one to download labelled images first and then upload to edge impulse manually.
+1. The method to upload images via [edge-impulse-data-forwarder](https://docs.edgeimpulse.com/docs/tools/edge-impulse-cli/cli-data-forwarder) requires an intermediary computer. [While collecting and sending accelerometer and audio data is straightforward](https://docs.edgeimpulse.com/docs/tools/edge-impulse-cli/cli-data-forwarder), there's no simple example showing how to convert image data into a byte stream array. Though it's possible to do this manually (by capturing an image and converting it into a serializable byte stream), this functionality isn't readily available and requires significant programming effort, depending on your embedded systems expertise.
+2. The Edge Impulse [data uploader firmware's](https://docs.edgeimpulse.com/docs/edge-ai-hardware/mcu/espressif-esp32) image upload method uses [WebSerial API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Serial_API) and can be seen directly in the studio. But the process to capture each single image is slow. While it offers a good browser-based experience and eliminates the need for a data forwarding middleware, [compiling the latest firmware (for custom board other than "ESP-EYE")](https://github.com/edgeimpulse/firmware-espressif-esp32) remains challenging for beginners.
+3. [EloquentEsp32cam](https://eloquentarduino.com/posts/esp32-cam-object-detection) is nice and closer to what I was looking for as it hosts the web ui in packed binary format so everything is in c, finally and "one upload" functions flashes everything. But the trade off is that the Web UI modification is not straight forward (since it is gzipped) and the image transfer is also a multi step process requiring one to download labelled images first and then upload to edge impulse manually.
 
    | ![EloquentEsp32cam Web UI](assets/EloqUI.png) | ![Manual Upload Process](assets/manual_upload_process.png) |
    |:-------------------------------------------:|:----------------------------------------------------------:|
@@ -43,6 +43,21 @@ _In a nutshell_
 _In a nutshell_
 
 1. WiFi configuration is flexible - users can set it up after compiling since the code logic accommodates this.
+
+![alt text](<assets/Slide 16_9 - 2.png>)
+
+<div style="width: 50%">
+  <img src="assets/ScreenRecording2025-02-25at22.24.14-ezgif.com-video-to-gif-converter.gif" width="100%" alt="Image description">
+  <p align="center"><em>Configuring wifi from the Web UI</em></p>
+</div>
+
+> It will automatically show up, i.e. the ESP will go to AP mode and provide this captive portal like experience, if it fails to connect to any wifi from it's memory (or if the wifi memory doesn't exist yet)
+
+<br> <br>
+<img src="assets/Screenshot 2025-02-25 at 22.26.18.png" width="35%" alt="Image description">
+
+> Once the esp32 connects, you will see this in Serial as you get re-directed to the main dashboard.
+
 2. Multiple WiFi networks can be stored and persist between reboots, allowing seamless use across different locations without reconfiguring.
 3. Stream can be started, stopped, and snapshots can be captured even while streaming is paused.
 4. Supports both single snapshots and automatic multiple image capture.
@@ -50,7 +65,7 @@ _In a nutshell_
 6. Uploads directly to Edge Impulse through the Web UI (the core purpose of this project). Edge Impulse API credentials persist between reboots.
 7. Automatically updates Edge Impulse project settings for object detection if needed.
 8. Images are stored in the browser session rather than Flash or RAM.
-9. Features an attractive UI with both light and dark modes.
+9.  Features an attractive UI with both light and dark modes.
 10. UI is easily modifiable through HTML and CSS updates, though re-flashing is required. See instructions below.
 
 ---
