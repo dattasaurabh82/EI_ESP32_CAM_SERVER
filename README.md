@@ -5,7 +5,11 @@
 | CI on [dattazigzag repo](https://github.com/dattazigzag/EI_ESP32_CAM_SERVER) | [![Arduino CI](https://github.com/dattazigzag/EI_ESP32_CAM_SERVER/actions/workflows/arduino-ci.yml/badge.svg)](https://github.com/dattazigzag/EI_ESP32_CAM_SERVER/actions/workflows/arduino-ci.yml) |
 | CI on [dattasaurabh82 repo](https://github.com/dattasaurabh82/EI_ESP32_CAM_SERVER) | [![Arduino CI](https://github.com/dattasaurabh82/EI_ESP32_CAM_SERVER/actions/workflows/arduino-ci.yml/badge.svg)](https://github.com/dattasaurabh82/EI_ESP32_CAM_SERVER/actions/workflows/arduino-ci.yml) |
 
+---
+
 ## What is this?
+
+![alt text](<assets/Screenshot 2025-02-11 at 02.08.08.png>)
 
 This educational tool helps reduce the time needed for capturing and labeling ESP32 camera images for TinyML training in [edgeimpulse](https://docs.edgeimpulse.com/reference). It's more efficient than the standard method of capturing and uploading single images through the [edgeimpulse data forwarder firmware](https://github.com/edgeimpulse/firmware-espressif-esp32).
 
@@ -18,17 +22,6 @@ _In a nutshell_
 1. The Method to upload images via [edge-impulse-data-forwarder](https://docs.edgeimpulse.com/docs/tools/edge-impulse-cli/cli-data-forwarder) requires an intermediary computer. [While collecting and sending accelerometer and audio data is straightforward](https://docs.edgeimpulse.com/docs/tools/edge-impulse-cli/cli-data-forwarder), there's no simple example showing how to convert image data into a byte stream array. Though it's possible to do this manually (by capturing an image and converting it into a serializable byte stream), this functionality isn't readily available and requires significant programming effort, depending on your embedded systems expertise.
 2. The Edge Impulse [data uploader firmware's](https://docs.edgeimpulse.com/docs/edge-ai-hardware/mcu/espressif-esp32) image upload method uses [WebSerial API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Serial_API) and can be seen directly in the studio. But the process to capture each single image is slow. While it offers a good browser-based experience and eliminates the need for a data forwarding middleware, [compiling the latest firmware (for custom board other ESP-EYE)](https://github.com/edgeimpulse/firmware-espressif-esp32) remains challenging for beginners.
 3. [EloquentEsp32cam](https://eloquentarduino.com/posts/esp32-cam-object-detection) is nice and closer what I was looking for. Also it hosts the web ui in packed binary format so everything is c and one upload works. But the trade off is that the Web UI modification is not straight forward and the image transfer is also a multi step process requiring one to download labelled images first and then upload to edge impulse manually.
-
-   <!-- <div style="display: flex; flex-direction: row; gap: 20px;">
-   <div style="flex: 1; text-align: center;">
-      <img src="assets/EloqUI.png" alt="First image description" style="width: 100%; max-width: 400px;">
-      <p><em>EloquentEsp32cam Web UI for capture and download. <br>Courtesy: Author</em></p>
-   </div>
-   <div style="flex: 1; text-align: center;">
-      <img src="assets/manual_upload_process.png" alt="Second image description" style="width: 100%; max-width: 400px;">
-      <p><em>Manual uploading process to Edge Impulse studio<br>Courtsey: <a href= https://gravatar.com/mjrovai> Marcelo Rovai</a></em></p>
-   </div>
-   </div> -->
 
    | ![EloquentEsp32cam Web UI](assets/EloqUI.png) | ![Manual Upload Process](assets/manual_upload_process.png) |
    |:-------------------------------------------:|:----------------------------------------------------------:|
@@ -44,16 +37,12 @@ _In a nutshell_
 2. Multiple WiFi networks can be stored and persist between reboots, allowing seamless use across different locations without reconfiguring.
 3. Stream can be started, stopped, and snapshots can be captured even while streaming is paused.
 4. Supports both single snapshots and automatic multiple image capture.
-5. Images can be labeled and downloaded in groups for manual upload if preferred.
+5. Images can be labeled and downloaded in groups for manual upload to Edge Impulse, if preferred.
 6. Uploads directly to Edge Impulse through the Web UI (the core purpose of this project). Edge Impulse API credentials persist between reboots.
 7. Automatically updates Edge Impulse project settings for object detection if needed.
 8. Images are stored in the browser session rather than Flash or RAM.
 9. Features an attractive UI with both light and dark modes.
 10. UI is easily modifiable through HTML and CSS updates, though re-flashing is required. See instructions below.
-
----
-
-![alt text](<assets/Screenshot 2025-02-11 at 02.08.08.png>)
 
 ---
 
@@ -79,29 +68,25 @@ So I added a beefy cooper heat sink used in raspberry PIs and not the cheap alum
 So, I designed a cooling contraption for better air flow ...
 And, additionally it holds everything together and also has a modular gorilla arm screw adapter.
 
-![alt text](<assets/Screenshot 2025-02-19 at 00.02.28.png>)
-
-**Before** turning **ON** the fans
-
-![alt text](<assets/Screenshot 2025-02-19 at 00.06.46.png>)
-
-**After** turning **ON** the fans
-
-![alt text](<assets/Screenshot 2025-02-19 at 00.07.25.png>)
+| **Before** turning **ON** the fans | **After** turning **ON** the fans |
+|:----------------------------------:|:---------------------------------:|
+| ![Before turning on fans](<assets/Screenshot 2025-02-19 at 00.06.46.png>) | ![After turning on fans](<assets/Screenshot 2025-02-19 at 00.07.25.png>) |
 
 Two points to note here:
 
 1.  The OV5640 camera also gets 🥵.
 
-    ![alt text](<assets/Screenshot 2025-02-19 at 00.13.18.png>)
+   > !! Plan to fix that in next iteration
 
-    > !! Plan to fix that in next iteration
+   <img src="assets/Screenshot 2025-02-19 at 00.13.18.png" width="50%" alt="Image description">
+
+    
 
 2.  The fan power is not drawn form the same VBUS that powers the XIAO_ESP32S3 but has a separate source, so that the performance of XIAO_ESP32S3 is not affected.
 
-    > Yes that means you need a separate cable if you do not want to fry your XIAO_ESP32S3.
+    > Yes! That means you need a separate cable if you do not want to fry your XIAO_ESP32S3.
 
-    ![alt text](<assets/Screenshot 2025-02-19 at 00.19.43.png>)
+   <img src="assets/Screenshot 2025-02-19 at 00.19.43.png" width="80%" alt="Image description">
 
     > My quick & dirty elegant solution
 
