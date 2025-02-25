@@ -64,13 +64,12 @@ _In a nutshell_
 
 <p align="center">
   <img src="assets/Screen Recording 2025-02-25 at 22.57.31.gif" width="75%" alt="Image description"><br>
-  <em>Configuring wifi from the Web UI</em>
+  <em>Start/Stop stream and various capture modes demo</em>
 </p>
 
 5. Images can be labeled and downloaded in groups for manual upload to Edge Impulse, if preferred.
 6. Uploads directly to Edge Impulse through the Web UI (the core purpose of this project). Edge Impulse API credentials persist between reboots.
 7. Automatically updates Edge Impulse project settings for object detection if needed.
-
 
 ![alt text](assets/ScreenRecording2025-02-25at23.09.52.gif)
 
