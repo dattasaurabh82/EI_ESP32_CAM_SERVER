@@ -31,8 +31,8 @@ Instead, it creates an MJPEG stream directly from the camera and displays it on 
 - [x] Add Footer
 - [x] Implement actions for compilation checks in Github Actions
 - [x] LittleFS File Sys packing and serving both firmware bin and file sys bin from web uploader based repo ver update.
-- [x] Update Readme and Documentation
 - [x] Implement: If not connected to wifi, first load captive portal in AP mode
+- [ ] [WIP]: Update Readme and Documentation (Remaining webflasher update)
 - [ ] [Optional]: Implement gzipped method and transformations for optimizing file storage for frontend
 
 ---
@@ -112,7 +112,7 @@ Instead, it creates an MJPEG stream directly from the camera and displays it on 
 <details>
    <summary> 3 . Software</summary>
 
-## Software Preparation
+## Arduino IDE compile and upload method
 
 Arduino IDE version: `2.3.4`
 
@@ -264,57 +264,135 @@ ___ ESP32-CAM-WEB-SERVER - (edgeImpulse tool)___
    ⤷ HTTP server started on port 80
 ```
 
-</details>
+## cmdline compile and upload methods
 
----
+Let's say you just want to edit some basic html features and do not want to change any firmware settings and as a result do not want to go through the whole arduino IDE setup.
 
-<details>
-   <summary> 4 . [BONUS] Testing Github Actions workflow, locally</summary>
+Even though that is a fairly straight forward route, for some reason your like being in Terminal and want to do everything from there.
 
-### Prerequisites
+If that is the case, below are your compilation and update options.
 
-- Install Docker Desktop for Mac
-- Make sure socket is accessible
-
-   ![alt text](<assets/Screenshot 2025-02-19 at 01.00.14.png>)
-
-- Install act using Homebrew:
+1. Make sure to install `esptools.py`
+   1. Information source 1: [here](https://docs.espressif.com/projects/esptool/en/latest/esp32/installation.html)
+   2. Information source 2: [here](https://docs.espressif.com/projects/esptool/en/latest/esp32/index.html#quick-start)
+   3. Information source 3: [here](https://tasmota.github.io/docs/Esptool/)
+2. Make sure to install `arduino-cli`
+3. After `arduino-cli` has been installed, install esp32 core, and library dependencies
 
    ```bash
-   brew install act
+   # install esp32 core and boards
+   arduino-cli config init
+   arduino-cli config add board_manager.additional_urls https://raw.githubusercontent.com/espressif/arduino-esp32/gh-pages/package_esp32_index.json
+   arduino-cli core update-index
+   arduino-cli core install esp32:esp32
+
+   # Install lib deps
+   arduino-cli core update-index
+   arduino-cli lib install ArduinoJson
+   mkdir -p "$HOME/Arduino/libraries"
+   cd "$HOME/Arduino/libraries"
+   git clone https://github.com/ESP32Async/AsyncTCP.git
+   git clone https://github.com/ESP32Async/ESPAsyncWebServer.git
+   arduino-cli core update-index
    ```
 
-### Running Tests
+4. Install `mklittlefs`. This is used to produce a packed binary of all the front-end files that can be flashed later.
 
-From your project root directory, run:
+   > Make sure you have cmake, build essentials etc. ready and configured
 
-```bash
-act -P ubuntu-latest=ghcr.io/catthehacker/ubuntu:act-latest --container-architecture linux/amd64 -v
-```
+   ```bash
+   git clone --recursive https://github.com/earlephilhower/mklittlefs.git
+   cd mklittlefs
+   make dist
+   sudo cp mklittlefs /usr/local/bin/
 
-> Note: The `-v` flag enables verbose output for better debugging.
+   # source your env if needed
+   
+   mklittlefs --help
+   ```
 
-### Testing Specific Events
+5. Create an empty `ei_config.json`. It will be filled with your credentials and edgeimpulse project details later, from frontend and will be saved to be used persistently till next update.
 
-Test push event:
+   ```bash
+   cp data/ei_config.template.json data/ei_config.json
+   ```
 
-```bash
-act push
-```
+   Your data folder should now have these files
 
-Test manual workflow trigger:
+   ```txt
+   data/
+   ├── ei_config.json
+   ├── ei_config.template.json
+   ├── index.html
+   ├── script.js
+   ├── styles.css
+   ├── wifi_portal.css
+   ├── wifi_portal.html
+   └── wifi_portal.js
+   ```
 
-```bash
-act workflow_dispatch
-```
 
-### Troubleshooting
+6. Create a packed binary of all the front-end files of `data/`
 
-- If you see warnings about Apple M-series chip, ensure you're using the `--container-architecture linux/amd64` flag
-- If Docker isn't running, you'll need to start Docker Desktop first
-- Use `-v` flag for verbose output when debugging issues
+   ```bash
+   mkdir -p build
 
-For more information about act, visit the [nektos/act](https://github.com/nektos/act) repository.
+   # Create
+   mklittlefs -c data -p 256 -b 4096 -s 1572864 build/filesystem.littlefs.bin
+
+   # Verify
+   mklittlefs -l -d 5 build/filesystem.littlefs.bin
+   ```
+
+7. Compile the firmware
+
+   ```bash
+   arduino-cli compile \
+   --fqbn "esp32:esp32:XIAO_ESP32S3:USBMode=hwcdc,CDCOnBoot=default,MSCOnBoot=default,DFUOnBoot=default,UploadMode=default,CPUFreq=240,FlashMode=qio,FlashSize=8M,PartitionScheme=default_8MB,DebugLevel=none,PSRAM=opi,LoopCore=1,EventsCore=1,EraseFlash=none,UploadSpeed=921600,JTAGAdapter=default" \
+   --output-dir build . -v
+   ```
+
+8. Upload the firmware and packed frontend binaries (multiple options)
+
+   ```bash
+   # Option 1.1: Using arduino-cli - Compile & write the compiled firmware to target
+   arduino-cli compile \
+   --fqbn "esp32:esp32:XIAO_ESP32S3:USBMode=hwcdc,CDCOnBoot=default,MSCOnBoot=default,DFUOnBoot=default,UploadMode=default,CPUFreq=240,FlashMode=qio,FlashSize=8M,PartitionScheme=default_8MB,DebugLevel=none,PSRAM=opi,LoopCore=1,EventsCore=1,UploadSpeed=921600,JTAGAdapter=default" \
+   . -u -p [YOUR_SERIAL_PORT_TO_WHICH_ESP32_IS_ATTACHED] -v
+
+   # Option 1.2: Using arduino-cli - Write the pre-compiled firmware to target
+   arduino-cli upload -p [YOUR_SERIAL_PORT_TO_WHICH_ESP32_IS_ATTACHED] \
+   --fqbn "esp32:esp32:XIAO_ESP32S3:USBMode=hwcdc,CDCOnBoot=default,MSCOnBoot=default,DFUOnBoot=default,UploadMode=default,CPUFreq=240,FlashMode=qio,FlashSize=8M,PartitionScheme=default_8MB,DebugLevel=none,PSRAM=opi,LoopCore=1,EventsCore=1,UploadSpeed=921600,JTAGAdapter=default" \
+   --input-file build/EI_ESP32_CAM_SERVER.ino.merged.bin .
+
+   # Using esptools.py - Write ONLY the pre-compiled firmware to target
+   esptool.py \
+   --chip esp32s3 \
+   --port [YOUR_SERIAL_PORT_TO_WHICH_ESP32_IS_ATTACHED] \
+   --baud 921600 \
+   --before default_reset \
+   --after hard_reset write_flash \
+   -z --flash_mode qio --flash_freq 80m --flash_size 8MB \
+   0x0 build/EI_ESP32_CAM_SERVER.ino.merged.bin
+
+   # Using esptools.py - Write the packed frontend binary to the target's correct location
+   esptool.py \
+   --chip esp32s3 \
+   --port [YOUR_SERIAL_PORT_TO_WHICH_ESP32_IS_ATTACHED] \
+   --baud 921600 write_flash -z \
+   --flash_mode dio \
+   --flash_freq 80m 0x670000 \
+   build/filesystem.littlefs.bin
+   ```
+
+>Notes
+>
+>1. `--flash_mode` is `qio` for flashing firmware and `--flash_mode` is `dio` for flashing packed frontend binary
+>
+>2. And, how do we know the __exact location__ in flash (`0x670000`) where the front end code goes?
+> Well, we know it from the Arduino IDE. When we used the IDE plugin, we saw the output ...
+>
+>     ![alt text](<assets/Screenshot 2025-02-25 at 14.17.52.png>)
 
 </details>
 

@@ -93,7 +93,7 @@ jobs:
           ls -l
           arduino-cli lib install ArduinoJson
 
-      - name: Clean and re-create binary directory
+      - name: Add build info in build directory
         run: |
           echo "Build started at: $(date)" > build/build_info.txt
           echo "Git commit: ${{ github.sha }}" >> build/build_info.txt
