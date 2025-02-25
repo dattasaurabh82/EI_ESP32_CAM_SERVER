@@ -300,7 +300,7 @@ Async HTTP server started on port 80
 
 Let's say you just want to edit some basic html features and do not want to change any firmware settings and as a result do not want to go through the whole arduino IDE setup.
 
-Even though that is a fairly straight forward route, for some reason your like being in Terminal and want to do everything from there.
+Even though that is a fairly straight forward route, for some reason you like being in terminal and want to do everything from there.
 
 If that is the case, below are your compilation and update options.
 
@@ -308,8 +308,8 @@ If that is the case, below are your compilation and update options.
    1. Information source 1: [here](https://docs.espressif.com/projects/esptool/en/latest/esp32/installation.html)
    2. Information source 2: [here](https://docs.espressif.com/projects/esptool/en/latest/esp32/index.html#quick-start)
    3. Information source 3: [here](https://tasmota.github.io/docs/Esptool/)
-2. Make sure to install `arduino-cli`
-3. After `arduino-cli` has been installed, install esp32 core, and library dependencies. Instructions 👉🏼 [here](https://github.com/arduino/arduino-cli)
+2. Make sure to install `arduino-cli`. Instructions 👉🏼 [here](https://github.com/arduino/arduino-cli)
+3. After `arduino-cli` has been installed, install esp32 core, and library dependencies.
 
    ```bash
    # install esp32 core and boards
@@ -328,7 +328,7 @@ If that is the case, below are your compilation and update options.
    arduino-cli core update-index
    ```
 
-4. Install `mklittlefs`. This is used to produce a packed binary of all the front-end files that can be flashed later. NOte: if suing the Arduino IDE, then we use a IDE plugin. Check it our 👉🏼 [file upload instructions](#file-upload---for-frontend) for more details.
+4. Install `mklittlefs`. This is used to produce a packed binary of all the front-end files that can be flashed later. __Note__: if using the Arduino IDE, then we use a IDE plugin. Check it our 👉🏼 [file upload instructions](#file-upload---for-frontend) for more details.
    <br><br>
 
    > Prerequisite for this step: Make sure you have cmake, build essentials etc. ready and configured.
@@ -422,12 +422,12 @@ If that is the case, below are your compilation and update options.
 
 > Notes
 >
-> 1.  `--flash_mode` is `qio` for flashing firmware and `--flash_mode` is `dio` for flashing packed frontend binary
+> 1. `--flash_mode` is `qio` for flashing firmware and `--flash_mode` is `dio` for flashing packed frontend binary
 >
-> 2.  And, how do we know the **exact location** in flash (`0x670000`) where the front end code goes?
->     Well, we know it from the Arduino IDE. When we used the IDE plugin, we saw the output ...
+> 2. And, how do we know the **exact location** in flash (`0x670000`) where the front end code goes?
+> Well, we know it from the Arduino IDE. When we used the IDE plugin, we saw the output ...
 >
->         ![alt text](<assets/Screenshot 2025-02-25 at 14.17.52.png>)
+> ![alt text](<assets/Screenshot 2025-02-25 at 14.17.52.png>)
 
 </details>
 
