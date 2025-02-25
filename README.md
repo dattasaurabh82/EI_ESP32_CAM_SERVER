@@ -46,7 +46,7 @@ _In a nutshell_
 
 ![alt text](<assets/Slide 16_9 - 2.png>)
 
-<div style="width: 80%">
+<div style="width: 60%">
   <img src="assets/ScreenRecording2025-02-25at22.24.14-ezgif.com-video-to-gif-converter.gif" width="100%" alt="Image description">
   <p align="center"><em>Configuring wifi from the Web UI</em></p>
 </div>
@@ -62,7 +62,7 @@ _In a nutshell_
 3. Stream can be started, stopped, and snapshots can be captured even while streaming is paused.
 4. Supports both single snapshots and automatic multiple image capture.
 
-<div style="width: 80%">
+<div style="width: 60%">
   <img src="assets/Screen Recording 2025-02-25 at 22.57.31.gif" width="100%" alt="Image description">
   <p align="center"><em>Demo of the above 2 points</em></p>
 </div>
