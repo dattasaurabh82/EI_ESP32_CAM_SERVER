@@ -145,24 +145,8 @@ We need to upload our files (html, css. js, etc. for the frontend) to esp-32 via
 3. Quit & reopen Arduino IDE. __Note:__ Sometimes you might have to restart the mac
 4. Pressing `CMD` + `SHIFT` + `P`, will open commands palette of Arduino IDE
 5. Type in `Upload LittleFS` and the full command (`Upload LittleFS to Pico/ESP8266/ESP32`) will show up. Hit `ENTER`
-6. All the contents from [`data/`](data/) will not be transferred to the fs of ESP32
+6. All the contents from [`data/`](data/) will now be transferred to the fs of ESP32
    > Make sure Serial Monitor is closed
-
-### Credentials Settings
-
-Copy [credentials.h.template](credentials.h.template) to a new file called `credentials.h` and update it's contents:
-
-```c++
-#ifndef CREDENTIALS_H
-#define CREDENTIALS_H
-
-const char* ssid = "YOUR_SSID";
-const char* password = "YOUR_PWD";
-
-#endif // CREDENTIALS_H
-```
-
-Update wifi credentials and your [Edge Impulse API key](https://docs.edgeimpulse.com/reference/edge-impulse-api/edge-impulse-api) (TBD)
 
 ### Camera Settings
 
