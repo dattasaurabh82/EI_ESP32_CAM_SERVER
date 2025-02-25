@@ -19,7 +19,9 @@ Instead, it creates an MJPEG stream directly from the camera and displays it on 
 
 In a nutshell
 
-1. WIP
+1. The Method to Upload images via edge-impulse data forwarder is slow + needs an intermediary computer
+2. The Method to Upload images via edge-impulse data uploader firmware is slow although it uses latest webserial api, giving good browser based experience and mitigating the need of a data forwarding middle agent. Also, compiling latest firmware is not very beginner friendly ...
+3. Eloquent ESP is nice and closer what I was looking for but the UI modification is not straight forward and the image transfer is also a multi step process requiring to download first.  
 
 ## Advantages
 
