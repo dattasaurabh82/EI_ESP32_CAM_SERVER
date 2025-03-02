@@ -13,7 +13,7 @@
 
 #define AP_IP IPAddress(192, 168, 4, 1)
 #define AP_GATEWAY IPAddress(192, 168, 4, 1)
-#define AP_SUBNET IPAddress(255, 255, 255, 0)
+#define AP_SUBNET IPAddress(255, 255, 255, 0) 
 
 // DNS Server for captive portal
 #define DNS_PORT 53
@@ -48,20 +48,20 @@ private:
     credentials.clear();
 
     if (!LittleFS.exists(WIFI_CREDENTIALS_FILE)) {
-      Serial.println("   ⚠ No WiFi credentials file found");
+      Serial.println("\t⚠ No WiFi credentials file found");
       return false;
     }
 
     File file = LittleFS.open(WIFI_CREDENTIALS_FILE, "r");
     if (!file) {
-      Serial.println("   ❌ Failed to open WiFi credentials file");
+      Serial.println("\t❌ Failed to open WiFi credentials file");
       return false;
     }
 
     // Calculate file size for JsonDocument
     size_t size = file.size();
     if (size > 1024) {
-      Serial.println("   ❌ Credentials file too large");
+      Serial.println("\t❌ Credentials file too large");
       file.close();
       return false;
     }
@@ -71,13 +71,13 @@ private:
     file.close();
 
     if (error) {
-      Serial.print("   ❌ Failed to parse JSON: ");
+      Serial.print("\t❌ Failed to parse JSON: ");
       Serial.println(error.c_str());
       return false;
     }
 
     if (!doc.is<JsonArray>()) {
-      Serial.println("   ❌ Invalid JSON format (expected array)");
+      Serial.println("\t❌ Invalid JSON format (expected array)");
       return false;
     }
 
@@ -90,7 +90,7 @@ private:
       }
     }
 
-    Serial.print("   ✓ Loaded ");
+    Serial.print("\t✓ Loaded ");
     Serial.print(credentials.size());
     Serial.println(" WiFi networks from storage");
     return true;
@@ -109,18 +109,18 @@ private:
 
     File file = LittleFS.open(WIFI_CREDENTIALS_FILE, "w");
     if (!file) {
-      Serial.println("   ❌ Failed to open WiFi credentials file for writing");
+      Serial.println("\t❌ Failed to open WiFi credentials file for writing");
       return false;
     }
 
     if (serializeJson(doc, file) == 0) {
-      Serial.println("   ❌ Failed to write credentials to file");
+      Serial.println("\t❌ Failed to write credentials to file");
       file.close();
       return false;
     }
 
     file.close();
-    Serial.println("   ✓ WiFi credentials saved successfully");
+    Serial.println("\t✓ WiFi credentials saved successfully");
     return true;
   }
 
@@ -141,20 +141,21 @@ public:
   // Try to connect to saved networks
   bool connectToSavedNetworks() {
     if (credentials.empty()) {
-      Serial.println("   ⚠ No saved WiFi networks found");
+      Serial.println("\t⚠ No saved WiFi networks found");
       return false;
     }
 
     int attempt = 0;
     for (const auto &cred : credentials) {
       attempt++;
-      Serial.print("   Attempting connection to: ");
+      Serial.print("\t* Attempting connection to: ");
       Serial.print(cred.ssid);
       Serial.print(" (");
       Serial.print(attempt);
       Serial.print("/");
       Serial.print(credentials.size());
       Serial.println(")");
+      Serial.print("\t");
 
       WiFi.begin(cred.ssid.c_str(), cred.password.c_str());
 
@@ -165,30 +166,30 @@ public:
       }
 
       if (WiFi.status() == WL_CONNECTED) {
-        Serial.println(" ✓ Connected!");
+        Serial.println("\n\t✓ Connected!");
         printNetworkInfo();
         return true;
       } else {
-        Serial.println(" ✗ Failed!");
+        Serial.println("\n\t✗ Failed!");
         WiFi.disconnect();
       }
     }
 
-    Serial.println("   ❌ Could not connect to any saved network");
+    Serial.println("\t❌ Could not connect to any saved network");
     return false;
   }
 
   // Start AP mode with captive portal
   void startAPMode() {
-    Serial.println("   Starting AP Mode for configuration");
+    Serial.println("\tStarting AP Mode for configuration");
 
     WiFi.mode(WIFI_AP);
     WiFi.softAPConfig(AP_IP, AP_GATEWAY, AP_SUBNET);
     WiFi.softAP(AP_SSID, AP_PASSWORD);
 
-    Serial.print("   ✓ AP started with SSID: ");
+    Serial.print("\t✓ AP started with SSID: ");
     Serial.println(AP_SSID);
-    Serial.print("   ✓ IP Address: ");
+    Serial.print("\t✓ IP Address: ");
     Serial.println(WiFi.softAPIP());
 
     // Start DNS server for captive portal
@@ -243,13 +244,13 @@ public:
     networkList.clear();
     scanComplete = false;
 
-    Serial.println("   Scanning for WiFi networks...");
+    Serial.println("\tScanning for WiFi networks...");
     int numNetworks = WiFi.scanNetworks();
 
     if (numNetworks == 0) {
-      Serial.println("   ⚠ No networks found");
+      Serial.println("\t⚠ No networks found");
     } else {
-      Serial.print("   ✓ Found ");
+      Serial.print("\t✓ Found ");
       Serial.print(numNetworks);
       Serial.println(" networks");
 
@@ -332,8 +333,9 @@ public:
 
   // Connect to a specific network
   bool connectToNetwork(const String &ssid, const String &password) {
-    Serial.print("   Connecting to: ");
+    Serial.print("\tConnecting to: ");
     Serial.println(ssid);
+    Serial.print("\t");
 
     WiFi.disconnect();
     WiFi.begin(ssid.c_str(), password.c_str());
@@ -345,7 +347,7 @@ public:
     }
 
     if (WiFi.status() == WL_CONNECTED) {
-      Serial.println(" ✓ Connected!");
+      Serial.println("\t✓ Connected!");
 
       // Add to saved networks if successful
       addCredentials(ssid, password);
@@ -359,29 +361,29 @@ public:
       printNetworkInfo();
       return true;
     } else {
-      Serial.println(" ✗ Failed!");
+      Serial.println("\t✗ Failed!");
       return false;
     }
   }
 
   // Print network information
   void printNetworkInfo() {
-    Serial.println("\n   Network Info:");
-    Serial.println("   ------------");
-    Serial.printf("   ⤷ IP Address: %s\n", WiFi.localIP().toString().c_str());
-    Serial.printf("   ⤷ Subnet Mask: %s\n", WiFi.subnetMask().toString().c_str());
-    Serial.printf("   ⤷ Gateway: %s\n", WiFi.gatewayIP().toString().c_str());
-    Serial.printf("   ⤷ DNS: %s\n", WiFi.dnsIP().toString().c_str());
-    Serial.printf("   ⤷ MAC Address: %s\n", WiFi.macAddress().c_str());
+    Serial.println("\n\tNetwork Info:");
+    Serial.println("\t------------");
+    Serial.printf("\t⤷ IP Address: %s\n", WiFi.localIP().toString().c_str());
+    Serial.printf("\t⤷ Subnet Mask: %s\n", WiFi.subnetMask().toString().c_str());
+    Serial.printf("\t⤷ Gateway: %s\n", WiFi.gatewayIP().toString().c_str());
+    Serial.printf("\t⤷ DNS: %s\n", WiFi.dnsIP().toString().c_str());
+    Serial.printf("\t⤷ MAC Address: %s\n", WiFi.macAddress().c_str());
 
-    Serial.println("\n   Signal Info:");
-    Serial.println("   -----------");
-    Serial.printf("   ⤷ RSSI: %d dBm\n", WiFi.RSSI());
-    Serial.printf("   ⤷ Channel: %ld\n", WiFi.channel());
+    Serial.println("\n\tSignal Info:");
+    Serial.println("\t-----------");
+    Serial.printf("\t⤷ RSSI: %d dBm\n", WiFi.RSSI());
+    Serial.printf("\t⤷ Channel: %ld\n", WiFi.channel());
 
-    Serial.println("\n   Connection Info:");
-    Serial.println("   ---------------");
-    Serial.printf("   ⤷ SSID: %s\n", WiFi.SSID().c_str());
+    Serial.println("\n\tConnection Info:");
+    Serial.println("\t---------------");
+    Serial.printf("\t⤷ SSID: %s\n", WiFi.SSID().c_str());
   }
 
   // Get scan status

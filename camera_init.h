@@ -39,14 +39,14 @@ bool setupCamera() {
   // Initial buffer size settings
   if (psramFound()) {
     Serial.println();
-    Serial.println("    [camera_init.h] PSRAM found ...");
+    Serial.println("\t[camera_init.h] PSRAM found ...");
 
     config.frame_size = FRAMESIZE_QQVGA;  // 160x120
     config.jpeg_quality = 30;             // 0-63: lower means higher quality
     config.fb_count = 1;
   } else {
     Serial.println();
-    Serial.println("    [camera_init.h] PSRAM Not found ...");
+    Serial.println("\t[camera_init.h] PSRAM Not found ...");
 
     config.frame_size = FRAMESIZE_QQVGA;  // Still 160x120
     config.jpeg_quality = 40;             // 0-63: lower means higher quality

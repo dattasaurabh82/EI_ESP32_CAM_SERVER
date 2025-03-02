@@ -24,6 +24,11 @@ bool isConnecting = false;   // Flag to track WiFi connection status
 String lastConnectionSSID = "";
 String lastConnectionPassword = "";
 
+// FreeRTOS task Used for Resetting over serial
+// ** (This happens completely independently of your main loop)
+TaskHandle_t serialMonitorTaskHandle;
+
+
 // ======== Non-blocking MJPEG Stream ========
 void handleMjpeg(AsyncWebServerRequest *request) {
   AsyncWebServerResponse *response = request->beginChunkedResponse(
@@ -56,7 +61,7 @@ void handleMjpeg(AsyncWebServerRequest *request) {
 
 // Image saving
 void handleCapture(AsyncWebServerRequest *request) {
-  Serial.println("  Received Save frame request ...");
+  Serial.println("Received Save frame request ...");
   static unsigned long lastCapture = 0;
   unsigned long now = millis();
 
@@ -80,38 +85,38 @@ void handleCapture(AsyncWebServerRequest *request) {
 // Camera init with verbose output
 void initCamera() {
   Serial.println("\n1. Checking Camera Status:");
-  Serial.print("   Initializing camera... ");
+  Serial.print("\t* Initializing camera... ");
 
   if (setupCamera()) {
-    Serial.println("✓ Success");
+    Serial.println("\t✓ Success");
 
     sensor_t *sensor = esp_camera_sensor_get();
     if (sensor) {
-      Serial.println("\n   Camera Details:");
-      Serial.println("   --------------");
-      Serial.printf("   Resolution: %dx%d\n", sensor->status.framesize, sensor->status.framesize);
-      Serial.printf("   Quality: %d\n", sensor->status.quality);
-      Serial.printf("   Brightness: %d\n", sensor->status.brightness);
-      Serial.printf("   Contrast: %d\n", sensor->status.contrast);
-      Serial.printf("   Saturation: %d\n", sensor->status.saturation);
-      Serial.printf("   Special Effect: %d\n", sensor->status.special_effect);
-      Serial.printf("   Vertical Flip: %s\n", sensor->status.vflip ? "Yes" : "No");
-      Serial.printf("   Horizontal Mirror: %s\n", sensor->status.hmirror ? "Yes" : "No");
+      Serial.println("\n\tCamera Details:");
+      Serial.println("\t--------------");
+      Serial.printf("\tResolution: %dx%d\n", sensor->status.framesize, sensor->status.framesize);
+      Serial.printf("\tQuality: %d\n", sensor->status.quality);
+      Serial.printf("\tBrightness: %d\n", sensor->status.brightness);
+      Serial.printf("\tContrast: %d\n", sensor->status.contrast);
+      Serial.printf("\tSaturation: %d\n", sensor->status.saturation);
+      Serial.printf("\tSpecial Effect: %d\n", sensor->status.special_effect);
+      Serial.printf("\tVertical Flip: %s\n", sensor->status.vflip ? "Yes" : "No");
+      Serial.printf("\tHorizontal Mirror: %s\n", sensor->status.hmirror ? "Yes" : "No");
     }
     if (psramFound()) {
-      Serial.println("\n   Memory Info:");
-      Serial.println("   -----------");
-      Serial.println("   PSRAM: Available ✓");
-      Serial.printf("   Free PSRAM: %lu bytes\n", ESP.getFreePsram());
-      Serial.printf("   Total PSRAM: %lu bytes\n", ESP.getPsramSize());
+      Serial.println("\n\tMemory Info:");
+      Serial.println("\t-----------");
+      Serial.println("\tPSRAM: Available ✓");
+      Serial.printf("\tFree PSRAM: %lu bytes\n", ESP.getFreePsram());
+      Serial.printf("\tTotal PSRAM: %lu bytes\n", ESP.getPsramSize());
     } else {
-      Serial.println("\n   ⚠ WARNING: No PSRAM detected");
-      Serial.println("   Camera will operate with limited buffer size");
+      Serial.println("\n\t⚠ WARNING: No PSRAM detected");
+      Serial.println("\tCamera will operate with limited buffer size");
     }
   } else {
     Serial.println("✗ Failed");
-    Serial.println("   ❌ Fatal Error: Camera initialization failed");
-    Serial.println("   Please check camera connection and pins");
+    Serial.println("\t❌ Fatal Error: Camera initialization failed");
+    Serial.println("\tPlease check camera connection and pins");
     return;
   }
 
@@ -121,51 +126,51 @@ void initCamera() {
 
 void initLittleFS() {
   Serial.println("\n2. Checking LittleFS Status:");
-  Serial.print("   Mounting LittleFS... ");
+  Serial.println("\t* Mounting LittleFS... ");
 
   if (LittleFS.begin(false)) {
-    Serial.println("✓ Mounted successfully (No formatting needed)");
+    Serial.println("\t✓ Mounted successfully (No formatting needed)");
   } else {
-    Serial.println("✗ Mount failed");
-    Serial.print("   Attempting to format... ");
+    Serial.println("\t✗ Mount failed");
+    Serial.print("Attempting to format... ");
 
     if (LittleFS.format()) {
-      Serial.println("✓ Format successful");
-      Serial.print("   Trying to mount again... ");
+      Serial.println("\t✓ Format successful");
+      Serial.print("Trying to mount again... ");
 
       if (LittleFS.begin()) {
-        Serial.println("✓ Mounted successfully");
-        Serial.println("   ⚠ WARNING: File system is empty!");
-        Serial.println("   ⚠ Please upload files using ESP32 LittleFS Data Upload");
-        Serial.println("   ⚠ Do not forget to close the serail monitor before");
-        Serial.println("   ⚠ Then reset the device.");
+        Serial.println("\t✓ Mounted successfully");
+        Serial.println("\t⚠ WARNING: File system is empty!");
+        Serial.println("⚠ Please upload files using ESP32 LittleFS Data Upload");
+        Serial.println("⚠ Do not forget to close the serail monitor before");
+        Serial.println("⚠ Then reset the device.");
       } else {
         Serial.println("✗ Mount failed after format");
-        Serial.println("   ❌ Fatal Error: Storage unavailable");
+        Serial.println("\t❌ Fatal Error: Storage unavailable");
         return;
       }
     } else {
       Serial.println("✗ Format failed");
-      Serial.println("   ❌ Fatal Error: Unable to initialize storage");
+      Serial.println("\t❌ Fatal Error: Unable to initialize storage");
       return;
     }
   }
   // Print LittleFS info for ESP32
-  Serial.println("\n   Storage Info:");
-  Serial.println("   ------------");
-  Serial.printf("   Total space: %u KB\n", LittleFS.totalBytes() / 1024);
-  Serial.printf("   Used space: %u KB\n", LittleFS.usedBytes() / 1024);
-  Serial.printf("   Free space: %u KB\n", (LittleFS.totalBytes() - LittleFS.usedBytes()) / 1024);
+  Serial.println("\n\tStorage Info:");
+  Serial.println("\t------------");
+  Serial.printf("\tTotal space: %u KB\n", LittleFS.totalBytes() / 1024);
+  Serial.printf("\tUsed space: %u KB\n", LittleFS.usedBytes() / 1024);
+  Serial.printf("\tFree space: %u KB\n", (LittleFS.totalBytes() - LittleFS.usedBytes()) / 1024);
 
   // List all files
-  Serial.println("\n   Files in storage:");
-  Serial.println("   ---------------");
+  Serial.println("\n\tFiles in storage:");
+  Serial.println("\t---------------");
   File root = LittleFS.open("/");
   File file = root.openNextFile();
   while (file) {
     String fileName = file.name();
     size_t fileSize = file.size();
-    Serial.printf("   • %-20s %8u bytes\n", fileName.c_str(), fileSize);
+    Serial.printf("\t• %-20s %8u bytes\n", fileName.c_str(), fileSize);
     file = root.openNextFile();
   }
 
@@ -174,8 +179,6 @@ void initLittleFS() {
 
 
 void setupWIFIstn() {
-  Serial.println("\n3. WiFi Manager Initialization:");
-
   // Initialize the WiFi manager
   wifiManager.begin();
 
@@ -201,12 +204,22 @@ void setup() {
 #endif
 
   Serial.begin(115200);
-  while (!Serial) {
-    ;
-  }
-  delay(3000);
-  Serial.println();
-  Serial.println("___ ESP32-CAM-WEB-SERVER - (edgeImpulse tool)___");
+
+  // Some small delay to wait for serial to begin
+  Serial.println("\nWaiting 5 secs ...\n");
+  delay(5000);
+
+  Serial.println("\n___ ESP32-CAM-WEB-SERVER - (edgeImpulse tool)___");
+
+  // 0. Create a task dedicated to monitoring serial input
+  xTaskCreate(
+    serialMonitorTask,        // Function to implement the task
+    "SerialMonitorTask",      // Name of the task
+    2048,                     // Stack size in words
+    NULL,                     // Task input parameter
+    1,                        // Priority of the task
+    &serialMonitorTaskHandle  // Task handle
+  );
 
   // 1. Cam init
   initCamera();
@@ -219,7 +232,7 @@ void setup() {
   // Static files
   server.on("/", HTTP_GET, [](AsyncWebServerRequest *request) {
     request->send(LittleFS, "/index.html", "text/html");
-    Serial.println("Client has tried to access ...");
+    Serial.println("\tClient has tried to access ...");
   });
 
   server.on("/styles.css", HTTP_GET, [](AsyncWebServerRequest *request) {
@@ -248,7 +261,7 @@ void setup() {
   // Stream endpoints
   server.on("/toggleStream", HTTP_POST, [](AsyncWebServerRequest *request) {
     isStreamActive = !isStreamActive;
-    Serial.printf("Stream state: %s\n", isStreamActive ? "Active" : "Paused");
+    Serial.printf("\tStream state: %s\n", isStreamActive ? "Active" : "Paused");
     request->send(200, "text/plain", isStreamActive ? "streaming" : "paused");
   });
 
@@ -259,11 +272,11 @@ void setup() {
 
   // Clear endpoint: Both GET & POST
   server.on("/clear", HTTP_GET, [](AsyncWebServerRequest *request) {
-    Serial.println("  Received Clear all GET request ...");
+    Serial.println("\tReceived Clear all GET request ...");
     request->send(200, "text/plain", "Images cleared (GET)");
   });
   server.on("/clear", HTTP_POST, [](AsyncWebServerRequest *request) {
-    Serial.println("  Received Clear all POST request ...");
+    Serial.println("\tReceived Clear all POST request ...");
     request->send(200, "text/plain", "Images cleared (POST)");
   });
 
@@ -274,10 +287,10 @@ void setup() {
       if (file) {
         file.print(config);
         file.close();
-        Serial.println("  Configuration saved to LittleFS ...");
+        Serial.println("\tConfiguration saved to LittleFS ...");
         request->send(200, "text/plain", "Configuration saved");
       } else {
-        Serial.println("  Failed to save configuration to LittleFS ...");
+        Serial.println("\tFailed to save configuration to LittleFS ...");
         request->send(500, "text/plain", "Failed to save configuration");
       }
     } else {
@@ -290,7 +303,7 @@ void setup() {
       request->send(LittleFS, "/ei_config.json", "application/json");
       Serial.println("  Configuration loaded from LittleFS ...");
     } else {
-      Serial.println("  No configuration found in LittleFS ...");
+      Serial.println("\tNo configuration found in LittleFS ...");
       request->send(404, "text/plain", "No configuration found");
     }
   });
@@ -317,23 +330,6 @@ void setup() {
     }
   });
 
-  // server.on("/wifi/connect", HTTP_POST, [](AsyncWebServerRequest *request) {
-  //   String ssid, password;
-  //   if (request->hasParam("ssid", true) && request->hasParam("password", true)) {
-  //     ssid = request->getParam("ssid", true)->value();
-  //     password = request->getParam("password", true)->value();
-
-  //     // Start connection process (non-blocking)
-  //     isConnecting = true;
-
-  //     // We need to respond to the client before attempting connection
-  //     request->send(200, "text/plain", "Connection attempt started");
-
-  //     // Connection attempt will be handled in the loop() function
-  //   } else {
-  //     request->send(400, "text/plain", "Missing parameters");
-  //   }
-  // });
   server.on("/wifi/connect", HTTP_POST, [](AsyncWebServerRequest *request) {
     if (request->hasParam("ssid", true) && request->hasParam("password", true)) {
       lastConnectionSSID = request->getParam("ssid", true)->value();
@@ -372,7 +368,11 @@ void setup() {
   });
 
   server.begin();
+
   Serial.println("Async HTTP server started on port 80");
+  Serial.printf("👉🏼 Open http://%s:80 from a browser of a computer connected to WiFi SSID: %s\n",
+                WiFi.localIP().toString().c_str(),
+                WiFi.SSID().c_str());
 }
 
 
@@ -380,9 +380,9 @@ void loop() {
   // Monitor HEAP and PSRAM USAGE and apply a more aggressive restart control
   // Note: More easy would be if ESP.getFreeHeap() < 60000
   if (ESP.getFreeHeap() < 20000 || ESP.getFreePsram() < 10000) {
-    Serial.printf("Free PSRAM: %lu bytes\n", ESP.getFreePsram());
-    Serial.printf("Free Heap: %lu bytes\n\n", ESP.getFreeHeap());
-    Serial.println("Low memory: Restarting\n");
+    Serial.printf("\tFree PSRAM: %lu bytes\n", ESP.getFreePsram());
+    Serial.printf("\tFree Heap: %lu bytes\n\n", ESP.getFreeHeap());
+    Serial.println("\tLow memory: Restarting\n");
     ESP.restart();
   }
 
@@ -404,9 +404,9 @@ void loop() {
       bool result = wifiManager.connectToNetwork(pendingSSID, pendingPassword);
 
       if (result) {
-        Serial.println("Connection successful!");
+        Serial.println("\t👍 Connection successful!");
       } else {
-        Serial.println("Connection failed!");
+        Serial.println("\t❌ Connection failed!");
       }
 
       isConnecting = false;
@@ -415,7 +415,7 @@ void loop() {
       // Timeout after 15 seconds
       isConnecting = false;
       connectionInitiated = false;
-      Serial.println("Connection attempt timed out");
+      Serial.println("\t ... Connection attempt timed out");
     }
   }
 
@@ -425,4 +425,22 @@ void loop() {
   }
 
   delay(100);
+}
+
+
+// This task runs independently of the main loop
+void serialMonitorTask(void *parameter) {
+  for (;;) {  // Infinite loop
+    if (Serial.available() > 0) {
+      char incomingByte = Serial.read();
+      if (incomingByte == 'r') {  // 'r' for reset
+        Serial.println("\nRestarting ESP32...\n");
+        Serial.println("\tBoot messages:\n");
+        delay(1000);
+        ESP.restart();
+      }
+    }
+    // Small delay to prevent this task from consuming too much CPU
+    vTaskDelay(10 / portTICK_PERIOD_MS);  // 10ms delay
+  }
 }

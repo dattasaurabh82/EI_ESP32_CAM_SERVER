@@ -74,8 +74,8 @@ _In a nutshell_
 ![alt text](assets/ScreenRecording2025-02-25at23.09.52.gif)
 
 1. Images are stored in the browser session rather than Flash or RAM.
-2.  Features an attractive UI with both light and dark modes.
-3.  UI is easily modifiable through HTML and CSS updates, though re-flashing is required. See instructions below.
+2. Features an attractive UI with both light and dark modes.
+3. UI is easily modifiable through HTML and CSS updates, though re-flashing is required. See instructions below.
 
 ---
 
