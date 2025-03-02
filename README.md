@@ -167,7 +167,11 @@ Two points to note here:
 The goal is to eliminate friction by removing the need for any development environment setup—even for simple tasks like configuring WiFi settings 😁
 
 > After completing the machine learning training in Edge Impulse, you will need to download and use the model/library according to your own context and then you have to program...
+<<<<<<< HEAD
 > 
+=======
+
+>>>>>>> 9793cdf0887b01a218e0a19dcc2ca89e4dd5190a
 So, I created a [web-based flasher tool](webflasher) (hosted on both [zigzag repo](https://dattazigzag.github.io/EI_ESP32_CAM_SERVER/) and [my personal repo](https://dattasaurabh82.github.io/EI_ESP32_CAM_SERVER/)) as part of the project. A website with all the necessary binary files and correct flashing settings, allowing you to connect your XIAO ESP32-S3 and flash everything directly from your browser—no Arduino IDE / Terminal or Platform IO setup needed! 😘
 
 ![alt text](assets/webflashing.gif)
