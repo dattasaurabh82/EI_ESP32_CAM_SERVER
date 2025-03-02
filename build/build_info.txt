@@ -1,3 +1,0 @@
-Build started at: Sun Mar  2 13:19:43 UTC 2025
-Git commit: 16398b000e4de0ab696aad53e2050326121ba459
-Version: v0.0.1
