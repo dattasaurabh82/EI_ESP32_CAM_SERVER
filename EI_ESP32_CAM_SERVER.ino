@@ -373,7 +373,7 @@ void setup() {
   if (wifiManager.isAPMode()) {
     Serial.printf("👉🏼 Open http://%s:80 from a browser of a computer connected to WiFi SSID: %s\n",
                   AP_IP.toString().c_str(),
-                  WiFi.SSID().c_str());
+                  AP_SSID);
   } else {
     Serial.printf("👉🏼 Open http://%s:80 from a browser of a computer connected to WiFi SSID: %s\n",
                   WiFi.localIP().toString().c_str(),
