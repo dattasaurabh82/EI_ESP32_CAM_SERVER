@@ -42,15 +42,17 @@ bool setupCamera() {
     Serial.println("\t[camera_init.h] PSRAM found ...");
 
     config.frame_size = FRAMESIZE_QQVGA;  // 160x120
-    config.jpeg_quality = 30;             // 0-63: lower means higher quality
-    config.fb_count = 1;
+    config.jpeg_quality = 12;             // 0-63: lower means higher quality
+
+    config.fb_count = 2;
   } else {
     Serial.println();
     Serial.println("\t[camera_init.h] PSRAM Not found ...");
 
-    config.frame_size = FRAMESIZE_QQVGA;  // Still 160x120
-    config.jpeg_quality = 40;             // 0-63: lower means higher quality
-    config.fb_count = 1;
+    config.frame_size = FRAMESIZE_QQVGA;  // 160x120
+    config.jpeg_quality = 25;             // 0-63: lower means higher quality
+
+    config.fb_count = 2;
   }
 
   // Initialize the camera
@@ -63,8 +65,17 @@ bool setupCamera() {
   // Additional camera settings after initialization
   sensor_t* s = esp_camera_sensor_get();
   if (s) {
-    // Set frame size to desired resolution
     s->set_framesize(s, FRAMESIZE_QQVGA);  // 160x120
+    s->set_quality(s, 12);                 // 0-63: lower means higher quality
+
+    // Enhancements
+    s->set_brightness(s, 2);                // Normal brightness (-2 to 2)
+    s->set_contrast(s, 2);                  // Normal contrast (-2 to 2)
+    s->set_saturation(s, 2);                // Normal saturation (-2 to 2)
+    s->set_whitebal(s, 1);                  // Enable white balance
+    s->set_awb_gain(s, 1);                  // Enable auto white balance gain
+    s->set_gainceiling(s, GAINCEILING_2X);  // Normal gain
+
     // Flip camera vertically
     s->set_vflip(s, 1);
     // Flip camera horizontally
