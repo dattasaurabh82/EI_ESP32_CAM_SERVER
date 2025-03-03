@@ -95,11 +95,39 @@ void initCamera() {
       Serial.println("\n\tCamera Details:");
       Serial.println("\t--------------");
       Serial.printf("\tResolution: %dx%d\n", sensor->status.framesize, sensor->status.framesize);
-      Serial.printf("\tQuality: %d\n", sensor->status.quality);
+      Serial.printf("\tJPEG Quality: %d\n", sensor->status.quality);
+
+      // Get camera handle to access buffer information to print buffer information
+      camera_fb_t *fb = esp_camera_fb_get();
+      if (fb) {
+        Serial.printf("\tBuffer Size: %d bytes\n", fb->len);
+        Serial.printf("\tBuffer Width: %d px\n", fb->width);
+        Serial.printf("\tBuffer Height: %d px\n", fb->height);
+        // Return the frame buffer so it can be reused
+        esp_camera_fb_return(fb);
+      }
+
       Serial.printf("\tBrightness: %d\n", sensor->status.brightness);
       Serial.printf("\tContrast: %d\n", sensor->status.contrast);
       Serial.printf("\tSaturation: %d\n", sensor->status.saturation);
       Serial.printf("\tSpecial Effect: %d\n", sensor->status.special_effect);
+      Serial.printf("\tWhite Balance Enabled (human readable): %s\n", sensor->status.wb_mode ? "Yes" : "No");
+      Serial.printf("\tAWB Gain Enabled: %s\n", sensor->status.awb_gain ? "Yes" : "No");
+      Serial.printf("\tGain Ceiling Value: %d\n", sensor->status.gainceiling);  // Gain ceiling - this is an enum value (integer)
+      // Translate gain ceiling to human-readable format
+      const char *gainCeilingText;
+      switch (sensor->status.gainceiling) {
+        case GAINCEILING_2X: gainCeilingText = "2X"; break;
+        case GAINCEILING_4X: gainCeilingText = "4X"; break;
+        case GAINCEILING_8X: gainCeilingText = "8X"; break;
+        case GAINCEILING_16X: gainCeilingText = "16X"; break;
+        case GAINCEILING_32X: gainCeilingText = "32X"; break;
+        case GAINCEILING_64X: gainCeilingText = "64X"; break;
+        case GAINCEILING_128X: gainCeilingText = "128X"; break;
+        default: gainCeilingText = "Unknown"; break;
+      }
+      Serial.printf("\tGain Ceiling: %s\n", gainCeilingText);
+
       Serial.printf("\tVertical Flip: %s\n", sensor->status.vflip ? "Yes" : "No");
       Serial.printf("\tHorizontal Mirror: %s\n", sensor->status.hmirror ? "Yes" : "No");
     }

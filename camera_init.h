@@ -42,7 +42,7 @@ bool setupCamera() {
     Serial.println("\t[camera_init.h] PSRAM found ...");
 
     config.frame_size = FRAMESIZE_QQVGA;  // 160x120
-    config.jpeg_quality = 12;             // 0-63: lower means higher quality
+    config.jpeg_quality = 10;             // 0-63: lower means higher quality
 
     config.fb_count = 2;
   } else {
@@ -50,7 +50,7 @@ bool setupCamera() {
     Serial.println("\t[camera_init.h] PSRAM Not found ...");
 
     config.frame_size = FRAMESIZE_QQVGA;  // 160x120
-    config.jpeg_quality = 25;             // 0-63: lower means higher quality
+    config.jpeg_quality = 30;             // 0-63: lower means higher quality
 
     config.fb_count = 2;
   }
@@ -66,14 +66,20 @@ bool setupCamera() {
   sensor_t* s = esp_camera_sensor_get();
   if (s) {
     s->set_framesize(s, FRAMESIZE_QQVGA);  // 160x120
-    s->set_quality(s, 12);                 // 0-63: lower means higher quality
+    // s->set_quality(s, 10);                 // 0-63: lower means higher quality
 
-    // Enhancements
-    s->set_brightness(s, 2);                // Normal brightness (-2 to 2)
-    s->set_contrast(s, 2);                  // Normal contrast (-2 to 2)
-    s->set_saturation(s, 1);                // Normal saturation (-2 to 2)
-    s->set_whitebal(s, 1);                  // Enable white balance
-    s->set_awb_gain(s, 1);                  // Enable auto white balance gain
+    // Image clarity enhancements
+    s->set_brightness(s, 2);  // Normal brightness (-2 to 2)
+    s->set_contrast(s, 2);    // Normal contrast (-2 to 2)
+    s->set_saturation(s, 1);  // Normal saturation (-2 to 2)
+
+    s->set_whitebal(s, 0);  // Enable white balance (0 / 1)
+    s->set_awb_gain(s, 0);  // Enable auto white balance gain
+    /*
+     * NOTE [TBT]
+     * White balance implementation varies by camera sensor. The XIAO ESP32S3 * * uses an OV sensor that might handle white balance differently than the * * ESP32 camera library expects. And so, the status.wb_mode field sometimes * doesn't accurately reflect the actual * camera state.
+    */
+
     s->set_gainceiling(s, GAINCEILING_2X);  // Normal gain
 
     // Flip camera vertically
