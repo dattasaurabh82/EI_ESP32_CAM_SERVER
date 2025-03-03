@@ -71,7 +71,7 @@ bool setupCamera() {
     // Enhancements
     s->set_brightness(s, 2);                // Normal brightness (-2 to 2)
     s->set_contrast(s, 2);                  // Normal contrast (-2 to 2)
-    s->set_saturation(s, 2);                // Normal saturation (-2 to 2)
+    s->set_saturation(s, 1);                // Normal saturation (-2 to 2)
     s->set_whitebal(s, 1);                  // Enable white balance
     s->set_awb_gain(s, 1);                  // Enable auto white balance gain
     s->set_gainceiling(s, GAINCEILING_2X);  // Normal gain
