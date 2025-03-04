@@ -243,7 +243,7 @@ void setup() {
 #elif defined(CAMERA_MODEL_AI_THINKER)
   // Brownout prevention
   WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0);
-  // ** Note: Do not set Pin 4, 10 & 12 for OUTPUT/LOW 
+  // ** Note: Do not set Pin 4, 10 & 12 for OUTPUT/LOW
 #endif
 
   Serial.begin(115200);
@@ -423,6 +423,10 @@ void setup() {
     // Schedule AP mode stop after response is sent
     WiFi.softAPdisconnect(true);
     wifiManager.setAPMode(false);
+    //
+    Serial.printf("👉🏼 Open http://%s:80 from a browser of a computer connected to WiFi SSID: %s\n",
+                  WiFi.localIP().toString().c_str(),
+                  WiFi.SSID().c_str());
   });
 
   server.begin();

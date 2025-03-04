@@ -292,33 +292,37 @@ After successful upload, you should see something like this
 
 ```txt
 
-___ ESP32-CAM-WEB-SERVER - (edgeImpulse tool)___
-
-1. Checking Camera Status:
-   Initializing camera...
-    [camera_init.h] PSRAM found ...
-✓ Success
+   [camera_init.h] Frame buffer count set to: 1
+   ✓ Success
 
    Camera Details:
    --------------
    Resolution: 1x1
-   Quality: 30
-   Brightness: 0
-   Contrast: 0
-   Saturation: 0
+   JPEG Quality: 15
+   Buffer Size: 1438 bytes
+   Buffer Width: 160 px
+   Buffer Height: 120 px
+   Brightness: 1
+   Contrast: 1
+   Saturation: 1
    Special Effect: 0
+   White Balance Enabled (human readable): No
+   AWB Gain Enabled: No
+   Gain Ceiling Value: 0
+   Gain Ceiling: 2X
    Vertical Flip: Yes
    Horizontal Mirror: No
 
    Memory Info:
    -----------
    PSRAM: Available ✓
-   Free PSRAM: 8381488 bytes
+   Free PSRAM: 8381220 bytes
    Total PSRAM: 8388608 bytes
 
 
 2. Checking LittleFS Status:
-   Mounting LittleFS... ✓ Mounted successfully (No formatting needed)
+   * Mounting LittleFS... 
+   ✓ Mounted successfully (No formatting needed)
 
    Storage Info:
    ------------
@@ -339,14 +343,14 @@ ___ ESP32-CAM-WEB-SERVER - (edgeImpulse tool)___
 
 
 3. WiFi Manager Initialization:
-
-3. WiFi Manager Initialization:
    ⚠ No WiFi credentials file found
    ⚠ No saved WiFi networks found
    Starting AP Mode for configuration
    ✓ AP started with SSID: XIAO_ESP32_CAM
    ✓ IP Address: 192.168.4.1
 Async HTTP server started on port 80
+
+👉🏼 Open http://192.168.4.1:80 from a browser of a computer connected to WiFi SSID: XIAO_ESP32_CAM
 ```
 
 # cmdline compile and upload methods
