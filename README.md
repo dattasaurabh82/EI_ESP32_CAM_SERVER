@@ -85,6 +85,7 @@ _In a nutshell_
    ## Hardware Setup
   
    Tested on: [XIAO_ESP32S3](https://wiki.seeedstudio.com/xiao_esp32s3_getting_started/)
+   Testing on: [AI_THINKER_CAM](https://docs.ai-thinker.com/en/esp32-cam)
 
    <br>
 
@@ -166,13 +167,8 @@ Two points to note here:
 
 The goal is to eliminate friction by removing the need for any development environment setup—even for simple tasks like configuring WiFi settings 😁
 
-> After completing the machine learning training in Edge Impulse, you will need to download and use the model/library according to your own context and then you have to program...
-<<<<<<< HEAD
-> 
-=======
-
->>>>>>> 9793cdf0887b01a218e0a19dcc2ca89e4dd5190a
-So, I created a [web-based flasher tool](webflasher) (hosted on both [zigzag repo](https://dattazigzag.github.io/EI_ESP32_CAM_SERVER/) and [my personal repo](https://dattasaurabh82.github.io/EI_ESP32_CAM_SERVER/)) as part of the project. A website with all the necessary binary files and correct flashing settings, allowing you to connect your XIAO ESP32-S3 and flash everything directly from your browser—no Arduino IDE / Terminal or Platform IO setup needed! 😘
+> So, I created a [web-based flasher tool](webflasher) (hosted on both [zigzag repo](https://dattazigzag.github.io/EI_ESP32_CAM_SERVER/) and [my personal repo](https://dattasaurabh82.github.io/EI_ESP32_CAM_SERVER/)) as part of the project. A website with all the necessary binary files and correct flashing settings, allowing you to connect your XIAO ESP32-S3 and flash everything directly from your browser—no Arduino IDE / Terminal or Platform IO setup needed! 😘
+> __Note:__ After completing the machine learning training in Edge Impulse, you will need to download and use the model/library according to your own context and then you have to program...
 
 ![alt text](assets/webflashing.gif)
 
@@ -222,28 +218,55 @@ We need to upload our files (html, css. js, etc. for the frontend) to esp-32 via
 
 ### Camera Settings
 
-Pick a esp32 camera module based on the [camera_pins.h](camera_pins.h) and use only one in [camera_init.h](camera_init.h)
+Pick a esp32 camera module in the [config.h](config.h) and use only one pre_processor directive macro
 
 ```c++
-// Define camera model before including camera_pins.h
-// e.g.: We are using XIAO_ESP32S3
-
-// #define CAMERA_MODEL_AI_THINKER 1
+// -----------------------------------------------------------------
+// CAMERA MODEL SELECTION - UNCOMMENT ONLY ONE MODEL
+// -----------------------------------------------------------------
 #define CAMERA_MODEL_XIAO_ESP32S3 1
+// #define CAMERA_MODEL_AI_THINKER 1
 ```
 
 Most of the camera settings doesn't need to be changed but sometimes you may need to flip the camera frame vertically or horizontally. In that case [camera_init.h](camera_init.h) find the section
 
 ```c++
- // Additional camera settings after initialization
- sensor_t * s = esp_camera_sensor_get();
- if (s) {
-     // Set frame size to desired resolution
-     s->set_framesize(s, FRAMESIZE_QQVGA);  // 160x120
-     // Flip camera vertically
-     s->set_vflip(s, 1);
-     // Flip camera horizontally
-     // s->set_hmirror(s, 1)
+// Additional camera settings after initialization
+  sensor_t* s = esp_camera_sensor_get();
+  if (s) {
+    // Set frame size to desired resolution
+    s->set_framesize(s, FRAMESIZE_QQVGA);  // 160x120
+
+    // Model-specific camera orientation settings
+#ifdef CAMERA_MODEL_XIAO_ESP32S3
+    s->set_vflip(s, 1);    // Flip camera vertically for XIAO
+    s->set_hmirror(s, 0);  // No horizontal mirror for XIAO
+#elif defined(CAMERA_MODEL_AI_THINKER)
+    s->set_vflip(s, 1);        // Flip camera vertically for AI-Thinker
+    s->set_hmirror(s, 1);      // Horizontal mirror typically needed
+#endif
+
+    // Image clarity enhancements
+    s->set_brightness(s, 1);  // Normal brightness (-2 to 2)
+    s->set_contrast(s, 1);    // Normal contrast (-2 to 2)
+    s->set_saturation(s, 1);  // Normal saturation (-2 to 2)
+
+    // --- //
+    /*
+     * NOTE [TBT]
+     * White balance implementation varies by camera sensor. The XIAO ESP32S3 * * uses an OV sensor that might handle white balance differently than the * * ESP32 camera library expects. And so, the status.wb_mode field sometimes * doesn't accurately reflect the actual * camera state.
+    */
+#ifdef CAMERA_MODEL_XIAO_ESP32S3
+    s->set_whitebal(s, 0);  // Disable white balance (0=disable, 1=enable)
+    s->set_awb_gain(s, 0);  // Disable auto white balance gain (0=disable,
+#elif defined(CAMERA_MODEL_AI_THINKER)
+    // Note: Some color correction needed (noticed) 
+    s->set_whitebal(s, 1);     // Disable white balance (0=disable, 1=enable)
+    s->set_awb_gain(s, 1);     // Disable auto white balance gain (0=disable,
+#endif
+    // --- //
+
+    s->set_gainceiling(s, GAINCEILING_2X);  // Normal gain
  }
 ```
 
@@ -252,6 +275,16 @@ Most of the camera settings doesn't need to be changed but sometimes you may nee
 ### Server Port Settings
 
 Our default web server is on port `80` defined in `WebServer server(80);` in our [EI_ESP32_CAM_SERVER.ino](EI_ESP32_CAM_SERVER.ino)
+
+### Arduino IDE compile settings
+
+#### For xiao esp32s3 sense
+
+![alt text](<assets/Screenshot 2025-03-04 at 02.38.54.png>)
+
+#### For AI-Thinker Cam
+
+![alt text](<assets/Screenshot 2025-03-04 at 02.41.03.png>)
 
 ### Usage
 

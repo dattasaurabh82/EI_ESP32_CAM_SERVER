@@ -46,8 +46,8 @@ bool setupCamera() {
     Serial.println("\t[camera_init.h] PSRAM found ...");
     config.frame_size = FRAMESIZE_QQVGA;  // 160x120
 #ifdef CAMERA_MODEL_XIAO_ESP32S3
-    config.jpeg_quality = 12;  // 0-63: lower means higher quality
-    config.fb_count = 2;       // Double buffering for smoother streaming
+    config.jpeg_quality = 15;  // 0-63: lower means higher quality
+    config.fb_count = 1;       // TBT: Double buffering for smoother streaming. But sngle is stable
 #elif defined(CAMERA_MODEL_AI_THINKER)
     config.jpeg_quality = 20;  // 0-63: lower means higher quality
     config.fb_count = 1;       // Double buffering for smoother streaming
