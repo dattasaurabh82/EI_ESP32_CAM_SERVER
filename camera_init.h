@@ -94,11 +94,12 @@ bool setupCamera() {
     s->set_whitebal(s, 0);  // Disable white balance (0=disable, 1=enable)
     s->set_awb_gain(s, 0);  // Disable auto white balance gain (0=disable,
 #elif defined(CAMERA_MODEL_AI_THINKER)
+    // Note: Some color correction needed (noticed) 
     s->set_whitebal(s, 1);     // Disable white balance (0=disable, 1=enable)
     s->set_awb_gain(s, 1);     // Disable auto white balance gain (0=disable,
 #endif
     // --- //
-    
+
     s->set_gainceiling(s, GAINCEILING_2X);  // Normal gain
   }
   return true;

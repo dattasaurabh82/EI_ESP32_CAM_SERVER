@@ -92,10 +92,8 @@ void handleCapture(AsyncWebServerRequest *request) {
 
 // Camera init with verbose output
 void initCamera() {
-#ifdef CAMERA_MODEL_AI_THINKER
-  // Extra stabilization delay for AI-Thinker
+  // Extra stabilization delay
   delay(500);
-#endif
 
   Serial.println("\n1. Checking Camera Status:");
   Serial.print("\t* Initializing ");
@@ -245,19 +243,7 @@ void setup() {
 #elif defined(CAMERA_MODEL_AI_THINKER)
   // Brownout prevention
   WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0);
-
-  // Camera power pin stabilization (AI Thinker specific)
-  // AI-Thinker uses pins 4/12/10 for flash LED, but we're not using that functionality.
-  // So, disable them
-  // pinMode(4, OUTPUT);  // ESP32-CAM Flash LED pin
-  // digitalWrite(4, LOW);
-  // pinMode(12, OUTPUT);  // ESP32-CAM Flash LED pin
-  // digitalWrite(12, LOW);
-  // pinMode(10, OUTPUT);  // ESP32-CAM Flash LED pin
-  // digitalWrite(10, LOW);
-
-  // Temporarily disable WiFi to reduce power during init
-  WiFi.mode(WIFI_OFF);
+  // ** Note: Do not set Pin 4, 10 & 12 for OUTPUT/LOW 
 #endif
 
   Serial.begin(115200);
@@ -456,12 +442,32 @@ void setup() {
 
 void loop() {
   // Monitor HEAP and PSRAM USAGE and apply a more aggressive restart control
+  /*
+  1. AI-Thinker ESP32-CAM:
+    - Higher PSRAM threshold (20KB vs 10KB) because it has half the PSRAM of XIAO
+    - Higher heap threshold (25KB vs 20KB) because the original ESP32 can be less efficient with memory
+    - Camera operations may consume memory differently on older ESP32
+  2. XIAO ESP32S3:
+    - Can operate with lower thresholds due to more available PSRAM
+    - ESP32-S3 has improved memory management over the original ESP32
+  */
+#ifdef CAMERA_MODEL_XIAO_ESP32S3
+  // Thresholds for XIAO with 8MB PSRAM
   if (ESP.getFreeHeap() < 20000 || ESP.getFreePsram() < 10000) {
     Serial.printf("\tFree PSRAM: %lu bytes\n", ESP.getFreePsram());
     Serial.printf("\tFree Heap: %lu bytes\n\n", ESP.getFreeHeap());
     Serial.println("\tLow memory: Restarting\n");
     ESP.restart();
   }
+#elif defined(CAMERA_MODEL_AI_THINKER)
+  // More conservative thresholds for AI-Thinker with 4MB PSRAM
+  if (ESP.getFreeHeap() < 25000 || ESP.getFreePsram() < 20000) {
+    Serial.printf("\tFree PSRAM: %lu bytes\n", ESP.getFreePsram());
+    Serial.printf("\tFree Heap: %lu bytes\n\n", ESP.getFreeHeap());
+    Serial.println("\tLow memory: Restarting\n");
+    ESP.restart();
+  }
+#endif
 
   // Handle WiFi connection requests (non-blocking)
   if (isConnecting) {
@@ -505,22 +511,7 @@ void loop() {
 }
 
 
-// This task runs independently of the main loop
-// void serialMonitorTask(void *parameter) {
-//   for (;;) {  // Infinite loop
-//     if (Serial.available() > 0) {
-//       char incomingByte = Serial.read();
-//       if (incomingByte == 'r') {  // 'r' for reset
-//         Serial.println("\nRestarting ESP32...\n");
-//         Serial.println("\tBoot messages:\n");
-//         delay(1000);
-//         ESP.restart();
-//       }
-//     }
-//     // Small delay to prevent this task from consuming too much CPU
-//     vTaskDelay(10 / portTICK_PERIOD_MS);  // 10ms delay
-//   }
-// }
+// RTOS Task Callback Event: Here used to monitor signal for for ESP resetting
 void serialMonitorTask(void *parameter) {
   for (;;) {
     if (Serial.available() > 0) {
@@ -531,8 +522,6 @@ void serialMonitorTask(void *parameter) {
         ESP.restart();
       }
     }
-
-    // Yield more frequently for AI-Thinker
 #ifdef CAMERA_MODEL_AI_THINKER
     vTaskDelay(30 / portTICK_PERIOD_MS);  // Longer delay for AI-Thinker
 #else
