@@ -436,7 +436,7 @@ If that is the case, below are your compilation and update options.
    mklittlefs -l -d 5 build/filesystem.littlefs.bin
    ```
 
-7. Compile the firmware
+7. Compile the firmware - __For xiao esp32s3 sense__
 
    ```bash
    arduino-cli compile \
@@ -444,7 +444,7 @@ If that is the case, below are your compilation and update options.
    --output-dir build . -v
    ```
 
-8. Upload the firmware and packed frontend binaries (multiple options)
+8. Upload the firmware and packed frontend binaries (multiple options) - __For xiao esp32s3 sense__
 
    ```bash
    # Option 1.1: Using arduino-cli - Compile & write the compiled firmware to target
@@ -477,6 +477,13 @@ If that is the case, below are your compilation and update options.
    build/filesystem.littlefs.bin
    ```
 
+9. Compile the firmware - __For AI_Thinker_cam_esp32__
+
+    TBD
+10. Upload the firmware and packed frontend binaries (multiple options) - __For AI_Thinker_cam_esp32__
+    
+    TBD
+
 > Notes
 >
 > 1. `--flash_mode` is `qio` for flashing firmware and `--flash_mode` is `dio` for flashing packed frontend binary
@@ -499,5 +506,9 @@ Feb 2025
 datta@zigzag.is
 hi@dattasaurabh.com
 ```
+
+## License
+
+[unlicense](LICENSE)
 
 ---
