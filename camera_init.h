@@ -45,14 +45,16 @@ bool setupCamera() {
     Serial.println();
     Serial.println("\t[camera_init.h] PSRAM found ...");
     config.frame_size = FRAMESIZE_QQVGA;  // 160x120
-    config.jpeg_quality = 12;             // 0-63: lower means higher quality
-    config.fb_count = 2;                  // Double buffering for smoother streaming
+#ifdef CAMERA_MODEL_XIAO_ESP32S3
+    config.jpeg_quality = 12;  // 0-63: lower means higher quality
+    config.fb_count = 2;       // Double buffering for smoother streaming
+#elif defined(CAMERA_MODEL_AI_THINKER)
+    config.jpeg_quality = 20;  // 0-63: lower means higher quality
+    config.fb_count = 1;       // Double buffering for smoother streaming
+#endif
   } else {
-    Serial.println();
-    Serial.println("\t[camera_init.h] PSRAM Not found ...");
-    config.frame_size = FRAMESIZE_QQVGA;  // Still 160x120
-    config.jpeg_quality = 30;             // 0-63: lower means higher quality
-    config.fb_count = 1;                  // Single buffer when PSRAM not available
+    config.jpeg_quality = 35;  // 0-63: lower means higher quality
+    config.fb_count = 1;       // Double buffering for smoother streaming
   }
   Serial.printf("\t[camera_init.h] Frame buffer count set to: %d\n", config.fb_count);
 
@@ -74,22 +76,29 @@ bool setupCamera() {
     s->set_vflip(s, 1);    // Flip camera vertically for XIAO
     s->set_hmirror(s, 0);  // No horizontal mirror for XIAO
 #elif defined(CAMERA_MODEL_AI_THINKER)
-    s->set_vflip(s, 1);    // Flip camera vertically for AI-Thinker
-    s->set_hmirror(s, 1);  // Horizontal mirror typically needed
+    s->set_vflip(s, 1);        // Flip camera vertically for AI-Thinker
+    s->set_hmirror(s, 1);      // Horizontal mirror typically needed
 #endif
 
     // Image clarity enhancements
     s->set_brightness(s, 1);  // Normal brightness (-2 to 2)
     s->set_contrast(s, 1);    // Normal contrast (-2 to 2)
     s->set_saturation(s, 1);  // Normal saturation (-2 to 2)
+
     // --- //
     /*
      * NOTE [TBT]
      * White balance implementation varies by camera sensor. The XIAO ESP32S3 * * uses an OV sensor that might handle white balance differently than the * * ESP32 camera library expects. And so, the status.wb_mode field sometimes * doesn't accurately reflect the actual * camera state.
     */
+#ifdef CAMERA_MODEL_XIAO_ESP32S3
     s->set_whitebal(s, 0);  // Disable white balance (0=disable, 1=enable)
-    s->set_awb_gain(s, 0);  // Disable auto white balance gain (0=disable, 1=enable)
+    s->set_awb_gain(s, 0);  // Disable auto white balance gain (0=disable,
+#elif defined(CAMERA_MODEL_AI_THINKER)
+    s->set_whitebal(s, 1);     // Disable white balance (0=disable, 1=enable)
+    s->set_awb_gain(s, 1);     // Disable auto white balance gain (0=disable,
+#endif
     // --- //
+    
     s->set_gainceiling(s, GAINCEILING_2X);  // Normal gain
   }
   return true;

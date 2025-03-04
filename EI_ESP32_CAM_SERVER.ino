@@ -92,6 +92,11 @@ void handleCapture(AsyncWebServerRequest *request) {
 
 // Camera init with verbose output
 void initCamera() {
+#ifdef CAMERA_MODEL_AI_THINKER
+  // Extra stabilization delay for AI-Thinker
+  delay(500);
+#endif
+
   Serial.println("\n1. Checking Camera Status:");
   Serial.print("\t* Initializing ");
 
@@ -244,12 +249,15 @@ void setup() {
   // Camera power pin stabilization (AI Thinker specific)
   // AI-Thinker uses pins 4/12/10 for flash LED, but we're not using that functionality.
   // So, disable them
-  pinMode(4, OUTPUT);  // ESP32-CAM Flash LED pin
-  digitalWrite(4, LOW);
-  pinMode(12, OUTPUT);  // ESP32-CAM Flash LED pin
-  digitalWrite(12, LOW);
-  pinMode(10, OUTPUT);  // ESP32-CAM Flash LED pin
-  digitalWrite(10, LOW);
+  // pinMode(4, OUTPUT);  // ESP32-CAM Flash LED pin
+  // digitalWrite(4, LOW);
+  // pinMode(12, OUTPUT);  // ESP32-CAM Flash LED pin
+  // digitalWrite(12, LOW);
+  // pinMode(10, OUTPUT);  // ESP32-CAM Flash LED pin
+  // digitalWrite(10, LOW);
+
+  // Temporarily disable WiFi to reduce power during init
+  WiFi.mode(WIFI_OFF);
 #endif
 
   Serial.begin(115200);
@@ -265,7 +273,8 @@ void setup() {
   Serial.println("\n___ AI-THINKER ESP32-CAM-WEB-SERVER - (edgeImpulse tool)___");
 #endif
 
-  // 0. Create a task dedicated to monitoring serial input
+// 0. Create a task dedicated to monitoring serial input
+#ifdef CAMERA_MODEL_XIAO_ESP32S3
   xTaskCreate(
     serialMonitorTask,        // Function to implement the task
     "SerialMonitorTask",      // Name of the task
@@ -274,6 +283,18 @@ void setup() {
     1,                        // Priority of the task
     &serialMonitorTaskHandle  // Task handle
   );
+#elif defined(CAMERA_MODEL_AI_THINKER)
+  // For AI-Thinker, create task on Core 0 with larger stack
+  xTaskCreatePinnedToCore(
+    serialMonitorTask,
+    "SerialMonitorTask",
+    4096,  // Double stack size
+    NULL,
+    1,  // Keep low priority
+    &serialMonitorTaskHandle,
+    0  // Run on Core 0 (Arduino loop uses Core 1)
+  );
+#endif
 
   // 1. Cam init
   initCamera();
@@ -295,9 +316,6 @@ void setup() {
   server.on("/script.js", HTTP_GET, [](AsyncWebServerRequest *request) {
     request->send(LittleFS, "/script.js", "application/javascript");
   });
-  // server.on("/ei-labeling-guide.png", HTTP_GET, [](AsyncWebServerRequest *request) {
-  //   request->send(LittleFS, "/ei-labeling-guide.png", "image/png");
-  // });
 
   // WiFi Portal files
   server.on("/wifi_portal.html", HTTP_GET, [](AsyncWebServerRequest *request) {
@@ -438,7 +456,6 @@ void setup() {
 
 void loop() {
   // Monitor HEAP and PSRAM USAGE and apply a more aggressive restart control
-  // Note: More easy would be if ESP.getFreeHeap() < 60000
   if (ESP.getFreeHeap() < 20000 || ESP.getFreePsram() < 10000) {
     Serial.printf("\tFree PSRAM: %lu bytes\n", ESP.getFreePsram());
     Serial.printf("\tFree Heap: %lu bytes\n\n", ESP.getFreeHeap());
@@ -489,18 +506,37 @@ void loop() {
 
 
 // This task runs independently of the main loop
+// void serialMonitorTask(void *parameter) {
+//   for (;;) {  // Infinite loop
+//     if (Serial.available() > 0) {
+//       char incomingByte = Serial.read();
+//       if (incomingByte == 'r') {  // 'r' for reset
+//         Serial.println("\nRestarting ESP32...\n");
+//         Serial.println("\tBoot messages:\n");
+//         delay(1000);
+//         ESP.restart();
+//       }
+//     }
+//     // Small delay to prevent this task from consuming too much CPU
+//     vTaskDelay(10 / portTICK_PERIOD_MS);  // 10ms delay
+//   }
+// }
 void serialMonitorTask(void *parameter) {
-  for (;;) {  // Infinite loop
+  for (;;) {
     if (Serial.available() > 0) {
       char incomingByte = Serial.read();
-      if (incomingByte == 'r') {  // 'r' for reset
+      if (incomingByte == 'r') {
         Serial.println("\nRestarting ESP32...\n");
-        Serial.println("\tBoot messages:\n");
         delay(1000);
         ESP.restart();
       }
     }
-    // Small delay to prevent this task from consuming too much CPU
-    vTaskDelay(10 / portTICK_PERIOD_MS);  // 10ms delay
+
+    // Yield more frequently for AI-Thinker
+#ifdef CAMERA_MODEL_AI_THINKER
+    vTaskDelay(30 / portTICK_PERIOD_MS);  // Longer delay for AI-Thinker
+#else
+    vTaskDelay(10 / portTICK_PERIOD_MS);  // Original delay for XIAO
+#endif
   }
 }
