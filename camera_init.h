@@ -33,7 +33,7 @@ bool setupCamera() {
   config.xclk_freq_hz = 20000000;
   config.pixel_format = PIXFORMAT_JPEG;
 
-  // Model-specific settings ⚙️
+  // Model-specific settings
 #ifdef CAMERA_MODEL_XIAO_ESP32S3
   Serial.println("\t[camera_init.h] Using XIAO ESP32S3 camera settings");
 #elif defined(CAMERA_MODEL_AI_THINKER)
@@ -56,35 +56,35 @@ bool setupCamera() {
   }
   Serial.printf("\t[camera_init.h] Frame buffer count set to: %d\n", config.fb_count);
 
-  // Initialize the camera 🎬
+  // Initialize the camera
   esp_err_t err = esp_camera_init(&config);
   if (err != ESP_OK) {
     Serial.printf("[camera_init.h] Camera init failed with error 0x%x", err);
     return false;
   }
 
-  // Additional 📸 camera settings after initialization
+  // Additional camera settings after initialization
   sensor_t* s = esp_camera_sensor_get();
   if (s) {
     // Set frame size to desired resolution
     s->set_framesize(s, FRAMESIZE_QQVGA);  // 160x120
 
-    // Model-specific 📸 camera orientation settings
+    // Model-specific camera orientation settings
 #ifdef CAMERA_MODEL_XIAO_ESP32S3
-    s->set_vflip(s, 1);    // Flip camera vertically for XIAO ⏎
+    s->set_vflip(s, 1);    // Flip camera vertically for XIAO
     s->set_hmirror(s, 0);  // No horizontal mirror for XIAO
 #elif defined(CAMERA_MODEL_AI_THINKER)
-    s->set_vflip(s, 1);    // Flip camera vertically for AI-Thinker  ⏎
-    s->set_hmirror(s, 1);  // Horizontal mirror typically needed  ⏎
+    s->set_vflip(s, 1);    // Flip camera vertically for AI-Thinker
+    s->set_hmirror(s, 1);  // Horizontal mirror typically needed
 #endif
 
-    // 🎆 Image clarity enhancements
+    // Image clarity enhancements
     s->set_brightness(s, 1);  // Normal brightness (-2 to 2)
     s->set_contrast(s, 1);    // Normal contrast (-2 to 2)
     s->set_saturation(s, 1);  // Normal saturation (-2 to 2)
     // --- //
     /*
-     * NOTE [TBT] 😔
+     * NOTE [TBT]
      * White balance implementation varies by camera sensor. The XIAO ESP32S3 * * uses an OV sensor that might handle white balance differently than the * * ESP32 camera library expects. And so, the status.wb_mode field sometimes * doesn't accurately reflect the actual * camera state.
     */
     s->set_whitebal(s, 0);  // Disable white balance (0=disable, 1=enable)
