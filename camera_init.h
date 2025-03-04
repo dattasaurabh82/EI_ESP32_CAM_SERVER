@@ -1,17 +1,14 @@
-#include "sensor.h"
 #ifndef CAMERA_INIT_H
 #define CAMERA_INIT_H
 
-// // Define camera model before including camera_pins.h
-// // #define CAMERA_MODEL_AI_THINKER 1
-// #define CAMERA_MODEL_XIAO_ESP32S3 1
-
 #include "config.h"  // Include the configuration file first
-
+#include "sensor.h"
 #include "esp_camera.h"
 #include "camera_pins.h"
 
 bool setupCamera();
+
+#endif // CAMERA_INIT_H
 
 bool setupCamera() {
   camera_config_t config;
