@@ -1,3 +1,12 @@
+#include "config.h"  // Include first and foremost the camera model selection configuration
+
+#ifdef CAMERA_MODEL_XIAO_ESP32S3
+// No brownout includes needed
+#elif defined(CAMERA_MODEL_AI_THINKER)
+#include "soc/soc.h"
+#include "soc/rtc_cntl_reg.h"
+#endif
+
 #include <AsyncTCP.h>
 #include <ESPAsyncWebServer.h>
 #include <ArduinoJson.h>
@@ -7,12 +16,8 @@
 #include "wifi_manager.h"
 #include "camera_init.h"
 
-#ifdef CAMERA_MODEL_XIAO_ESP32S3
-// No brownout includes needed
-#elif defined(CAMERA_MODEL_AI_THINKER)
-#include "soc/soc.h"
-#include "soc/rtc_cntl_reg.h"
-#endif
+
+
 
 
 AsyncWebServer server(80);  // Single server instance
@@ -27,6 +32,9 @@ String lastConnectionPassword = "";
 // FreeRTOS task Used for Resetting over serial
 // ** (This happens completely independently of your main loop)
 TaskHandle_t serialMonitorTaskHandle;
+
+
+
 
 
 // ======== Non-blocking MJPEG Stream ========
@@ -85,7 +93,14 @@ void handleCapture(AsyncWebServerRequest *request) {
 // Camera init with verbose output
 void initCamera() {
   Serial.println("\n1. Checking Camera Status:");
-  Serial.print("\t* Initializing camera... ");
+  Serial.print("\t* Initializing ");
+
+#ifdef CAMERA_MODEL_XIAO_ESP32S3
+  Serial.print("XIAO ESP32S3 SENSE");
+#elif defined(CAMERA_MODEL_AI_THINKER)
+  Serial.print("AI-Thinker ESP32");
+#endif
+  Serial.println("camera... ");
 
   if (setupCamera()) {
     Serial.println("\t✓ Success");
@@ -142,7 +157,7 @@ void initCamera() {
       Serial.println("\tCamera will operate with limited buffer size");
     }
   } else {
-    Serial.println("✗ Failed");
+    Serial.println("\t✗ Failed");
     Serial.println("\t❌ Fatal Error: Camera initialization failed");
     Serial.println("\tPlease check camera connection and pins");
     return;
@@ -219,12 +234,18 @@ void setupWIFIstn() {
 
 
 void setup() {
+  // Brownout handling ...
 #ifdef CAMERA_MODEL_XIAO_ESP32S3
   // Skip brownout and pin settings
 #elif defined(CAMERA_MODEL_AI_THINKER)
   // Brownout prevention
   WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0);
+
   // Camera power pin stabilization (AI Thinker specific)
+  // AI-Thinker uses pins 4/12/10 for flash LED, but we're not using that functionality.
+  // So, disable them
+  pinMode(4, OUTPUT);  // ESP32-CAM Flash LED pin
+  digitalWrite(4, LOW);
   pinMode(12, OUTPUT);  // ESP32-CAM Flash LED pin
   digitalWrite(12, LOW);
   pinMode(10, OUTPUT);  // ESP32-CAM Flash LED pin
@@ -237,7 +258,12 @@ void setup() {
   Serial.println("\nWaiting 5 secs ...\n");
   delay(5000);
 
-  Serial.println("\n___ ESP32-CAM-WEB-SERVER - (edgeImpulse tool)___");
+  // Model-specific welcome message
+#ifdef CAMERA_MODEL_XIAO_ESP32S3
+  Serial.println("\n___ XIAO ESP32S3 CAM-WEB-SERVER - (edgeImpulse tool)___");
+#elif defined(CAMERA_MODEL_AI_THINKER)
+  Serial.println("\n___ AI-THINKER ESP32-CAM-WEB-SERVER - (edgeImpulse tool)___");
+#endif
 
   // 0. Create a task dedicated to monitoring serial input
   xTaskCreate(
