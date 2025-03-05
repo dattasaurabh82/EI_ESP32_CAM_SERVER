@@ -49,13 +49,19 @@ bool setupCamera() {
     config.jpeg_quality = 15;  // 0-63: lower means higher quality
     config.fb_count = 1;       // TBT: Double buffering for smoother streaming. But sngle is stable
 #elif defined(CAMERA_MODEL_AI_THINKER)
-    config.jpeg_quality = 35;  // 0-63: lower means higher quality
-    config.fb_count = 1;       // Double buffering for smoother streaming
+    config.jpeg_quality = 45;  // 0-63: lower means higher quality
+    config.fb_count = 1;       // TBT: Double buffering for smoother streaming
 #endif
   } else {
+#ifdef CAMERA_MODEL_XIAO_ESP32S3
+    config.jpeg_quality = 35;  // 0-63: lower means higher quality
+    config.fb_count = 1;       // TBT: Double buffering for smoother streaming. But sngle is stable
+#elif defined(CAMERA_MODEL_AI_THINKER)
     config.jpeg_quality = 45;  // 0-63: lower means higher quality
-    config.fb_count = 1;       // Double buffering for smoother streaming
+    config.fb_count = 1;       // TBT: Double buffering for smoother streaming
+#endif
   }
+
   Serial.printf("\t[camera_init.h] Frame buffer count set to: %d\n", config.fb_count);
 
   // Initialize the camera

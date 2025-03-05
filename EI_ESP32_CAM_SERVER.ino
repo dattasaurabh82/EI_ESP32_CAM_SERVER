@@ -246,6 +246,7 @@ void setup() {
   // ** Note: Do not set Pin 4, 10 & 12 for OUTPUT/LOW
 #endif
 
+  delay(1000);
   Serial.begin(115200);
 
   // Some small delay to wait for serial to begin
@@ -280,12 +281,18 @@ void setup() {
     &serialMonitorTaskHandle,
     0  // Run on Core 0 (Arduino loop uses Core 1)
   );
+  // Add extra delay for AI-Thinker
+  delay(1000);
 #endif
 
   // 1. Cam init
   initCamera();
+  delay(1000);
+
   // 2. LittleFS init
   initLittleFS();
+  delay(1000);
+
   // 3. Connect to Wi Fi
   setupWIFIstn();
 
@@ -429,6 +436,8 @@ void setup() {
                   WiFi.SSID().c_str());
   });
 
+
+  delay(1000);
   server.begin();
 
   Serial.println("Async HTTP server started on port 80\n");
@@ -465,7 +474,7 @@ void loop() {
   }
 #elif defined(CAMERA_MODEL_AI_THINKER)
   // More conservative thresholds for AI-Thinker with 4MB PSRAM
-  if (ESP.getFreeHeap() < 25000 || ESP.getFreePsram() < 20000) {
+  if (ESP.getFreeHeap() < 15000 || ESP.getFreePsram() < 10000) {
     Serial.printf("\tFree PSRAM: %lu bytes\n", ESP.getFreePsram());
     Serial.printf("\tFree Heap: %lu bytes\n\n", ESP.getFreeHeap());
     Serial.println("\tLow memory: Restarting\n");

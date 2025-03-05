@@ -12,16 +12,16 @@
 
 // AP mode configuration
 #ifdef CAMERA_MODEL_XIAO_ESP32S3
-  #define AP_SSID "XIAO_ESP32S3_SENSE"
+#define AP_SSID "XIAO_ESP32S3_SENSE"
 #elif defined(CAMERA_MODEL_AI_THINKER)
-  #define AP_SSID "AI_THINKER_CAM"
+#define AP_SSID "AI_THINKER_CAM"
 #endif
 
 #define AP_PASSWORD ""  // Empty string for open network or set a password
 
 #define AP_IP IPAddress(192, 168, 4, 1)
 #define AP_GATEWAY IPAddress(192, 168, 4, 1)
-#define AP_SUBNET IPAddress(255, 255, 255, 0) 
+#define AP_SUBNET IPAddress(255, 255, 255, 0)
 
 // DNS Server for captive portal
 #define DNS_PORT 53
@@ -191,6 +191,10 @@ public:
   void startAPMode() {
     Serial.println("\tStarting AP Mode for configuration");
 
+    // Free some memory first
+    WiFi.disconnect(true);
+    delay(1000);
+
     WiFi.mode(WIFI_AP);
     WiFi.softAPConfig(AP_IP, AP_GATEWAY, AP_SUBNET);
     WiFi.softAP(AP_SSID, AP_PASSWORD);
@@ -199,6 +203,9 @@ public:
     Serial.println(AP_SSID);
     Serial.print("\t✓ IP Address: ");
     Serial.println(WiFi.softAPIP());
+
+    // Give some time for AP to initialize fully before starting DNS
+    delay(1000);
 
     // Start DNS server for captive portal
     dnsServer.start(DNS_PORT, "*", AP_IP);
