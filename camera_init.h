@@ -49,7 +49,7 @@ bool setupCamera() {
     config.jpeg_quality = 15;  // 0-63: lower means higher quality
     config.fb_count = 1;       // TBT: Double buffering for smoother streaming. But sngle is stable
 #elif defined(CAMERA_MODEL_AI_THINKER)
-    config.jpeg_quality = 45;  // 0-63: lower means higher quality
+    config.jpeg_quality = 25;  // 0-63: lower means higher quality
     config.fb_count = 1;       // TBT: Double buffering for smoother streaming
 #endif
   } else {

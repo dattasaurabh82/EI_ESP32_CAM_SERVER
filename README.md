@@ -443,66 +443,89 @@ If that is the case, below are your compilation and update options.
 7. Compile the firmware - __For xiao esp32s3 sense__
 
    ```bash
+   # From inside the project directory, run:
+   mkdir -p build/
    arduino-cli compile \
-   --fqbn "esp32:esp32:XIAO_ESP32S3:USBMode=hwcdc,CDCOnBoot=default,MSCOnBoot=default,DFUOnBoot=default,UploadMode=default,CPUFreq=240,FlashMode=qio,FlashSize=8M,PartitionScheme=default_8MB,DebugLevel=none,PSRAM=opi,LoopCore=1,EventsCore=1,EraseFlash=none,UploadSpeed=921600,JTAGAdapter=default" \
-   --output-dir build . -v
+      --fqbn "esp32:esp32:XIAO_ESP32S3:USBMode=hwcdc,CDCOnBoot=default,MSCOnBoot=default,DFUOnBoot=default,UploadMode=default,CPUFreq=240,FlashMode=qio,FlashSize=8M,PartitionScheme=default_8MB,DebugLevel=none,PSRAM=opi,LoopCore=1,EventsCore=1,EraseFlash=none,UploadSpeed=921600,JTAGAdapter=default" \
+      --output-dir build . -v
    ```
 
 8. Upload the firmware and packed frontend binaries (multiple options) - __For xiao esp32s3 sense__
 
    ```bash
    # Option 1.1: Using arduino-cli - Compile & write the compiled firmware to target
+   # From inside the project directory, run:
+   mkdir -p build/
    arduino-cli compile \
-   --fqbn "esp32:esp32:XIAO_ESP32S3:USBMode=hwcdc,CDCOnBoot=default,MSCOnBoot=default,DFUOnBoot=default,UploadMode=default,CPUFreq=240,FlashMode=qio,FlashSize=8M,PartitionScheme=default_8MB,DebugLevel=none,PSRAM=opi,LoopCore=1,EventsCore=1,UploadSpeed=921600,JTAGAdapter=default" \
-   . -u -p [YOUR_SERIAL_PORT_TO_WHICH_ESP32_IS_ATTACHED] -v
+      --fqbn "esp32:esp32:XIAO_ESP32S3:USBMode=hwcdc,CDCOnBoot=default,MSCOnBoot=default,DFUOnBoot=default,UploadMode=default,CPUFreq=240,FlashMode=qio,FlashSize=8M,PartitionScheme=default_8MB,DebugLevel=none,PSRAM=opi,LoopCore=1,EventsCore=1,UploadSpeed=921600,JTAGAdapter=default" \
+      . -u -p [YOUR_SERIAL_PORT_TO_WHICH_ESP32_IS_ATTACHED] -v
 
    # Option 1.2: Using arduino-cli - Write the pre-compiled firmware to target
+   # If you have run the "compile" cmd from above (pt.7) and the "build" dir is there, then from inside the project directory, run:
    arduino-cli upload -p [YOUR_SERIAL_PORT_TO_WHICH_ESP32_IS_ATTACHED] \
-   --fqbn "esp32:esp32:XIAO_ESP32S3:USBMode=hwcdc,CDCOnBoot=default,MSCOnBoot=default,DFUOnBoot=default,UploadMode=default,CPUFreq=240,FlashMode=qio,FlashSize=8M,PartitionScheme=default_8MB,DebugLevel=none,PSRAM=opi,LoopCore=1,EventsCore=1,UploadSpeed=921600,JTAGAdapter=default" \
-   --input-file build/EI_ESP32_CAM_SERVER.ino.merged.bin .
+      --fqbn "esp32:esp32:XIAO_ESP32S3:USBMode=hwcdc,CDCOnBoot=default,MSCOnBoot=default,DFUOnBoot=default,UploadMode=default,CPUFreq=240,FlashMode=qio, FlashSize=8M,PartitionScheme=default_8MB,DebugLevel=none,PSRAM=opi,LoopCore=1,EventsCore=1,UploadSpeed=921600,JTAGAdapter=default" \
+      --input-file build/EI_ESP32_CAM_SERVER.ino.merged.bin .
 
    # Using esptools.py - Write ONLY the pre-compiled firmware to target
    esptool.py \
-   --chip esp32s3 \
-   --port [YOUR_SERIAL_PORT_TO_WHICH_ESP32_IS_ATTACHED] \
-   --baud 921600 \
-   --before default_reset \
-   --after hard_reset write_flash \
-   -z --flash_mode qio --flash_freq 80m --flash_size 8MB \
-   0x0 build/EI_ESP32_CAM_SERVER.ino.merged.bin
+      --chip esp32s3 \
+      --port [YOUR_SERIAL_PORT_TO_WHICH_ESP32_IS_ATTACHED] \
+      --baud 921600 \
+      --before default_reset \
+      --after hard_reset write_flash \
+      -z --flash_mode qio --flash_freq 80m --flash_size 8MB \
+      0x0 build/EI_ESP32_CAM_SERVER.ino.merged.bin
 
    # Using esptools.py - Write the packed frontend binary to the target's correct location
    esptool.py \
-   --chip esp32s3 \
-   --port [YOUR_SERIAL_PORT_TO_WHICH_ESP32_IS_ATTACHED] \
-   --baud 921600 write_flash -z \
-   --flash_mode dio \
-   --flash_freq 80m 0x670000 \
-   build/filesystem.littlefs.xiaoesp32s3.bin
+      --chip esp32s3 \
+      --port [YOUR_SERIAL_PORT_TO_WHICH_ESP32_IS_ATTACHED] \
+      --baud 921600 write_flash -z \
+      --flash_mode dio \
+      --flash_freq 80m 0x670000 \
+      build/filesystem.littlefs.xiaoesp32s3.bin
    ```
 
 9. Compile the firmware - __For AI_Thinker_cam_esp32__
 
    ```bash
+   # From inside the project directory, run:
+   mkdir -p build/
    arduino-cli compile \
-   --fqbn "esp32:esp32:esp32:CPUFreq=240,FlashMode=qio,FlashFreq=80m,PartitionScheme=default,PSRAM=enabled,DebugLevel=none" \
-   --output-dir build . -v
+      --fqbn "esp32:esp32:esp32:CPUFreq=240,FlashMode=qio,FlashFreq=80,FlashSize=4M,PartitionScheme=default,PSRAM=enabled,DebugLevel=none,LoopCore=1,EventsCore=1,EraseFlash=none,JTAGAdapter=default,ZigbeeMode=default" \
+      --output-dir build . -v
    ```
 
 10. Upload the firmware and packed frontend binaries (multiple options) - __For AI_Thinker_cam_esp32__
-    
+
    ```bash
    # Option 1.1: Using arduino-cli - Compile & write the compiled firmware to target
+   mkdir -p build/
+   arduino-cli compile \
+      --fqbn "esp32:esp32:esp32:CPUFreq=240,FlashMode=qio,FlashFreq=80,FlashSize=4M,PartitionScheme=default,PSRAM=enabled,DebugLevel=none,LoopCore=1,EventsCore=1,EraseFlash=none,JTAGAdapter=default,ZigbeeMode=default,UploadSpeed=460800" \
+      . -u -p [YOUR_SERIAL_PORT_TO_WHICH_ESP32_IS_ATTACHED] -v
 
    # Option 1.2: Using arduino-cli - Write the pre-compiled firmware to target
+   # If you have run the "compile" cmd from above (pt.9) and the "build" dir is there, then from inside the project directory, run
+   arduino-cli upload -p [YOUR_SERIAL_PORT_TO_WHICH_ESP32_IS_ATTACHED] \
+      --fqbn "esp32:esp32:esp32:CPUFreq=240,FlashMode=qio,FlashFreq=80,FlashSize=4M,PartitionScheme=default,PSRAM=enabled,DebugLevel=none,LoopCore=1,EventsCore=1,EraseFlash=none,JTAGAdapter=default,ZigbeeMode=default,UploadSpeed=460800" \
+      . -v
 
    # Using esptools.py - Write ONLY the pre-compiled firmware to target
+   esptool.py \
+      --chip esp32 \
+      --port [YOUR_SERIAL_PORT_TO_WHICH_ESP32_IS_ATTACHED] \ 
+      --baud 460800 \
+      --before default_reset \
+      --after hard_reset write_flash \
+      -z --flash_mode qio --flash_freq 80m --flash_size 4MB \
+      0x0 build/EI_ESP32_CAM_SERVER.ino.merged.bin
 
    # Using esptools.py - Write the packed frontend binary to the target's correct location
-   esptool.py --chip esp32 --port /dev/cu.usbserial-2140 --baud 460800 \
-   --before default_reset --after hard_reset write_flash -z \
-   --flash_mode dio --flash_freq 80m --flash_size detect \
-   0x290000 build/filesystem.littlefs.ai_thinker_cam.bin
+   esptool.py --chip esp32 --port [YOUR_SERIAL_PORT_TO_WHICH_ESP32_IS_ATTACHED] --baud 460800 \
+      --before default_reset --after hard_reset write_flash -z \
+      --flash_mode dio --flash_freq 80m --flash_size detect \
+      0x290000 build/filesystem.littlefs.ai_thinker_cam.bin
    ```
 
 > Notes
