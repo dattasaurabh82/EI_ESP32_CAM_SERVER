@@ -1,6 +1,9 @@
 #ifndef WIFI_MANAGER_H
 #define WIFI_MANAGER_H
 
+// Include the configuration file first
+#include "config.h"
+
 #include <WiFi.h>
 #include <DNSServer.h>
 #include <ArduinoJson.h>
@@ -8,7 +11,12 @@
 #include <LittleFS.h>
 
 // AP mode configuration
-#define AP_SSID "XIAO_ESP32_CAM"
+#ifdef CAMERA_MODEL_XIAO_ESP32S3
+  #define AP_SSID "XIAO_ESP32S3_SENSE"
+#elif defined(CAMERA_MODEL_AI_THINKER)
+  #define AP_SSID "AI_THINKER_CAM"
+#endif
+
 #define AP_PASSWORD ""  // Empty string for open network or set a password
 
 #define AP_IP IPAddress(192, 168, 4, 1)

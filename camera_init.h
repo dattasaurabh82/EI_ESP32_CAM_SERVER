@@ -49,11 +49,11 @@ bool setupCamera() {
     config.jpeg_quality = 15;  // 0-63: lower means higher quality
     config.fb_count = 1;       // TBT: Double buffering for smoother streaming. But sngle is stable
 #elif defined(CAMERA_MODEL_AI_THINKER)
-    config.jpeg_quality = 20;  // 0-63: lower means higher quality
+    config.jpeg_quality = 35;  // 0-63: lower means higher quality
     config.fb_count = 1;       // Double buffering for smoother streaming
 #endif
   } else {
-    config.jpeg_quality = 35;  // 0-63: lower means higher quality
+    config.jpeg_quality = 45;  // 0-63: lower means higher quality
     config.fb_count = 1;       // Double buffering for smoother streaming
   }
   Serial.printf("\t[camera_init.h] Frame buffer count set to: %d\n", config.fb_count);

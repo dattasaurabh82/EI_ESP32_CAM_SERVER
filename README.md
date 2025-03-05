@@ -433,11 +433,11 @@ If that is the case, below are your compilation and update options.
    # For XiaoESP32-S3
    mklittlefs -c data -p 256 -b 4096 -s 1572864 build/filesystem.littlefs.xiaoesp32s3.bin
    # For AI_thinker_cam
-   mklittlefs -c data -p 256 -b 4096 -s 1441792 build/filesystem.littlefs.ai_thiker_cam.bin
+   mklittlefs -c data -p 256 -b 4096 -s 1441792 build/filesystem.littlefs.ai_thinker_cam.bin
 
    # Verify the frontend binaries
    mklittlefs -l -d 5 build/filesystem.littlefs.xiaoesp32s3.bin
-   mklittlefs -l -d 5 build/filesystem.littlefs.ai_thiker_cam.bin
+   mklittlefs -l -d 5 build/filesystem.littlefs.ai_thinker_cam.bin
    ```
 
 7. Compile the firmware - __For xiao esp32s3 sense__
@@ -502,7 +502,7 @@ If that is the case, below are your compilation and update options.
    esptool.py --chip esp32 --port /dev/cu.usbserial-2140 --baud 460800 \
    --before default_reset --after hard_reset write_flash -z \
    --flash_mode dio --flash_freq 80m --flash_size detect \
-   0x290000 build/filesystem.littlefs.ai_thiker_cam.bin
+   0x290000 build/filesystem.littlefs.ai_thinker_cam.bin
    ```
 
 > Notes
