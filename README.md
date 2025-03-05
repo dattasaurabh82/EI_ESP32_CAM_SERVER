@@ -430,10 +430,14 @@ If that is the case, below are your compilation and update options.
    mkdir -p build
 
    # Create
-   mklittlefs -c data -p 256 -b 4096 -s 1572864 build/filesystem.littlefs.bin
+   # For XiaoESP32-S3
+   mklittlefs -c data -p 256 -b 4096 -s 1572864 build/filesystem.littlefs.xiaoesp32s3.bin
+   # For AI_thinker_cam
+   mklittlefs -c data -p 256 -b 4096 -s 1441792 build/filesystem.littlefs.ai_thiker_cam.bin
 
-   # Verify
-   mklittlefs -l -d 5 build/filesystem.littlefs.bin
+   # Verify the frontend binaries
+   mklittlefs -l -d 5 build/filesystem.littlefs.xiaoesp32s3.bin
+   mklittlefs -l -d 5 build/filesystem.littlefs.ai_thiker_cam.bin
    ```
 
 7. Compile the firmware - __For xiao esp32s3 sense__
@@ -474,25 +478,48 @@ If that is the case, below are your compilation and update options.
    --baud 921600 write_flash -z \
    --flash_mode dio \
    --flash_freq 80m 0x670000 \
-   build/filesystem.littlefs.bin
+   build/filesystem.littlefs.xiaoesp32s3.bin
    ```
 
 9. Compile the firmware - __For AI_Thinker_cam_esp32__
 
-    TBD
+   ```bash
+   arduino-cli compile \
+   --fqbn "esp32:esp32:esp32:CPUFreq=240,FlashMode=qio,FlashFreq=80m,PartitionScheme=default,PSRAM=enabled,DebugLevel=none" \
+   --output-dir build . -v
+   ```
+
 10. Upload the firmware and packed frontend binaries (multiple options) - __For AI_Thinker_cam_esp32__
     
-    TBD
+   ```bash
+   # Option 1.1: Using arduino-cli - Compile & write the compiled firmware to target
+
+   # Option 1.2: Using arduino-cli - Write the pre-compiled firmware to target
+
+   # Using esptools.py - Write ONLY the pre-compiled firmware to target
+
+   # Using esptools.py - Write the packed frontend binary to the target's correct location
+   esptool.py --chip esp32 --port /dev/cu.usbserial-2140 --baud 460800 \
+   --before default_reset --after hard_reset write_flash -z \
+   --flash_mode dio --flash_freq 80m --flash_size detect \
+   0x290000 build/filesystem.littlefs.ai_thiker_cam.bin
+   ```
 
 > Notes
 >
 > 1. `--flash_mode` is `qio` for flashing firmware and `--flash_mode` is `dio` for flashing packed frontend binary
 >
-> 2. And, how do we know the **exact location** in flash (`0x670000`) where the front end code goes?
+> 2. And, how do we know the **exact location** in flash (`0x670000` for xiao and for ai thinker cam that is `0x290000`) where the front end code goes?
 > Well, we know it from the Arduino IDE. When we used the IDE plugin, we saw the output ...
 >
-> ![alt text](<assets/Screenshot 2025-02-25 at 14.17.52.png>)
-
+> ![Xiao esp32 s3 sense -> Arduino IDE LittleFS Upload Process Output](<assets/Screenshot 2025-02-25 at 14.17.52.png>)
+> _Xiao esp32 s3 sense -> Arduino IDE LittleFS Upload Process Output_
+> 
+> <br>
+> 
+> ![AI thinker cam -> Arduino IDE LittleFS Upload Process Output](<assets/Screenshot 2025-03-05 at 20.20.34.png>)
+> _AI thinker cam -> Arduino IDE LittleFS Upload Process Output_
+> 
 </details>
 
 ---
