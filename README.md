@@ -132,6 +132,12 @@ Two points to note here:
 
 > Fusion 360 preview and file Download link: 👉🏼 [🌐](https://a360.co/3EEMBdH)
 
+### AI Thinker cam with 3D printed box and gorilla pod mount
+
+
+
+> Fusion 360 preview and file Download link: 👉🏼 [🌐](https://a360.co/41k01U0)
+
 </details>
 
 ---
