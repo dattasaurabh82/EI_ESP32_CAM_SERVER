@@ -15,4 +15,6 @@ data/ei_config.json
 
 *.bin
 
+# Extra local test files
 notes.txt
+.github/workflows/multiple_build_test.yml
