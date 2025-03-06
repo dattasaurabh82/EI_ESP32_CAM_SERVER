@@ -149,6 +149,8 @@ _In a nutshell_
    |:----------------------------------:|:---------------------------------:|
    | ![Before turning on fans](<assets/Hot esp.png>) | ![After turning on fans](<assets/cooler esp.png>) |
 
+</details>
+
 ---
 
 <details>
