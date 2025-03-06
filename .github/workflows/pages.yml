@@ -61,9 +61,11 @@ jobs:
           tree webflasher/
           echo ""
           # Copy the latest binary files
-          echo "Copying latest firmware from build/ to webflasher/firmware/"
-          cp build/EI_ESP32_CAM_SERVER.merged.bin webflasher/firmware/
-          cp build/filesystem.littlefs.bin webflasher/firmware/
+          echo "Copying latest firmwares from build/ to webflasher/firmware/"
+          cp build/EI_ESP32_CAM_SERVER.xiaoesp32s3.merged.bin webflasher/firmware/
+          cp build/EI_ESP32_CAM_SERVER.aithinkercam.merged.bin webflasher/firmware/
+          cp build/filesystem.littlefs.xiaoesp32s3.bin webflasher/firmware/
+          cp build/filesystem.littlefs.aithinkercam.bin webflasher/firmware/
           ls -la webflasher/firmware/
           echo ""
 
@@ -86,7 +88,8 @@ jobs:
       - name: Debug firmware files
         run: |
           echo "Checking copied LittleFS binary contents:"
-          mklittlefs -l -d 5 webflasher/firmware/filesystem.littlefs.bin
+          mklittlefs -l -d 5 webflasher/firmware/filesystem.littlefs.aithinkercam.bin
+          mklittlefs -l -d 5 webflasher/firmware/filesystem.littlefs.xiaoesp32s3.bin
           echo "Checking firmware directory contents and sizes:"
           ls -la webflasher/firmware/
           echo "MD5 checksums of binaries:"
@@ -112,10 +115,9 @@ jobs:
             sed -i "s|<span class=\"firmware-version\">.*</span>|<span class=\"firmware-version\">v0.0.1</span>|g" webflasher/index.html
           fi
           # 2. Update firmware link
-          sed -i "s|<a href=\"\">XIAO ESP32 CAM server firmware</a>|<a href=\"${REPO_URL}/releases/download/${{ env.VERSION }}/EI_ESP32_CAM_SERVER.merged-${{ env.VERSION }}.bin\">XIAO ESP32 CAM server firmware</a>|g" webflasher/index.html
+          sed -i "s|<a href=\"\">XIAO ESP32 CAM server firmware</a>|<a href=\"${REPO_URL}/releases/download/${{ env.VERSION }}/EI_ESP32_CAM_SERVER.xiaoesp32s3.merged_${{ env.VERSION }}.bin\">XIAO ESP32 CAM server firmware</a>|g" webflasher/index.html
           # 3. Update filesystem binary link
-          # 3. Update filesystem binary link
-          sed -i "s|<a[[:space:]]*href=\"\">filesystem.littlefs.bin</a>|<a href=\"${REPO_URL}/releases/download/${{ env.VERSION }}/filesystem.littlefs-${{ env.VERSION }}.bin\">filesystem.littlefs.bin</a>|g" webflasher/index.html
+          sed -i "s|<a[[:space:]]*href=\"\">filesystem.littlefs.xiaoesp32s3.bin</a>|<a href=\"${REPO_URL}/releases/download/${{ env.VERSION }}/filesystem.littlefs.xiaoesp32s3_${{ env.VERSION }}.bin\">filesystem.littlefs.bin</a>|g" webflasher/index.html
           echo "Updated index.html file:"
           cat webflasher/index.html
 
