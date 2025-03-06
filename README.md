@@ -81,30 +81,83 @@ _In a nutshell_
 
 <details>
    <summary> 1. Hardware</summary>
-  
+
+   ### Choosing the right hardware and our preference
+
+   > We are not looking into [M5-Stack](https://shop.m5stack.com/collections/m5-cameras) series at the moment. The goal is to have something (dev board style) in smaller footprint to abe able to either integrate easily into other PCBs or use as standalone educational all-in-one device.
+
+   | Feature | [Xiao ESP32S3 Sense](https://www.seeedstudio.com/XIAO-ESP32S3-Sense-p-5639.html) | [AI-Thinker ESP32-CAM](https://docs.ai-thinker.com/en/esp32-cam) | [ESP-EYE V2](https://www.espressif.com/en/products/devkits/esp-eye/overview) |
+   |---------|-------------------|---------|----------------------|
+   | **Processor** | ESP32-S3 (240MHz dual-core) | ESP32 (240MHz dual-core) | ESP32 (240MHz dual-core) |
+   | **Camera Sensor** | OV2640 (2MP) | OV2640 (2MP) | OV2640 (2MP) |
+   | **RAM** | 8MB PSRAM |  4MB PSRAM | 8MB PSRAM |
+   | **Flash Memory** | 8MB | 4MB | 4MB |
+   | **Wi-Fi** | 2.4GHz 802.11b/g/n | 2.4GHz 802.11b/g/n | 2.4GHz 802.11b/g/n |
+   | **Bluetooth** | BLE 5.0 | BLE 4.2 | BLE 4.2 |
+   | **Display** | Optional | No | Yes |
+   | **Microphone** | Yes (built-in) | No | Yes (built-in) |
+   | **SD Card Slot** | Yes (microSD) | Yes (microSD) | Yes (microSD) |
+   | **GPIO Pins** | 11 accessible | 9 accessible | 10 accessible |
+   | **USB Interface** | Type-C |  None (UART via pins) | Micro USB |
+   | **ML Capabilities** | Enhanced with ESP32-S3 |  Basic | Face detection built-in |
+   | **Form Factor** | Ultra-compact | Compact | Compact, standalone  |
+   | **Power Consumption** | Low | Medium | Low |
+   | **Price Range** | $$ | $ | $$$ |
+   | **Special Features** | Small size, built-in PDM mic | Low cost, SD card support |Built-in face recognition |
+
+   ### Firmware development & implementation status
+
+   | Xiao ESP32S3 Sense | AI-Thinker ESP32-CAM | ESP-EYE V2 |
+   |---------|-------------------|---------|
+   | 🟢 DONE | 🟢 DONE| 🔴 TBD|
+
    ## Hardware Setup
-  
-   Tested on: [XIAO_ESP32S3](https://wiki.seeedstudio.com/xiao_esp32s3_getting_started/)
-   Testing on: [AI_THINKER_CAM](https://docs.ai-thinker.com/en/esp32-cam)
 
-   <br>
+   ---
 
-> The XIAO_ESP32S3 gets very hot when streaming MJPEG as stated [here](https://wiki.seeedstudio.com/xiao_esp32s3_camera_usage/#project-ii-video-streaming)
+   ### Xiao esp32-s3 sense with 3D printed contraption (For mounting & Cooling)
 
-![alt text](<assets/Screenshot 2025-02-18 at 23.54.35.png>)
+   ![xiao contraption](assets/xiao.png)
 
-So I added a beefy cooper heat sink used in raspberry PIs and not the cheap aluminium ones and thought maybe I should just give it some air 💨
+   > Fusion 360 preview and file Download link: 👉🏼 [🌐](https://a360.co/3EEMBdH)
+   <br><br><br>
+   ### AI Thinker cam with 3D printed enclosure (For mounting & Cooling)
 
-![alt text](<assets/Screenshot 2025-02-18 at 23.56.44.png>)
+   ![AiTHinkerCamContraption](assets/AiTHinkerCamContraption.png)
 
-**But then how do I put it in as I like things to be organized and in place?**
+   > Fusion 360 preview and file Download link: 👉🏼 [🌐](https://a360.co/41k01U0)
 
-So, I designed a cooling contraption for better air flow ...
-And, additionally it holds everything together and also has a modular gorilla arm screw adapter.
+   ---
 
-| **Before** turning **ON** the fans | **After** turning **ON** the fans |
-|:----------------------------------:|:---------------------------------:|
-| ![Before turning on fans](<assets/Screenshot 2025-02-19 at 00.06.46.png>) | ![After turning on fans](<assets/Screenshot 2025-02-19 at 00.07.25.png>) |
+   ### They get hot 🥵
+
+   > The XIAO_ESP32S3 gets very hot when streaming MJPEG as stated [here](https://wiki.seeedstudio.com/xiao_esp32s3_camera_usage/#project-ii-video-streaming)
+
+   So I added a beefy cooper heat sink used in raspberry PIs and not the cheap aluminium ones and thought maybe I should just give it some air 💨
+
+   ![xiao_cooling_need](assets/xiao_cooling_need.png)
+
+   So, I designed a cooling contraption for better air flow ...
+   And, additionally it holds everything together and also has a modular gorilla arm screw adapter.
+
+   > My quick & dirty elegant solution
+
+   ![alt text](assets/xiao_cooling_setup_view_1.png)
+
+   ![alt text](assets/xiao_cooling_setup_view_2.png)
+
+   The fan power is not drawn form the same VBUS that powers the XIAO_ESP32S3 but has a separate source, so that the performance of XIAO_ESP32S3 is not affected.
+
+   Yes! That means you need a separate cable if you do not want to fry your XIAO_ESP32S3.
+
+   ---
+   __TBD__ for ESP CAM
+
+   ---
+
+   | **Before** turning **ON** the fans | **After** turning **ON** the fans |
+   |:----------------------------------:|:---------------------------------:|
+   | ![Before turning on fans](<assets/Screenshot 2025-02-19 at 00.06.46.png>) | ![After turning on fans](<assets/Screenshot 2025-02-19 at 00.07.25.png>) |
 
 Two points to note here:
 
@@ -113,30 +166,6 @@ Two points to note here:
    > !! Plan to fix that in next iteration
 
    <img src="assets/Screenshot 2025-02-19 at 00.13.18.png" width="50%" alt="Image description">
-
-    
-
-2.  The fan power is not drawn form the same VBUS that powers the XIAO_ESP32S3 but has a separate source, so that the performance of XIAO_ESP32S3 is not affected.
-
-    > Yes! That means you need a separate cable if you do not want to fry your XIAO_ESP32S3.
-
-   <img src="assets/Screenshot 2025-02-19 at 00.19.43.png" width="80%" alt="Image description">
-
-    > My quick & dirty elegant solution
-
----
-
-### xiao with cooling contraption and gorilla pod mount
-
-![alt text](assets/xiao_with_cooling_contraption_and_gorilla_po_mount_render.png)
-
-> Fusion 360 preview and file Download link: 👉🏼 [🌐](https://a360.co/3EEMBdH)
-
-### AI Thinker cam with 3D printed box and gorilla pod mount
-
-![alt text](assets/AiTHinkerCamContraption.png)
-
-> Fusion 360 preview and file Download link: 👉🏼 [🌐](https://a360.co/41k01U0)
 
 </details>
 
