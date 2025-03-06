@@ -133,15 +133,6 @@ _In a nutshell_
 
    Yes! That means you need a separate cable if you do not want to fry your XIAO_ESP32S3.
 
-   ---
-
-   ## AI Thinker Cam
-   __WIP__
-
-   ![alt text](assets/aithinkercam_cooling_setup_view_1.png)
-
-   ---
-
    With cooling contraption for Xiao
 
    | **Before** turning **ON** the fans | **After** turning **ON** the fans |
@@ -150,7 +141,13 @@ _In a nutshell_
 
    With cooling contraption for AI Thinker Cam
 
-   __TBD__ for AI Thinker Cam
+   ## AI Thinker Cam
+
+   ![alt text](assets/aithinkercam_cooling_setup_view_1.png)
+
+   | **Before** turning **ON** the fans | **After** turning **ON** the fans |
+   |:----------------------------------:|:---------------------------------:|
+   | ![Before turning on fans](<assets/Hot esp.png>) | ![After turning on fans](<assets/cooler esp.png>) |
 
 ---
 
