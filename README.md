@@ -9,16 +9,7 @@
 
 ## What is this?
 
-<table>
-  <tr>
-    <td width="50%"><img src="assets/Screenshot 2025-02-11 at 02.08.08.png" width="100%" alt="First image"></td>
-    <td width="50%"><img src="assets/PXL_20250224_233042468.PORTRAIT.jpg" width="100%" alt="Second image"></td>
-  </tr>
-  <tr>
-    <td width="50%" align="center"><em>ESP self-hosted web UI</em></td>
-    <td width="50%" align="center"><em>Xiao esp32-s3 with fan contraption</em></td>
-  </tr>
-</table>
+![alt text](assets/ScreenRecording2025-02-25at23.09.52.gif)
 
 This educational tool helps reduce the time needed for capturing and labeling ESP32 camera images for TinyML training in [edgeimpulse](https://docs.edgeimpulse.com/reference). It's more efficient than the standard method of capturing and uploading single images through the [edgeimpulse data forwarder firmware](https://github.com/edgeimpulse/firmware-espressif-esp32).
 
@@ -32,10 +23,6 @@ _In a nutshell_
 2. The Edge Impulse [data uploader firmware's](https://docs.edgeimpulse.com/docs/edge-ai-hardware/mcu/espressif-esp32) image upload method uses [WebSerial API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Serial_API) and can be seen directly in the studio. But the process to capture each single image is slow. While it offers a good browser-based experience and eliminates the need for a data forwarding middleware, [compiling the latest firmware (for custom board other than "ESP-EYE")](https://github.com/edgeimpulse/firmware-espressif-esp32) remains challenging for beginners.
 3. [EloquentEsp32cam](https://eloquentarduino.com/posts/esp32-cam-object-detection) is nice and closer to what I was looking for as it hosts the web ui in packed binary format so everything is in c, finally and "one upload" functions flashes everything. But the trade off is that the Web UI modification is not straight forward (since it is gzipped) and the image transfer is also a multi step process requiring one to download labelled images first and then upload to edge impulse manually.
 
-   | ![EloquentEsp32cam Web UI](assets/EloqUI.png) | ![Manual Upload Process](assets/manual_upload_process.png) |
-   |:-------------------------------------------:|:----------------------------------------------------------:|
-   | *EloquentEsp32cam Web UI for capture and download. <br>Courtesy: Author* | *Manual uploading process to Edge Impulse studio<br>Courtesy: [Marcelo Rovai](https://gravatar.com/mjrovai)* |
-
 ## What this project overcomes
 
 ### Advantages over other solution for image data capture
@@ -46,32 +33,27 @@ _In a nutshell_
 
 ![alt text](<assets/Slide 16_9 - 2.png>)
 
-<p align="center">
-  <img src="assets/ScreenRecording2025-02-25at22.24.14-ezgif.com-video-to-gif-converter.gif" width="75%" alt="Image description"><br>
-  <em>Configuring wifi from the Web UI</em>
-</p>
+![alt text](assets/ScreenRecording2025-02-25at22.24.14-ezgif.com-video-to-gif-converter.gif)
 
 > It will automatically show up, i.e. the ESP will go to AP mode and provide this captive portal like experience, if it fails to connect to any wifi from it's memory (or if the wifi memory doesn't exist yet)
 
-<br> <br>
-<img src="assets/Screenshot 2025-02-25 at 22.26.18.png" width="35%" alt="Image description">
+<br>
+
+![alt text](<assets/Screenshot 2025-02-25 at 22.26.18.png>)
 
 > Once the esp32 connects, you will see this in Serial as you get re-directed to the main dashboard.
 
-2. Multiple WiFi networks can be stored and persist between reboots, allowing seamless use across different locations without reconfiguring.
-3. Stream can be started, stopped, and snapshots can be captured even while streaming is paused.
-4. Supports both single snapshots and automatic multiple image capture.
+1. Multiple WiFi networks can be stored and persist between reboots, allowing seamless use across different locations without reconfiguring.
+2. Stream can be started, stopped, and snapshots can be captured even while streaming is paused.
+3. Supports both single snapshots and automatic multiple image capture.
 
-<p align="center">
-  <img src="assets/Screen Recording 2025-02-25 at 22.57.31.gif" width="75%" alt="Image description"><br>
-  <em>Start/Stop stream and various capture modes demo</em>
-</p>
+![alt text](<assets/Screen Recording 2025-02-25 at 22.57.31.gif>)
 
-5. Images can be labeled and downloaded in groups for manual upload to Edge Impulse, if preferred.
-6. Uploads directly to Edge Impulse through the Web UI (the core purpose of this project). Edge Impulse API credentials persist between reboots.
-7. Automatically updates Edge Impulse project settings for object detection if needed.
+1. Images can be labeled and downloaded in groups for manual upload to Edge Impulse, if preferred.
+2. Uploads directly to Edge Impulse through the Web UI (the core purpose of this project). Edge Impulse API credentials persist between reboots.
+3. Automatically updates Edge Impulse project settings for object detection if needed.
 
-![alt text](assets/ScreenRecording2025-02-25at23.09.52.gif)
+
 
 1. Images are stored in the browser session rather than Flash or RAM.
 2. Features an attractive UI with both light and dark modes.
