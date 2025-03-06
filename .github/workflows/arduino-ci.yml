@@ -119,7 +119,7 @@ jobs:
           export PATH="$HOME/arduino-cli:$PATH"
           arduino-cli compile \
           --fqbn "esp32:esp32:XIAO_ESP32S3:USBMode=hwcdc,CDCOnBoot=default,MSCOnBoot=default,DFUOnBoot=default,UploadMode=default,CPUFreq=240,FlashMode=qio,FlashSize=8M,PartitionScheme=default_8MB,DebugLevel=none,PSRAM=opi,LoopCore=1,EventsCore=1,EraseFlash=none,UploadSpeed=921600,JTAGAdapter=default" \
-          --output-dir build . -v 2>&1 | tee build/build_log.txt
+          --output-dir build . 2>&1 | tee build/build_log.txt
 
       - name: Verify binary files
         run: |
@@ -150,15 +150,15 @@ jobs:
           ls -la
           cd ..
       
-          - name: Update Camera Model Configuration to CAMERA_MODEL_AI_THINKER
-          run: |
-            # Uncomment CAMERA_MODEL_AI_THINKER if it's commented out
-            sed -i 's|// #define CAMERA_MODEL_AI_THINKER 1|#define CAMERA_MODEL_AI_THINKER 1|g' config.h
-            # Comment out CAMERA_MODEL_AI_THINKER if it's uncommented
-            sed -i 's|^#define CAMERA_MODEL_XIAO_ESP32S3 1|// #define CAMERA_MODEL_XIAO_ESP32S3 1|g' config.h
-            # Verify the changes
-            echo "Updated config.h contents:"
-            cat config.h
+      - name: Update Camera Model Configuration to CAMERA_MODEL_AI_THINKER
+        run: |
+          # Uncomment CAMERA_MODEL_AI_THINKER if it's commented out
+          sed -i 's|// #define CAMERA_MODEL_AI_THINKER 1|#define CAMERA_MODEL_AI_THINKER 1|g' config.h
+          # Comment out CAMERA_MODEL_AI_THINKER if it's uncommented
+          sed -i 's|^#define CAMERA_MODEL_XIAO_ESP32S3 1|// #define CAMERA_MODEL_XIAO_ESP32S3 1|g' config.h
+          # Verify the changes
+          echo "Updated config.h contents:"
+          cat config.h
     
       - name: Compile Sketch for CAMERA_MODEL_AI_THINKER
         run: |
