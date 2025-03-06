@@ -113,6 +113,7 @@ _In a nutshell_
 
    ### They get hot 🥵
 
+   ## XIAO_ESP32S3
    > The XIAO_ESP32S3 gets very hot when streaming MJPEG as stated [here](https://wiki.seeedstudio.com/xiao_esp32s3_camera_usage/#project-ii-video-streaming)
 
    So I added a beefy cooper heat sink used in raspberry PIs and not the cheap aluminium ones and thought maybe I should just give it some air 💨
@@ -133,23 +134,23 @@ _In a nutshell_
    Yes! That means you need a separate cable if you do not want to fry your XIAO_ESP32S3.
 
    ---
-   __TBD__ for ESP CAM
+
+   ## AI Thinker Cam
+   __WIP__
+
+   ![alt text](assets/aithinkercam_cooling_setup_view_1.png)
 
    ---
+
+   With cooling contraption for Xiao
 
    | **Before** turning **ON** the fans | **After** turning **ON** the fans |
    |:----------------------------------:|:---------------------------------:|
    | ![Before turning on fans](<assets/Screenshot 2025-02-19 at 00.06.46.png>) | ![After turning on fans](<assets/Screenshot 2025-02-19 at 00.07.25.png>) |
 
-Two points to note here:
+   With cooling contraption for AI Thinker Cam
 
-1.  The OV5640 camera also gets 🥵.
-
-   > !! Plan to fix that in next iteration
-
-   <img src="assets/Screenshot 2025-02-19 at 00.13.18.png" width="50%" alt="Image description">
-
-</details>
+   __TBD__ for AI Thinker Cam
 
 ---
 
