@@ -283,6 +283,17 @@ void setup() {
   );
   // Add extra delay for AI-Thinker
   delay(1000);
+#elif defined(CAMERA_MODEL_ESP_EYE)
+  xTaskCreatePinnedToCore(
+    serialMonitorTask,
+    "SerialMonitorTask",
+    4096,  // Stack size similar to AI-Thinker
+    NULL,
+    1,
+    &serialMonitorTaskHandle,
+    0  // Run on Core 0
+  );
+  delay(1000);
 #endif
 
   // 1. Cam init
@@ -475,6 +486,14 @@ void loop() {
 #elif defined(CAMERA_MODEL_AI_THINKER)
   // More conservative thresholds for AI-Thinker with 4MB PSRAM
   if (ESP.getFreeHeap() < 15000 || ESP.getFreePsram() < 10000) {
+    Serial.printf("\tFree PSRAM: %lu bytes\n", ESP.getFreePsram());
+    Serial.printf("\tFree Heap: %lu bytes\n\n", ESP.getFreeHeap());
+    Serial.println("\tLow memory: Restarting\n");
+    ESP.restart();
+  }
+#elif defined(CAMERA_MODEL_ESP_EYE)
+  // ESP-EYE has 8MB PSRAM like XIAO ESP32S3
+  if (ESP.getFreeHeap() < 20000 || ESP.getFreePsram() < 10000) {
     Serial.printf("\tFree PSRAM: %lu bytes\n", ESP.getFreePsram());
     Serial.printf("\tFree Heap: %lu bytes\n\n", ESP.getFreeHeap());
     Serial.println("\tLow memory: Restarting\n");

@@ -15,6 +15,8 @@
 #define AP_SSID "XIAO_ESP32S3_SENSE"
 #elif defined(CAMERA_MODEL_AI_THINKER)
 #define AP_SSID "AI_THINKER_CAM"
+#elif defined(CAMERA_MODEL_ESP_EYE)
+#define AP_SSID "ESP_EYE_CAM"
 #endif
 
 #define AP_PASSWORD ""  // Empty string for open network or set a password

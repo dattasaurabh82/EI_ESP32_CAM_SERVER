@@ -84,6 +84,9 @@ bool setupCamera() {
 #elif defined(CAMERA_MODEL_AI_THINKER)
     s->set_vflip(s, 1);        // Flip camera vertically for AI-Thinker
     s->set_hmirror(s, 1);      // Horizontal mirror typically needed
+#elif defined(CAMERA_MODEL_ESP_EYE)
+    s->set_vflip(s, 1);    // Flip camera vertically - may need adjustment
+    s->set_hmirror(s, 1);  // Horizontal mirror - may need adjustment
 #endif
 
     // Image clarity enhancements
