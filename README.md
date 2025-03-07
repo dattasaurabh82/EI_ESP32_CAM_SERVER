@@ -52,12 +52,9 @@ _In a nutshell_
 1. Images can be labeled and downloaded in groups for manual upload to Edge Impulse, if preferred.
 2. Uploads directly to Edge Impulse through the Web UI (the core purpose of this project). Edge Impulse API credentials persist between reboots.
 3. Automatically updates Edge Impulse project settings for object detection if needed.
-
-
-
-1. Images are stored in the browser session rather than Flash or RAM.
-2. Features an attractive UI with both light and dark modes.
-3. UI is easily modifiable through HTML and CSS updates, though re-flashing is required. See instructions below.
+4. Images are stored in the browser session rather than Flash or RAM.
+5. Features an attractive UI with both light and dark modes.
+6. UI is easily modifiable through HTML and CSS updates, though re-flashing is required. See instructions below.
 
 ---
 
@@ -94,8 +91,6 @@ _In a nutshell_
    | 🟢 DONE | 🟢 DONE| 🔴 TBD|
 
    ## Hardware Setup
-
-   ---
 
    ### Xiao esp32-s3 sense with 3D printed contraption (For mounting & Cooling)
 
@@ -187,15 +182,15 @@ The goal is to eliminate friction by removing the need for any development envir
 > So, I created a [web-based flasher tool](webflasher) (hosted on both [zigzag repo](https://dattazigzag.github.io/EI_ESP32_CAM_SERVER/) and [my personal repo](https://dattasaurabh82.github.io/EI_ESP32_CAM_SERVER/)) as part of the project. A website with all the necessary binary files and correct flashing settings, allowing you to connect your XIAO ESP32-S3 and flash everything directly from your browser—no Arduino IDE / Terminal or Platform IO setup needed! 😘
 > __Note:__ After completing the machine learning training in Edge Impulse, you will need to download and use the model/library according to your own context and then you have to program...
 
-![alt text](assets/webflashing.gif)
+![alt text](<assets/firmware flasher steps.png>)
 
 > **Notes**:
 >
-> 1.  Although if you want to know how it all works, follow the ... [Arduino IDE compile and upload method](#arduino-ide-compile-and-upload-method) and or [cmdline compile and upload methods](#cmdline-compile-and-upload-methods)
+> 1. Although if you want to know how it all works, follow the ... [Arduino IDE compile and upload method](#arduino-ide-compile-and-upload-method) and or [cmdline compile and upload methods](#cmdline-compile-and-upload-methods)
 >
-> 2.  Post flashing, you can also setup Wifi Credentials (Persistent across boots)
+> 2. Post flashing, you can also setup Wifi Credentials (Persistent across boots)
 >
-> 3.  Two Github Action CI/CD pipelines accomplish them. You can learn more about them [here](.github/workflows), if you are keen on the Github Actions Pipeline that compiles and create releases of binaries and also updates the webflasher.
+> 3. Two Github Action CI/CD pipelines accomplish them. You can learn more about them [here](.github/workflows), if you are keen on the Github Actions Pipeline that compiles and create releases of binaries and also updates the webflasher.
 
 # Arduino IDE compile and upload method
 
