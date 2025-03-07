@@ -10,7 +10,9 @@
             "parts": [
                 {
                     "path": "firmware/EI_ESP32_CAM_SERVER.xiaoesp32s3.merged.bin",
-                    "offset": "0x0"
+                    "offset": "0x0",
+                    "flash_mode": "qio",
+                    "flash_freq": "80m"
                 },
                 {
                     "path": "firmware/filesystem.littlefs.xiaoesp32s3.bin",
