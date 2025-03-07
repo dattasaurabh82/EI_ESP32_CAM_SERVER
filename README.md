@@ -490,7 +490,7 @@ If that is the case, below are your compilation and update options.
       --baud 921600 \
       --before default_reset \
       --after hard_reset write_flash \
-      -z --flash_mode qio --flash_freq 80m --flash_size 8MB \
+      -z --flash_mode dio --flash_freq 80m --flash_size 8MB \
       0x0 build/EI_ESP32_CAM_SERVER.ino.merged.bin
 
    # Using esptools.py - Write the packed frontend binary to the target's correct location
@@ -535,7 +535,7 @@ If that is the case, below are your compilation and update options.
       --baud 460800 \
       --before default_reset \
       --after hard_reset write_flash \
-      -z --flash_mode qio --flash_freq 80m --flash_size 4MB \
+      -z --flash_mode dio --flash_freq 80m --flash_size 4MB \
       0x0 build/EI_ESP32_CAM_SERVER.ino.merged.bin
 
    # Using esptools.py - Write the packed frontend binary to the target's correct location
@@ -547,7 +547,7 @@ If that is the case, below are your compilation and update options.
 
 > Notes
 >
-> 1. `--flash_mode` is `qio` for flashing firmware and `--flash_mode` is `dio` for flashing packed frontend binary
+> 1. `FlashMode` is `qio` for compiling firmware and is `dio` for flashing
 >
 > 2. And, how do we know the **exact location** in flash (`0x670000` for xiao and for ai thinker cam that is `0x290000`) where the front end code goes?
 > Well, we know it from the Arduino IDE. When we used the IDE plugin, we saw the output ...
