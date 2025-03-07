@@ -75,17 +75,11 @@ jobs:
         run: |
           mklittlefs -c data -p 256 -b 4096 -s 1441792 build/filesystem.littlefs.aithinkercam.bin
           mklittlefs -l -d 5 build/filesystem.littlefs.aithinkercam.bin
-
-      # - name: Setup Arduino CLI
-      #   run: |
-      #     mkdir -p "$HOME/arduino-cli"
-      #     cd "$HOME/arduino-cli"
-      #     curl -fsSL https://raw.githubusercontent.com/arduino/arduino-cli/master/install.sh | BINDIR="$HOME/arduino-cli" sh
-      #     export PATH="$HOME/arduino-cli:$PATH"
-      #     arduino-cli config init
-      #     arduino-cli config add board_manager.additional_urls https://raw.githubusercontent.com/espressif/arduino-esp32/gh-pages/package_esp32_index.json
-      #     arduino-cli core update-index
-      #     arduino-cli core install esp32:esp32
+      
+      - name: Create LittleFS binary for ESP_EYE
+        run: |
+          mklittlefs -c data -p 256 -b 4096 -s 1441792 build/filesystem.littlefs.espeye.bin
+          mklittlefs -l -d 5 build/filesystem.littlefs.espeye.bin
 
       - name: Install Arduino CLI
         run: |

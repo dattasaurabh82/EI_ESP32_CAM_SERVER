@@ -445,11 +445,14 @@ If that is the case, below are your compilation and update options.
    # For XiaoESP32-S3
    mklittlefs -c data -p 256 -b 4096 -s 1572864 build/filesystem.littlefs.xiaoesp32s3.bin
    # For AI_thinker_cam
-   mklittlefs -c data -p 256 -b 4096 -s 1441792 build/filesystem.littlefs.ai_thinker_cam.bin
+   mklittlefs -c data -p 256 -b 4096 -s 1441792 build/filesystem.littlefs.aithinkercam.bin
+   # ESP-EYE V2.1
+   mklittlefs -c data -p 256 -b 4096 -s 1441792 build/filesystem.littlefs.espeye.bin
 
    # Verify the frontend binaries
    mklittlefs -l -d 5 build/filesystem.littlefs.xiaoesp32s3.bin
-   mklittlefs -l -d 5 build/filesystem.littlefs.ai_thinker_cam.bin
+   mklittlefs -l -d 5 build/filesystem.littlefs.aithinkercam.bin
+   mklittlefs -l -d 5 build/filesystem.littlefs.espeye.bin
    ```
 
 7. Compile the firmware - __For xiao esp32s3 sense__
@@ -540,6 +543,22 @@ If that is the case, below are your compilation and update options.
       0x290000 build/filesystem.littlefs.ai_thinker_cam.bin
    ```
 
+11. Compile the firmware - __For ESP_EYE__
+
+   ```bash
+   WIP
+   ```
+
+12. Upload the firmware and packed frontend binaries (multiple options) - __For ESP_EYE__
+
+   ```bash
+   # Using esptools.py - Write the packed frontend binary to the target's correct location
+   esptool.py --chip esp32 --port [YOUR_SERIAL_PORT_TO_WHICH_ESP32_IS_ATTACHED] --baud 921600 \
+      --before default_reset --after hard_reset write_flash -z \
+      --flash_mode dio --flash_freq 80m --flash_size detect \
+      0x290000 build/filesystem.littlefs.espeye.bin
+   ```
+
 > Notes
 >
 > How do we know the **exact location** in flash (`0x670000` for xiao and for ai thinker cam that is `0x290000`) where the front end code goes?
@@ -547,11 +566,14 @@ If that is the case, below are your compilation and update options.
 >
 > ![Xiao esp32 s3 sense -> Arduino IDE LittleFS Upload Process Output](<assets/Screenshot 2025-02-25 at 14.17.52.png>)
 > _Xiao esp32 s3 sense -> Arduino IDE LittleFS Upload Process Output_
-> 
+>
 > <br>
-> 
+>
 > ![AI thinker cam -> Arduino IDE LittleFS Upload Process Output](<assets/Screenshot 2025-03-05 at 20.20.34.png>)
 > _AI thinker cam -> Arduino IDE LittleFS Upload Process Output_
+>
+> ![ESP_EYE-> Arduino IDE LittleFS Upload Process Output](<assets/Screenshot 2025-03-07 at 21.05.06.png>)
+> _ESP-EYE -> Arduino IDE LittleFS Upload Process Output_
 > 
 </details>
 
