@@ -87,7 +87,7 @@ bool setupCamera() {
 #endif
 
     // Image clarity enhancements
-    s->set_brightness(s, 1);  // Normal brightness (-2 to 2)
+    s->set_brightness(s, 2);  // Normal brightness (-2 to 2)
     s->set_contrast(s, 1);    // Normal contrast (-2 to 2)
     s->set_saturation(s, 1);  // Normal saturation (-2 to 2)
 
@@ -97,12 +97,12 @@ bool setupCamera() {
      * White balance implementation varies by camera sensor. The XIAO ESP32S3 * * uses an OV sensor that might handle white balance differently than the * * ESP32 camera library expects. And so, the status.wb_mode field sometimes * doesn't accurately reflect the actual * camera state.
     */
 #ifdef CAMERA_MODEL_XIAO_ESP32S3
-    s->set_whitebal(s, 0);  // Disable white balance (0=disable, 1=enable)
-    s->set_awb_gain(s, 0);  // Disable auto white balance gain (0=disable,
+    s->set_whitebal(s, 1);  // Disable white balance (0=disable, 1=enable)
+    s->set_awb_gain(s, 1);  // Disable auto white balance gain (0=disable,
 #elif defined(CAMERA_MODEL_AI_THINKER)
-    // Note: Some color correction needed (noticed) 
-    s->set_whitebal(s, 1);     // Disable white balance (0=disable, 1=enable)
-    s->set_awb_gain(s, 1);     // Disable auto white balance gain (0=disable,
+    // Note: Some color correction needed (noticed)
+    s->set_whitebal(s, 1);  // Disable white balance (0=disable, 1=enable)
+    s->set_awb_gain(s, 1);  // Disable auto white balance gain (0=disable,
 #endif
     // --- //
 
