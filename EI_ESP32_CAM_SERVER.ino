@@ -6,6 +6,9 @@
 #include "soc/soc.h"
 #include "soc/rtc_cntl_reg.h"
 #endif
+#elif defined(CAMERA_MODEL_ESP_EYE)
+// ESP-EYE typically doesn't need brownout prevention
+#endif
 
 #include <AsyncTCP.h>
 #include <ESPAsyncWebServer.h>
@@ -244,6 +247,8 @@ void setup() {
   // Brownout prevention
   WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0);
   // ** Note: Do not set Pin 4, 10 & 12 for OUTPUT/LOW
+#elif defined(CAMERA_MODEL_ESP_EYE)
+  // Skip brownout and pin settings
 #endif
 
   delay(1000);
@@ -258,6 +263,8 @@ void setup() {
   Serial.println("\n___ XIAO ESP32S3 CAM-WEB-SERVER - (edgeImpulse tool)___");
 #elif defined(CAMERA_MODEL_AI_THINKER)
   Serial.println("\n___ AI-THINKER ESP32-CAM-WEB-SERVER - (edgeImpulse tool)___");
+#elif defined(CAMERA_MODEL_ESP_EYE)
+  Serial.println("\n___ ESP-EYE V2 CAM-WEB-SERVER - (edgeImpulse tool)___");
 #endif
 
 // 0. Create a task dedicated to monitoring serial input
@@ -283,18 +290,17 @@ void setup() {
   );
   // Add extra delay for AI-Thinker
   delay(1000);
-#elif defined(CAMERA_MODEL_ESP_EYE)
-  xTaskCreatePinnedToCore(
+#ifdef CAMERA_MODEL_ESP_EYE
+  xTaskCreate(
     serialMonitorTask,
     "SerialMonitorTask",
-    4096,  // Stack size similar to AI-Thinker
+    2048,           // Stack size (adjust if needed)
     NULL,
-    1,
-    &serialMonitorTaskHandle,
-    0  // Run on Core 0
+    1,              // Priority
+    &serialMonitorTaskHandle
   );
-  delay(1000);
 #endif
+
 
   // 1. Cam init
   initCamera();
@@ -492,7 +498,7 @@ void loop() {
     ESP.restart();
   }
 #elif defined(CAMERA_MODEL_ESP_EYE)
-  // ESP-EYE has 8MB PSRAM like XIAO ESP32S3
+  // ESP-EYE has 8MB PSRAM (same as XIAO)
   if (ESP.getFreeHeap() < 20000 || ESP.getFreePsram() < 10000) {
     Serial.printf("\tFree PSRAM: %lu bytes\n", ESP.getFreePsram());
     Serial.printf("\tFree Heap: %lu bytes\n\n", ESP.getFreeHeap());

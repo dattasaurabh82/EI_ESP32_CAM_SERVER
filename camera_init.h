@@ -38,6 +38,8 @@ bool setupCamera() {
   Serial.println("\t[camera_init.h] Using XIAO ESP32S3 camera settings");
 #elif defined(CAMERA_MODEL_AI_THINKER)
   Serial.println("\t[camera_init.h] Using AI-THINKER ESP32-CAM settings");
+#elif defined(CAMERA_MODEL_ESP_EYE)
+  Serial.println("\t[camera_init.h] Using ESP-EYE V2 camera settings");
 #endif
 
   // Buffer configuration based on PSRAM availability
@@ -49,8 +51,12 @@ bool setupCamera() {
     config.jpeg_quality = 15;  // 0-63: lower means higher quality
     config.fb_count = 1;       // TBT: Double buffering for smoother streaming. But sngle is stable
 #elif defined(CAMERA_MODEL_AI_THINKER)
-    config.jpeg_quality = 25;  // 0-63: lower means higher quality
-    config.fb_count = 1;       // TBT: Double buffering for smoother streaming
+    config.jpeg_quality = 25;             // 0-63: lower means higher quality
+    config.fb_count = 1;                  // TBT: Double buffering for smoother streaming
+#ifdef CAMERA_MODEL_ESP_EYE
+    config.frame_size = FRAMESIZE_QQVGA;  // 160x120
+    config.jpeg_quality = 15;             // 0-63: lower means higher quality
+    config.fb_count = 2;                  // TBT: Double buffering for smoother
 #endif
   } else {
 #ifdef CAMERA_MODEL_XIAO_ESP32S3
@@ -106,8 +112,11 @@ bool setupCamera() {
     // Note: Some color correction needed (noticed)
     s->set_whitebal(s, 1);  // Disable white balance (0=disable, 1=enable)
     s->set_awb_gain(s, 1);  // Disable auto white balance gain (0=disable,
+#ifdef CAMERA_MODEL_ESP_EYE
+    s->set_whitebal(s, 1);  // Enable white balance
+    s->set_awb_gain(s, 1);  // Enable auto white balance gain
 #endif
-    // --- //
+      // --- //
 
     s->set_gainceiling(s, GAINCEILING_2X);  // Normal gain
   }
