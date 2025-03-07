@@ -289,15 +289,14 @@ void setup() {
   );
   // Add extra delay for AI-Thinker
   delay(1000);
-#ifdef CAMERA_MODEL_ESP_EYE
+#elif defined(CAMERA_MODEL_ESP_EYE)
   xTaskCreate(
     serialMonitorTask,
     "SerialMonitorTask",
-    2048,           // Stack size (adjust if needed)
+    2048,  // Stack size (adjust if needed)
     NULL,
-    1,              // Priority
-    &serialMonitorTaskHandle
-  );
+    1,  // Priority
+    &serialMonitorTaskHandle);
 #endif
 
 
