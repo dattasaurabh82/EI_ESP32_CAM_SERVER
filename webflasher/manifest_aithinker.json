@@ -1,0 +1,24 @@
+{
+    "name": "Edge Impulse AIThinker ESP32 CAM server firmware",
+    "version": "1.0",
+    "new_install_prompt_erase": true,
+    "builds": [
+        {
+            "chipFamily": "ESP32",
+            "improv": false,
+            "full_flash_size": "4MB",
+            "parts": [
+                {
+                    "path": "firmware/EI_ESP32_CAM_SERVER.aithinkercam.merged.bin",
+                    "offset": "0x0"
+                },
+                {
+                    "path": "firmware/filesystem.littlefs.aithinkercam.bin",
+                    "offset": "0x290000",
+                    "flash_mode": "dio",
+                    "flash_freq": "80m"
+                }
+            ]
+        }
+    ]
+}

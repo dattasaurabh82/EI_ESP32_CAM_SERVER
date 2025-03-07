@@ -16,25 +16,50 @@
 
 <body>
     <div class="content">
-        <span class="header-signature">
-            <!-- <img src="assets/logo_black_jennyfer.png" alt="logo" class="signature-img"> -->
-            <!-- <img src="assets/sig_logo.png" alt="logo" class="signature-img"> -->
-        </span>
-        <h3>ESP firmware flasher</h3>
+        <h3>ESP32 CAM server firmware for Edge Impulse</h3>
         <p>
-            Firmware: <a href="">EI_ESP32_CAM_SERVER.xiaoesp32s3.merged.bin</a>
-            (Version: <span class="firmware-version">v0.0.1</span>)
+            Firmware Version: <span class="firmware-version">v0.0.1</span>
         </p>
         <p>
+            LittleFS Front-end binary Version: <span class="fs-version">v0.0.1</span>
+        </p>
+
+        <!-- <p>
             File System Binary: <a href="">filesystem.littlefs.xiaoesp32s3.bin</a>
-        </p>
-        Module: <span class="module-type">ESP32-S3</span>
-        </p>
+        </p> -->
+        <!-- <p>
+            Module: <span class="module-type">ESP32-S3</span>
+        </p> -->
+
+        <p>Select your product</p>
+
+        <ul class="radios">
+            <li>
+                <label><input type="radio" name="type" value="xiaoesp32s3" /> Seeed Studio's Xiao ESP32-S3 Sense</label>
+            </li>
+            <li>
+                <label><input type="radio" name="type" value="aithinkercam" /> AI Thinker cam</label>
+            </li>
+        </ul>
 
         <p class="button-row" align="left">
             <esp-web-install-button></esp-web-install-button>
         </p>
     </div>
+
+    <div class="debug-section">
+        <details>
+            <summary>Current target manifest information</summary>
+            <div class="debug-content">
+                <p>Current manifest: <span id="current-manifest">Not set yet</span></p>
+                <button id="refresh-debug" onclick="updateDebugInfo()">Refresh Debug Info</button>
+
+                <h4>Manifest Contents:</h4>
+                <pre id="manifest-content" class="manifest-preview">No manifest loaded yet</pre>
+            </div>
+        </details>
+    </div>
+
     <div class="footer">
         Installer powered by <a href="https://esphome.github.io/esp-web-tools/">ESP Web Tools</a>. Customized for the
         project by <a href="https://github.com/dattasaurabh82">Saurabh Datta</a>
