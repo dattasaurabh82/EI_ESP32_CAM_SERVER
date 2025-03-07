@@ -95,16 +95,17 @@ jobs:
           echo "MD5 checksums of binaries:"
           md5sum webflasher/firmware/*.bin
 
-      - name: Update version in manifest.json and index.html
+      - name: Update version in manifest.json files and index.html
         env:
           REPO_URL: ${{ github.server_url }}/${{ github.repository }}
         run: |
           echo "Current VERSION: ${{ env.VERSION }}"
           echo "Current REPO_URL: ${REPO_URL}"
-          # Update manifest.json
-          echo "Updated manifest.json file:"
-          sed -i "s/\"version\": \"[^\"]*\"/\"version\": \"${{ env.VERSION }}\"/" webflasher/manifest.json
-          cat webflasher/manifest.json
+          echo "Updated manifest.json files:"
+          sed -i "s/\"version\": \"[^\"]*\"/\"version\": \"${{ env.VERSION }}\"/" webflasher/manifest_aithinker.json
+          cat webflasher/manifest_aithinker.json
+          sed -i "s/\"version\": \"[^\"]*\"/\"version\": \"${{ env.VERSION }}\"/" webflasher/manifest_xiao.json
+          cat webflasher/manifest_xiao.json
           echo ""
           # Update index.html
           # 1. Update version number
