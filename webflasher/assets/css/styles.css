@@ -107,7 +107,7 @@ td {
 }
 
 #refresh-debug {
-  background-color: #03a9f4;
+  background-color: #00a0ab;
   color: white;
   border: none;
   padding: 8px 12px;
@@ -117,7 +117,7 @@ td {
 }
 
 #refresh-debug:hover {
-  background-color: #0288d1;
+  background-color: #018884;
 }
 
 .manifest-preview {
@@ -148,11 +148,11 @@ td {
   }
 
   #refresh-debug {
-    background-color: #0288d1;
+    background-color: #00a0ab;
   }
 
   #refresh-debug:hover {
-    background-color: #0277bd;
+    background-color: #018884;
   }
 
   .manifest-preview {
@@ -160,4 +160,46 @@ td {
     border-color: #555;
     color: #eee;
   }
+}
+
+/* Customize the button */
+esp-web-install-button {
+  --esp-tools-button-border-radius: 4px;
+  --esp-tools-button-color: #f3cf1b;
+  --esp-tools-button-text-color: #000;
+}
+
+
+/* Center the container but keep content left-aligned */
+.content {
+  max-width: 600px;
+  /* Adjust width as needed */
+  margin: 0 auto;
+  /* This centers the container */
+  padding: 12px;
+  text-align: left;
+  /* Keep text left-aligned */
+}
+
+/* Center the debug section container but keep its content left-aligned */
+.debug-section {
+  max-width: 600px;
+  /* Should match the content width */
+  margin: 20px auto;
+  /* Center it horizontally with space above/below */
+  text-align: left;
+  width: 100%;
+}
+
+/* For the manifest content */
+.manifest-preview {
+  text-align: left;
+}
+
+/* Make the footer centered */
+.footer {
+  max-width: 600px;
+  margin: 24px auto;
+  text-align: center;
+  /* Usually footers look better centered */
 }
