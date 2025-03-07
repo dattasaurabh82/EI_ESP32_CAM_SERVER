@@ -5,7 +5,6 @@
 #elif defined(CAMERA_MODEL_AI_THINKER)
 #include "soc/soc.h"
 #include "soc/rtc_cntl_reg.h"
-#endif
 #elif defined(CAMERA_MODEL_ESP_EYE)
 // ESP-EYE typically doesn't need brownout prevention
 #endif
