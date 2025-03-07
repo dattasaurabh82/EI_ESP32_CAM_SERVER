@@ -46,6 +46,9 @@ bool setupCamera() {
   if (psramFound()) {
     Serial.println();
     Serial.println("\t[camera_init.h] PSRAM found ...");
+    Serial.printf("\t[camera_init.h] PSRAM enabled: %s\n", psramFound() ? "YES" : "NO");
+    Serial.printf("\t[camera_init.h] Free PSRAM: %lu bytes\n", ESP.getFreePsram());
+
     config.frame_size = FRAMESIZE_QQVGA;  // 160x120
 #ifdef CAMERA_MODEL_XIAO_ESP32S3
     config.jpeg_quality = 15;  // 0-63: lower means higher quality
