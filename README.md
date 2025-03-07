@@ -547,9 +547,7 @@ If that is the case, below are your compilation and update options.
 
 > Notes
 >
-> 1. `FlashMode` is `qio` for compiling firmware and is `dio` for flashing
->
-> 2. And, how do we know the **exact location** in flash (`0x670000` for xiao and for ai thinker cam that is `0x290000`) where the front end code goes?
+> How do we know the **exact location** in flash (`0x670000` for xiao and for ai thinker cam that is `0x290000`) where the front end code goes?
 > Well, we know it from the Arduino IDE. When we used the IDE plugin, we saw the output ...
 >
 > ![Xiao esp32 s3 sense -> Arduino IDE LittleFS Upload Process Output](<assets/Screenshot 2025-02-25 at 14.17.52.png>)
