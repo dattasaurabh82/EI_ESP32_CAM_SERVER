@@ -94,8 +94,8 @@ jobs:
         run: |
           echo "Checking copied LittleFS binary contents:"
           mklittlefs -l -d 5 webflasher/firmware/filesystem.littlefs.xiaoesp32s3.bin
-          klittlefs -l -d 5 webflasher/firmware/filesystem.littlefs.aithinkercam.bin
-          klittlefs -l -d 5 webflasher/firmware/filesystem.littlefs.espeye.bin
+          mklittlefs -l -d 5 webflasher/firmware/filesystem.littlefs.aithinkercam.bin
+          mklittlefs -l -d 5 webflasher/firmware/filesystem.littlefs.espeye.bin
           echo "Checking firmware directory contents and sizes:"
           ls -la webflasher/firmware/
           echo "MD5 checksums of binaries:"
