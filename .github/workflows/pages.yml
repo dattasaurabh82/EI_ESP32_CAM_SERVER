@@ -60,14 +60,17 @@ jobs:
           mkdir -p webflasher/firmware
           tree webflasher/
           echo ""
-          # Copy the latest binary files
+          # Copy the latest main firmware binary files
           echo "Copying latest firmwares from build/ to webflasher/firmware/"
           cp build/EI_ESP32_CAM_SERVER.xiaoesp32s3.merged.bin webflasher/firmware/
           cp build/EI_ESP32_CAM_SERVER.aithinkercam.merged.bin webflasher/firmware/
           cp build/EI_ESP32_CAM_SERVER.espeye.merged.bin webflasher/firmware/
+          # Copy the latest frontend firmware binary files
           cp build/filesystem.littlefs.xiaoesp32s3.bin webflasher/firmware/
           cp build/filesystem.littlefs.aithinkercam.bin webflasher/firmware/
-          p build/filesystem.littlefs.espeye.bin webflasher/firmware/
+          cp build/filesystem.littlefs.espeye.bin webflasher/firmware/
+          # Verify the copied files
+          echo "Copied Files:"
           ls -la webflasher/firmware/
           echo ""
 
