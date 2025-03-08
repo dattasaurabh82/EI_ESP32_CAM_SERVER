@@ -70,7 +70,7 @@ jobs:
           cp build/filesystem.littlefs.aithinkercam.bin webflasher/firmware/
           cp build/filesystem.littlefs.espeye.bin webflasher/firmware/
           # Verify the copied files
-          echo "Copied Files:"
+          echo "Copied Files are:"
           ls -la webflasher/firmware/
           echo ""
 
