@@ -64,8 +64,10 @@ jobs:
           echo "Copying latest firmwares from build/ to webflasher/firmware/"
           cp build/EI_ESP32_CAM_SERVER.xiaoesp32s3.merged.bin webflasher/firmware/
           cp build/EI_ESP32_CAM_SERVER.aithinkercam.merged.bin webflasher/firmware/
+          cp build/EI_ESP32_CAM_SERVER.espeye.merged.bin webflasher/firmware/
           cp build/filesystem.littlefs.xiaoesp32s3.bin webflasher/firmware/
           cp build/filesystem.littlefs.aithinkercam.bin webflasher/firmware/
+          p build/filesystem.littlefs.espeye.bin webflasher/firmware/
           ls -la webflasher/firmware/
           echo ""
 
@@ -88,8 +90,9 @@ jobs:
       - name: Debug firmware files
         run: |
           echo "Checking copied LittleFS binary contents:"
-          mklittlefs -l -d 5 webflasher/firmware/filesystem.littlefs.aithinkercam.bin
           mklittlefs -l -d 5 webflasher/firmware/filesystem.littlefs.xiaoesp32s3.bin
+          klittlefs -l -d 5 webflasher/firmware/filesystem.littlefs.aithinkercam.bin
+          klittlefs -l -d 5 webflasher/firmware/filesystem.littlefs.espeye.bin
           echo "Checking firmware directory contents and sizes:"
           ls -la webflasher/firmware/
           echo "MD5 checksums of binaries:"
@@ -102,10 +105,12 @@ jobs:
           echo "Current VERSION: ${{ env.VERSION }}"
           echo "Current REPO_URL: ${REPO_URL}"
           echo "Updated manifest.json files:"
-          sed -i "s/\"version\": \"[^\"]*\"/\"version\": \"${{ env.VERSION }}\"/" webflasher/manifest_aithinker.json
-          cat webflasher/manifest_aithinker.json
           sed -i "s/\"version\": \"[^\"]*\"/\"version\": \"${{ env.VERSION }}\"/" webflasher/manifest_xiao.json
           cat webflasher/manifest_xiao.json
+          sed -i "s/\"version\": \"[^\"]*\"/\"version\": \"${{ env.VERSION }}\"/" webflasher/manifest_aithinker.json
+          cat webflasher/manifest_aithinker.json
+          sed -i "s/\"version\": \"[^\"]*\"/\"version\": \"${{ env.VERSION }}\"/" webflasher/manifest_espeye.json
+          cat webflasher/manifest_espeye.json
           echo ""
           # Update index.html
           # 1. Update version number

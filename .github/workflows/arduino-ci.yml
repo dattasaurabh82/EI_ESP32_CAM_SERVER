@@ -73,12 +73,12 @@ jobs:
       
       - name: Create LittleFS binary for AI Thinker ESP32-CAM
         run: |
-          mklittlefs -c data -p 256 -b 4096 -s 1441792 build/filesystem.littlefs.aithinkercam.bin
+          mklittlefs -c data -p 256 -b 4096 -s 917504 build/filesystem.littlefs.aithinkercam.bin
           mklittlefs -l -d 5 build/filesystem.littlefs.aithinkercam.bin
       
       - name: Create LittleFS binary for ESP_EYE
         run: |
-          mklittlefs -c data -p 256 -b 4096 -s 1441792 build/filesystem.littlefs.espeye.bin
+          mmklittlefs -c data -p 256 -b 4096 -s 917504 build/filesystem.littlefs.espeye.bin
           mklittlefs -l -d 5 build/filesystem.littlefs.espeye.bin
 
       - name: Install Arduino CLI
@@ -119,6 +119,8 @@ jobs:
           sed -i 's|// #define CAMERA_MODEL_XIAO_ESP32S3 1|#define CAMERA_MODEL_XIAO_ESP32S3 1|g' config.h
           # Comment out CAMERA_MODEL_AI_THINKER if it's uncommented
           sed -i 's|^#define CAMERA_MODEL_AI_THINKER 1|// #define CAMERA_MODEL_AI_THINKER 1|g' config.h
+          # Comment out CAMERA_MODEL_ESP_EYE if it's uncommented
+          sed -i 's|^#define CAMERA_MODEL_ESP_EYE 1|// #define CAMERA_MODEL_ESP_EYE 1|g' config.h
           # Verify the changes
           echo "Updated config.h contents:"
           cat config.h
@@ -163,8 +165,10 @@ jobs:
         run: |
           # Uncomment CAMERA_MODEL_AI_THINKER if it's commented out
           sed -i 's|// #define CAMERA_MODEL_AI_THINKER 1|#define CAMERA_MODEL_AI_THINKER 1|g' config.h
-          # Comment out CAMERA_MODEL_AI_THINKER if it's uncommented
+          # Comment out CAMERA_MODEL_XIAO_ESP32S3 if it's uncommented
           sed -i 's|^#define CAMERA_MODEL_XIAO_ESP32S3 1|// #define CAMERA_MODEL_XIAO_ESP32S3 1|g' config.h
+          # Comment out CAMERA_MODEL_ESP_EYE if it's uncommented
+          sed -i 's|^#define CAMERA_MODEL_ESP_EYE 1|// #define CAMERA_MODEL_ESP_EYE 1|g' config.h
           # Verify the changes
           echo "Updated config.h contents:"
           cat config.h
@@ -173,7 +177,7 @@ jobs:
         run: |
           export PATH="$HOME/arduino-cli:$PATH"
           arduino-cli compile \
-          --fqbn "esp32:esp32:esp32:CPUFreq=240,FlashMode=dio,FlashFreq=80,FlashSize=4M,PartitionScheme=default,PSRAM=enabled,DebugLevel=none,LoopCore=1,EventsCore=1,EraseFlash=none,JTAGAdapter=default,ZigbeeMode=default,UploadSpeed=460800" \
+          --fqbn "esp32:esp32:esp32:CPUFreq=240,FlashMode=dio,FlashFreq=80,FlashSize=4M,PartitionScheme=huge_app,PSRAM=enabled,DebugLevel=none,LoopCore=1,EventsCore=1,EraseFlash=none,JTAGAdapter=default,ZigbeeMode=default,UploadSpeed=460800" \
           --output-dir build . 2>&1 | tee build/build_log.txt
 
       - name: Verify binary files
@@ -201,6 +205,54 @@ jobs:
           cp EI_ESP32_CAM_SERVER.aithinkercam.merged.bin "EI_ESP32_CAM_SERVER.aithinkercam.merged_${GITHUB_REF_NAME}.bin"
           echo "Created a copy of the binary with version: ${GITHUB_REF_NAME}"
           cp filesystem.littlefs.aithinkercam.bin "filesystem.littlefs.aithinkercam_${GITHUB_REF_NAME}.bin"
+          echo "Created a copy of the LittleFS file sys binary with version: ${GITHUB_REF_NAME}"
+          ls -la
+          cd ..
+      
+      - name: Update Camera Model Configuration to CAMERA_MODEL_ESP_EYE
+        run: |
+          # Comment out CAMERA_MODEL_XIAO_ESP32S3 if it's uncommented
+          sed -i 's|^#define CAMERA_MODEL_XIAO_ESP32S3 1|// #define CAMERA_MODEL_XIAO_ESP32S3 1|g' config.h
+          # Comment out CAMERA_MODEL_AI_THINKER if it's uncommented
+          sed -i 's|^#define CAMERA_MODEL_AI_THINKER 1|// #define CAMERA_MODEL_AI_THINKER 1|g' config.h
+          # Uncomment CAMERA_MODEL_ESP_EYE if it's commented out
+          sed -i 's|// #define CAMERA_MODEL_ESP_EYE 1|#define CAMERA_MODEL_ESP_EYE 1|g' config.h
+          # Verify the changes
+          echo "Updated config.h contents:"
+          cat config.h
+      
+      - name: Compile Sketch for CAMERA_MODEL_ESP_EYE
+        run: |
+          export PATH="$HOME/arduino-cli:$PATH"
+          arduino-cli compile \
+          --fqbn "esp32:esp32:esp32wrover:FlashMode=dio,FlashFreq=80,PartitionScheme=huge_app,DebugLevel=none,EraseFlash=none,UploadSpeed=921600" \
+          --output-dir build . 2>&1 | tee build/build_log.txt
+      
+      - name: Verify binary files
+        run: |
+          cd build
+          for file in "EI_ESP32_CAM_SERVER.ino.bin" "EI_ESP32_CAM_SERVER.ino.merged.bin"; do
+            if [ ! -f "$file" ]; then
+              echo "ERROR: Required file $file not found!"
+              exit 1
+            fi
+          done
+          ls -la
+          cd ..
+      
+      - name: Rename binary files with espeye suffix
+        run: |
+          cd build
+          for f in *.ino.*; do 
+            if [ -f "$f" ]; then
+              newname="${f/.ino./.espeye.}"
+              mv "$f" "$newname"
+              echo "Renamed: $f → $newname"
+            fi
+          done
+          cp EI_ESP32_CAM_SERVER.espeye.merged.bin "EI_ESP32_CAM_SERVER.espeye.merged_${GITHUB_REF_NAME}.bin"
+          echo "Created a copy of the binary with version: ${GITHUB_REF_NAME}"
+          cp filesystem.littlefs.espeye.bin "filesystem.littlefs.espeye_${GITHUB_REF_NAME}.bin"
           echo "Created a copy of the LittleFS file sys binary with version: ${GITHUB_REF_NAME}"
           ls -la
           cd ..
@@ -256,11 +308,14 @@ jobs:
             done
             cd ..
             echo "### Main firmware binaries"
-            echo "- build/EI_ESP32_CAM_SERVER.aithinkercam.merged.bin"
             echo "- build/EI_ESP32_CAM_SERVER.xiaoesp32s3.merged.bin"
+            echo "- build/EI_ESP32_CAM_SERVER.aithinkercam.merged.bin"
+            echo "- build/EI_ESP32_CAM_SERVER.espeye.merged.bin"
+            echo ""
             echo "### LittleFS FileSys binaries"
-            echo "- build/filesystem.littlefs.aithinkercam.bin"
             echo "- build/filesystem.littlefs.xiaoesp32s3.bin"
+            echo "- build/filesystem.littlefs.aithinkercam.bin"
+            echo "- build/filesystem.littlefs.espeye.bin"
             echo ""
           } > release_notes.md
           pwd
@@ -272,10 +327,12 @@ jobs:
         with:
           files: |
             firmwares.zip
-            build/EI_ESP32_CAM_SERVER.aithinkercam.merged_${{ github.ref_name }}.bin
-            build/filesystem.littlefs.aithinkercam_${{ github.ref_name }}.bin
             build/EI_ESP32_CAM_SERVER.xiaoesp32s3.merged_${{ github.ref_name }}.bin
             build/filesystem.littlefs.xiaoesp32s3_${{ github.ref_name }}.bin
+            build/EI_ESP32_CAM_SERVER.aithinkercam.merged_${{ github.ref_name }}.bin
+            build/filesystem.littlefs.aithinkercam_${{ github.ref_name }}.bin
+            build/EI_ESP32_CAM_SERVER.espeye.merged_${{ github.ref_name }}.bin
+            build/filesystem.littlefs.espeye_${{ github.ref_name }}.bin
           body_path: release_notes.md
           draft: false
           prerelease: ${{ contains(github.ref_name, '-') }}

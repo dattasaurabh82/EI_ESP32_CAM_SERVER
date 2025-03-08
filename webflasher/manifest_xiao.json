@@ -1,5 +1,5 @@
 {
-    "name": "Edge Impulse XIAO ESP32 CAM server firmware",
+    "name": "\"Xiao esp32s3 sense\" camera server (for Edge Impulse) firmware",
     "version": "1.0",
     "new_install_prompt_erase": true,
     "builds": [
