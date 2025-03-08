@@ -70,7 +70,8 @@ window.updateDebugInfo = function() {
     // Map radio values to manifest filenames
     const manifestMap = {
       'xiaoesp32s3': 'manifest_xiao.json',
-      'aithinkercam': 'manifest_aithinker.json'
+      'aithinkercam': 'manifest_aithinker.json',
+      'espeye': 'manifest_espeye.json'
     };
     
     // Determine if we're running locally or on GitHub Pages
