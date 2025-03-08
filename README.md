@@ -445,9 +445,9 @@ If that is the case, below are your compilation and update options.
    # For XiaoESP32-S3
    mklittlefs -c data -p 256 -b 4096 -s 1572864 build/filesystem.littlefs.xiaoesp32s3.bin
    # For AI_thinker_cam
-   mklittlefs -c data -p 256 -b 4096 -s 1441792 build/filesystem.littlefs.aithinkercam.bin
+   mklittlefs -c data -p 256 -b 4096 -s 917504 build/filesystem.littlefs.aithinkercam.bin
    # ESP-EYE V2.1
-   mklittlefs -c data -p 256 -b 4096 -s 1441792 build/filesystem.littlefs.espeye.bin
+   mklittlefs -c data -p 256 -b 4096 -s 917504 build/filesystem.littlefs.espeye.bin
 
    # Verify the frontend binaries
    mklittlefs -l -d 5 build/filesystem.littlefs.xiaoesp32s3.bin
@@ -484,11 +484,10 @@ If that is the case, below are your compilation and update options.
    # Using esptools.py - Write ONLY the pre-compiled firmware to target
    esptool.py \
       --chip esp32s3 \
-      --port [YOUR_SERIAL_PORT_TO_WHICH_ESP32_IS_ATTACHED] \
-      --baud 921600 \
+      --port [YOUR_SERIAL_PORT_TO_WHICH_ESP32_IS_ATTACHED] --baud 921600 \
       --before default_reset \
       --after hard_reset write_flash \
-      -z --flash_mode dio --flash_freq 80m --flash_size 8MB \
+      -z --flash_mode dio --flash_freq 80m --flash_size detect \
       0x0 build/EI_ESP32_CAM_SERVER.ino.merged.bin
 
    # Using esptools.py - Write the packed frontend binary to the target's correct location
@@ -507,7 +506,7 @@ If that is the case, below are your compilation and update options.
    # From inside the project directory, run:
    mkdir -p build/
    arduino-cli compile \
-      --fqbn "esp32:esp32:esp32:CPUFreq=240,FlashMode=qio,FlashFreq=80,FlashSize=4M,PartitionScheme=default,PSRAM=enabled,DebugLevel=none,LoopCore=1,EventsCore=1,EraseFlash=none,JTAGAdapter=default,ZigbeeMode=default,UploadSpeed=460800" \
+      --fqbn "esp32:esp32:esp32:CPUFreq=240,FlashMode=dio,FlashFreq=80,FlashSize=4M,PartitionScheme=huge_app,PSRAM=enabled,DebugLevel=none,LoopCore=1,EventsCore=1,EraseFlash=none,JTAGAdapter=default,ZigbeeMode=default,UploadSpeed=460800" \
       --output-dir build . -v
    ```
 
@@ -517,46 +516,70 @@ If that is the case, below are your compilation and update options.
    # Option 1.1: Using arduino-cli - Compile & write the compiled firmware to target
    mkdir -p build/
    arduino-cli compile \
-      --fqbn "esp32:esp32:esp32:CPUFreq=240,FlashMode=qio,FlashFreq=80,FlashSize=4M,PartitionScheme=default,PSRAM=enabled,DebugLevel=none,LoopCore=1,EventsCore=1,EraseFlash=none,JTAGAdapter=default,ZigbeeMode=default,UploadSpeed=460800" \
+      --fqbn "esp32:esp32:esp32:CPUFreq=240,FlashMode=dio,FlashFreq=80,FlashSize=4M,PartitionScheme=huge_app,PSRAM=enabled,DebugLevel=none,LoopCore=1,EventsCore=1,EraseFlash=none,JTAGAdapter=default,ZigbeeMode=default,UploadSpeed=460800" \
       . -u -p [YOUR_SERIAL_PORT_TO_WHICH_ESP32_IS_ATTACHED] -v
 
    # Option 1.2: Using arduino-cli - Write the pre-compiled firmware to target
    # If you have run the "compile" cmd from above (pt.9) and the "build" dir is there, then from inside the project directory, run
    arduino-cli upload -p [YOUR_SERIAL_PORT_TO_WHICH_ESP32_IS_ATTACHED] \
-      --fqbn "esp32:esp32:esp32:CPUFreq=240,FlashMode=qio,FlashFreq=80,FlashSize=4M,PartitionScheme=default,PSRAM=enabled,DebugLevel=none,LoopCore=1,EventsCore=1,EraseFlash=none,JTAGAdapter=default,ZigbeeMode=default,UploadSpeed=460800" \
+      --fqbn "esp32:esp32:esp32:CPUFreq=240,FlashMode=qio,FlashFreq=80,FlashSize=4M,PartitionScheme=huge_app,PSRAM=enabled,DebugLevel=none,LoopCore=1,EventsCore=1,EraseFlash=none,JTAGAdapter=default,ZigbeeMode=default,UploadSpeed=460800" \
       . -v
 
    # Using esptools.py - Write ONLY the pre-compiled firmware to target
    esptool.py \
       --chip esp32 \
-      --port [YOUR_SERIAL_PORT_TO_WHICH_ESP32_IS_ATTACHED] \ 
-      --baud 460800 \
+      --port [YOUR_SERIAL_PORT_TO_WHICH_ESP32_IS_ATTACHED] --baud 460800 \
       --before default_reset \
       --after hard_reset write_flash \
-      -z --flash_mode dio --flash_freq 80m --flash_size 4MB \
+      -z --flash_mode dio --flash_freq 80m --flash_size detect \
       0x0 build/EI_ESP32_CAM_SERVER.ino.merged.bin
 
    # Using esptools.py - Write the packed frontend binary to the target's correct location
    esptool.py --chip esp32 --port [YOUR_SERIAL_PORT_TO_WHICH_ESP32_IS_ATTACHED] --baud 460800 \
       --before default_reset --after hard_reset write_flash -z \
       --flash_mode dio --flash_freq 80m --flash_size detect \
-      0x290000 build/filesystem.littlefs.ai_thinker_cam.bin
+      0x310000 build/filesystem.littlefs.aithinkercam.bin
    ```
 
 11. Compile the firmware - __For ESP_EYE__
 
    ```bash
-   WIP
+   # From inside the project directory, run:
+   mkdir -p build/
+   arduino-cli compile \
+      --fqbn "esp32:esp32:esp32wrover:FlashMode=dio,FlashFreq=80,PartitionScheme=huge_app,DebugLevel=none,EraseFlash=none,UploadSpeed=921600" \
+      --output-dir build . -v
    ```
 
 12. Upload the firmware and packed frontend binaries (multiple options) - __For ESP_EYE__
 
    ```bash
+   # Option 1.1: Using arduino-cli - Compile & write the compiled firmware to target
+   mkdir -p build/
+   arduino-cli compile \
+      --fqbn "esp32:esp32:esp32wrover:FlashMode=dio,FlashFreq=80,PartitionScheme=huge_app,DebugLevel=none,EraseFlash=none,UploadSpeed=921600" \
+      . -u -p [YOUR_SERIAL_PORT_TO_WHICH_ESP32_IS_ATTACHED] -v
+   
+   # Option 1.2: Using arduino-cli - Write the pre-compiled firmware to target
+   # If you have run the "compile" cmd from above (pt.9) and the "build" dir is there, then from inside the project directory, run
+   arduino-cli upload -p [YOUR_SERIAL_PORT_TO_WHICH_ESP32_IS_ATTACHED] \
+      --fqbn "esp32:esp32:esp32wrover:FlashMode=dio,FlashFreq=80,PartitionScheme=huge_app,DebugLevel=none,EraseFlash=none,UploadSpeed=921600" \
+      . -v
+   
+   # Using esptools.py - Write ONLY the pre-compiled firmware to target
+   esptool.py \
+      --chip esp32 \
+      --port [YOUR_SERIAL_PORT_TO_WHICH_ESP32_IS_ATTACHED] --baud 921600 \
+      --before default_reset \
+      --after hard_reset write_flash \
+      -z --flash_mode dio --flash_freq 80m --flash_size detect \
+      0x0 build/EI_ESP32_CAM_SERVER.ino.merged.bin
+
    # Using esptools.py - Write the packed frontend binary to the target's correct location
    esptool.py --chip esp32 --port [YOUR_SERIAL_PORT_TO_WHICH_ESP32_IS_ATTACHED] --baud 921600 \
       --before default_reset --after hard_reset write_flash -z \
       --flash_mode dio --flash_freq 80m --flash_size detect \
-      0x290000 build/filesystem.littlefs.espeye.bin
+      0x310000 build/filesystem.littlefs.espeye.bin
    ```
 
 > Notes
@@ -583,7 +606,7 @@ If that is the case, below are your compilation and update options.
 
 ```txt
 Saurabh Datta
-zigzag.is
+zigzag.is   
 Feb 2025
 datta@zigzag.is
 hi@dattasaurabh.com
