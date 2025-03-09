@@ -17,3 +17,4 @@ data/ei_config.json
 
 # Local SSL Test certs
 webflasher/*.pem
+web_assets_extracted/
