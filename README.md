@@ -104,6 +104,13 @@ _In a nutshell_
 
    > Fusion 360 preview and file Download link: 👉🏼 [🌐](https://a360.co/41k01U0)
 
+   <br><br><br>
+   ### ESP-EYE V2.1 cam with 3D printed enclosure (For mounting & Cooling)
+
+   ![AESP-EYE V2.1Contraption](<assets/ESP-EYE Contraption.png>)
+
+   > Fusion 360 preview and file Download link: 👉🏼 [🌐](https://a360.co/41k01U0)
+
    ---
 
    ### They get hot 🥵
@@ -143,6 +150,14 @@ _In a nutshell_
    | **Before** turning **ON** the fans | **After** turning **ON** the fans |
    |:----------------------------------:|:---------------------------------:|
    | ![Before turning on fans](<assets/Hot esp.png>) | ![After turning on fans](<assets/cooler esp.png>) |
+
+   ## ESP-EYE V2.1 Cam
+
+   ![alt text](assets/esp-eye_cooling_setup_view_1.png)
+   
+   | **Before** turning **ON** the fans | **After** turning **ON** the fans |
+   |:----------------------------------:|:---------------------------------:|
+   | ![Before turning on fans](<assets/Hot esp-eye.png>) | ![After turning on fans](<assets/cooler esp-eye.png>) |
 
 </details>
 
@@ -296,7 +311,11 @@ Our default web server is on port `80` defined in `WebServer server(80);` in our
 
 #### For AI-Thinker Cam
 
-![alt text](<assets/Screenshot 2025-03-04 at 02.41.03.png>)
+![alt text](<assets/Screenshot 2025-03-09 at 18.48.22.png>)
+
+#### For ESP-EYE Cam
+
+![alt text](<assets/Screenshot 2025-03-09 at 18.47.44.png>)
 
 ### Usage
 
