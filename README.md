@@ -88,7 +88,7 @@ _In a nutshell_
 
    | Xiao ESP32S3 Sense | AI-Thinker ESP32-CAM | ESP-EYE V2 |
    |---------|-------------------|---------|
-   | 🟢 DONE | 🟢 DONE| 🟠 WIP |
+   | 🟢 DONE | 🟢 DONE| 🟢 DONE |
 
    ## Hardware Setup
 

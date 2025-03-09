@@ -1,11 +1,22 @@
+// ------------------------------------------------------------------- //
+// Keeping it here as a reference for future use
+// A super simple (simplest implementation) if you have 1 target board 
+// and 1 firmware binary and no styling is needed and without local tests
+// ------------------------------------------------------------------- //
+
 // document.addEventListener('DOMContentLoaded', () => {
 //     const button = document.querySelector('esp-web-install-button');
 //     // button.manifest = `manifest.json`;
-
 //     // For GitHub Pages, use the full path to your manifest
 //     button.manifest = `${window.location.origin}/EI_ESP32_CAM_SERVER/manifest.json`;
 // });
 
+// ------------------------------------------------------------------- //
+// Keeping it here as a reference for future use
+// A super simple if you have more than 1 target board 
+// each with respective firmware binaries and no styling is needed 
+// and without local tests ...
+// ------------------------------------------------------------------- //
 // document.querySelectorAll('input[name="type"]').forEach(radio =>
 //     radio.addEventListener("change", () => {
 //         const button = document.querySelector('esp-web-install-button');
@@ -16,7 +27,10 @@
 //     }
 //     ));
 
-
+// ------------------------------------------------------------------- //
+// More elaborate implementation with multiple targets 
+// with multiple firmware binaries; with local testing and some styling 
+// ------------------------------------------------------------------- //
 // Define updateDebugInfo in the global scope first, before any event handlers
 window.updateDebugInfo = function() {
     console.log("Debug info function called");
