@@ -5,7 +5,7 @@ import gzip
 
 
 def extract_assets_from_header(header_file, output_dir):
-    """Extract gzipped assets from a C++ header file back to their original."""
+    """Extract gzipped assets from a C++ header file back to their original"""
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
 
@@ -57,6 +57,8 @@ def extract_assets_from_header(header_file, output_dir):
                     file_name = "wifi_portal.css"
                 elif "wifi_portal_js" in var_name:
                     file_name = "wifi_portal.js"
+                elif "ei_config_json" in var_name:
+                    file_name = "ei_config.json"
                 elif "ei_config_template_json" in var_name:
                     file_name = "ei_config.template.json"
                 else:
@@ -72,6 +74,8 @@ def extract_assets_from_header(header_file, output_dir):
 
                 # Save the file
                 output_path = os.path.join(output_dir, file_name)
+                os.makedirs(os.path.dirname(output_path), exist_ok=True)
+
                 with open(output_path, "wb") as f:
                     f.write(decompressed)
 
@@ -136,7 +140,23 @@ def extract_assets_from_header(header_file, output_dir):
 
 
 if __name__ == "__main__":
-    extract_assets_from_header("../gzipped_assets.h",
-                               "../web_assets_extracted")
-    print("Extraction complete. Files are in the 'web_assets_extracted'"
-          "directory.")
+    # Get the directory of this script
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+
+    # Get the project root directory
+    # One level up if script is in a subdirectory
+    if os.path.basename(script_dir) == "tools":
+        project_root = os.path.dirname(script_dir)
+    else:
+        project_root = script_dir
+
+    # Define paths relative to the project root
+    header_file = os.path.join(project_root, "gzipped_assets.h")
+    output_dir = os.path.join(project_root, "web_assets_extracted")
+
+    print(f"Project root: {project_root}")
+    print(f"Header file: {header_file}")
+    print(f"Output directory: {output_dir}")
+
+    extract_assets_from_header(header_file, output_dir)
+    print(f"Extraction complete. Files are in '{output_dir}' directory.")

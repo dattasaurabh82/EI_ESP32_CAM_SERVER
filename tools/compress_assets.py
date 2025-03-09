@@ -1,4 +1,4 @@
-# compress_assets.py (corrected)
+# compress_assets.py
 import gzip
 import os
 
@@ -24,6 +24,7 @@ def generate_header_file(input_dir, output_file):
         ("wifi_portal.css", "text/css"),
         ("wifi_portal.js", "application/javascript"),
         ("ei_config.json", "application/json"),
+        ("ei_config.template.json", "application/json"),
     ]
 
     # Start writing the header file
@@ -59,7 +60,9 @@ def generate_header_file(input_dir, output_file):
                 compressed_content = f.read()
 
             # Convert to hex array
-            var_name = f"gzip_{filename.replace('.', '_').replace('-', '_')}"
+            name_without_dots = filename.replace(".", "_")
+            var_name = f"gzip_{name_without_dots.replace('-', '_')}"
+
             header.write(f"// {filename}: ")
             header.write(f"{original_size} bytes -> {compressed_size} bytes ")
             header.write(f"({compressed_size/original_size*100:.1f}%)\n")
@@ -82,25 +85,46 @@ def generate_header_file(input_dir, output_file):
         header.write("static const GzipAsset GZIP_ASSETS[] = {\n")
         for filename, content_type in files_to_compress:
             if os.path.exists(os.path.join(input_dir, filename)):
-                name_without_dots = filename.replace('.', '_')
+                name_without_dots = filename.replace(".", "_")
                 var_name = f"gzip_{name_without_dots.replace('-', '_')}"
+
                 # Use the correct path for serving
                 if filename == "index.html":
                     path = "/"  # Serve index.html at root path
                 else:
                     path = f"/{filename}"
+
+                # Split the asset entry into multiple parts
                 asset_entry = f'  {{ "{path}", "{content_type}", '
                 asset_entry += f"{var_name}, sizeof({var_name}) }},\n"
                 header.write(asset_entry)
         header.write("};\n\n")
 
-        assets_count_def = ("static const int GZIP_ASSETS_COUNT = "
-                            "sizeof(GZIP_ASSETS) / sizeof(GzipAsset);\n\n")
-        header.write(assets_count_def)
+        # Write asset count
+        header.write("static const int GZIP_ASSETS_COUNT = ")
+        header.write("sizeof(GZIP_ASSETS) / sizeof(GzipAsset);\n\n")
         header.write("#endif // GZIPPED_ASSETS_H\n")
 
     print(f"Generated {output_file}")
 
 
 if __name__ == "__main__":
-    generate_header_file("../data", "../gzipped_assets.h")
+    # Get the directory of this script
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+
+    # Get the project root directory
+    # One level up if script is in a subdirectory
+    if os.path.basename(script_dir) == "tools":
+        project_root = os.path.dirname(script_dir)
+    else:
+        project_root = script_dir
+
+    # Define paths relative to the project root
+    data_dir = os.path.join(project_root, "data")
+    output_file = os.path.join(project_root, "gzipped_assets.h")
+
+    print(f"Project root: {project_root}")
+    print(f"Data directory: {data_dir}")
+    print(f"Output file: {output_file}")
+
+    generate_header_file(data_dir, output_file)
