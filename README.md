@@ -207,22 +207,9 @@ The goal is to eliminate friction by removing the need for any development envir
 >
 > 3. Two Github Action CI/CD pipelines accomplish them. You can learn more about them [here](.github/workflows), if you are keen on the Github Actions Pipeline that compiles and create releases of binaries and also updates the webflasher.
 
-# Arduino IDE compile and upload method
+Then you can open the serial port provided by the webflasher or use any other serial monitor program (incl. Arduino IDE's serial monitor)to follow the next steps.  
 
-Arduino IDE version: `2.3.4`
-
-### Install libraries
-
-1. [ESPAsyncWebServer](https://github.com/ESP32Async/ESPAsyncWebServer)
-2. [AsyncTCP](https://github.com/ESP32Async/AsyncTCP)
-
-> You can find them from the Library Manager of IDE. There are various versions. Install ones by "ESP32Async" for both the libraries.
-
-### File upload - for frontend
-
-   ```bash
-   
-   ```
+## Few facets to check out if you are interested
 
 ### Camera Settings
 
@@ -256,9 +243,69 @@ s->set_awb_gain(s, 1);  // Disable auto white balance gain (0=disable,
 
 > More info here: [esp32-cam-ov2640-camera-settings](https://randomnerdtutorials.com/esp32-cam-ov2640-camera-settings/)
 
+You can change camera flipping from the front end but unfortunately there's not proper rotation available on these modules
+
+![alt text](<assets/Screenshot 2025-03-10 at 23.45.19.png>)
+
+---
+
 ### Server Port Settings
 
 Our default web server is on port `80` defined in `WebServer server(80);` in our [EI_ESP32_CAM_SERVER.ino](EI_ESP32_CAM_SERVER.ino)
+
+---
+
+### Front-end files
+
+#### Where do they come from and can I edit?
+
+So, we are `gzipping` the whole frontend.
+
+A python script ([compress_assets.py](tools/compress_assets.py)) takes the contents of [dashboard/](dashboard) directory (where all the front end files are kept) and spits out a compressed c style header file called [gzipped_assets.h](gzipped_assets.h), merging everything (in lack of better words).
+
+The contents of the front end are:
+
+```txt
+├── index.html
+├── script.js
+├── styles.css
+├── wifi_portal.css
+├── wifi_portal.html
+└── wifi_portal.js
+```
+
+If you want to edit / change anything, upon editing you have to run:
+
+```bash
+# First install a dependency (you can make a venv if you want, I didn't bother)
+python3 -m pip install gzip
+
+# Then run the script
+python tools/compress_assets.py
+```
+
+To verify, you can run another script
+
+```bash
+python tools/extract_assets.py
+```
+
+This will dump the files (better for checking decompression and if the files are 1:1) in [web_assets_extracted/](web_assets_extracted)
+
+And, then compile and upload the whole program (See step below)
+
+---
+
+# Arduino IDE compile and upload method
+
+Arduino IDE version: `2.3.4`
+
+### Install libraries
+
+1. [ESPAsyncWebServer](https://github.com/ESP32Async/ESPAsyncWebServer)
+2. [AsyncTCP](https://github.com/ESP32Async/AsyncTCP)
+
+> You can find them from the Library Manager of IDE. There are various versions. Install ones by "ESP32Async" for both the libraries.
 
 ### Arduino IDE compile settings
 

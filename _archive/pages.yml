@@ -65,9 +65,41 @@ jobs:
           cp build/EI_ESP32_CAM_SERVER.xiaoesp32s3.merged.bin webflasher/firmware/
           cp build/EI_ESP32_CAM_SERVER.aithinkercam.merged.bin webflasher/firmware/
           cp build/EI_ESP32_CAM_SERVER.espeye.merged.bin webflasher/firmware/
+          # Copy the latest frontend firmware binary files
+          cp build/filesystem.littlefs.xiaoesp32s3.bin webflasher/firmware/
+          cp build/filesystem.littlefs.aithinkercam.bin webflasher/firmware/
+          cp build/filesystem.littlefs.espeye.bin webflasher/firmware/
+          # Verify the copied files
           echo "Copied Files are:"
           ls -la webflasher/firmware/
           echo ""
+
+      # Install build dependencies
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y cmake build-essential
+
+      # Build mklittlefs
+      - name: Build mklittlefs
+        run: |
+          git clone --recursive https://github.com/earlephilhower/mklittlefs.git
+          cd mklittlefs
+          make dist
+          sudo cp mklittlefs /usr/local/bin/
+          cd ..
+          mklittlefs --help
+
+      - name: Debug firmware files
+        run: |
+          echo "Checking copied LittleFS binary contents:"
+          mklittlefs -l -d 5 webflasher/firmware/filesystem.littlefs.xiaoesp32s3.bin
+          mklittlefs -l -d 5 webflasher/firmware/filesystem.littlefs.aithinkercam.bin
+          mklittlefs -l -d 5 webflasher/firmware/filesystem.littlefs.espeye.bin
+          echo "Checking firmware directory contents and sizes:"
+          ls -la webflasher/firmware/
+          echo "MD5 checksums of binaries:"
+          md5sum webflasher/firmware/*.bin
 
       - name: Update version in manifest.json files and index.html
         env:

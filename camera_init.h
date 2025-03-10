@@ -49,8 +49,8 @@ bool setupCamera() {
     Serial.printf("\t[camera_init.h] PSRAM enabled: %s\n", psramFound() ? "YES" : "NO");
     Serial.printf("\t[camera_init.h] Free PSRAM: %lu bytes\n", ESP.getFreePsram());
 
-    // config.frame_size = FRAMESIZE_QQVGA;  // 160x120
-    config.frame_size = FRAMESIZE_QVGA;  // 320x240 (higher quality)
+    config.frame_size = FRAMESIZE_QQVGA;  // 160x120
+                                          // config.frame_size = FRAMESIZE_QVGA;  // 320x240 (higher quality)
 
 #ifdef CAMERA_MODEL_XIAO_ESP32S3
     config.jpeg_quality = 25;  // 0-63: lower means higher quality
@@ -87,7 +87,8 @@ bool setupCamera() {
   // Additional camera settings after initialization
   sensor_t* s = esp_camera_sensor_get();
   if (s) {
-    s->set_framesize(s, FRAMESIZE_QVGA);   // 320x240 (higher quality)
+    s->set_framesize(s, FRAMESIZE_QQVGA);  // 160x120
+    // s->set_framesize(s, FRAMESIZE_QVGA);   // 320x240 (higher quality)
 
     // Model-specific Initial camera orientation settings
 #ifdef CAMERA_MODEL_XIAO_ESP32S3

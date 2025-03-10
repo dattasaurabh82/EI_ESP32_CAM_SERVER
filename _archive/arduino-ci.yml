@@ -38,11 +38,48 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }} # Explicitly set token for push permissions
           ref: main # Explicitly checkout main branch
 
+      # Install build dependencies
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y cmake build-essential
+
+      # Build mklittlefs
+      - name: Build mklittlefs
+        run: |
+          git clone --recursive https://github.com/earlephilhower/mklittlefs.git
+          cd mklittlefs
+          make dist
+          sudo cp mklittlefs /usr/local/bin/
+          cd ..
+          mklittlefs --help
+      
+      # Create ei_config
+      - name: Create dummy ei_config.json
+        run: |
+          cp data/ei_config.template.json data/ei_config.json
+      
       # Make firmware and other build dir
       - name: Make build directory
         run: |
           rm -rf build
           mkdir -p build
+
+      # Create LittleFS binary
+      - name: Create LittleFS binary for XIAO ESP32-S3
+        run: |
+          mklittlefs -c data -p 256 -b 4096 -s 1572864 build/filesystem.littlefs.xiaoesp32s3.bin
+          mklittlefs -l -d 5 build/filesystem.littlefs.xiaoesp32s3.bin
+      
+      - name: Create LittleFS binary for AI Thinker ESP32-CAM
+        run: |
+          mklittlefs -c data -p 256 -b 4096 -s 917504 build/filesystem.littlefs.aithinkercam.bin
+          mklittlefs -l -d 5 build/filesystem.littlefs.aithinkercam.bin
+      
+      - name: Create LittleFS binary for ESP_EYE
+        run: |
+          mklittlefs -c data -p 256 -b 4096 -s 917504 build/filesystem.littlefs.espeye.bin
+          mklittlefs -l -d 5 build/filesystem.littlefs.espeye.bin
 
       - name: Install Arduino CLI
         run: |
@@ -270,10 +307,16 @@ jobs:
               fi
             done
             cd ..
-            echo "### Firmware binaries"
+            echo "### Main firmware binaries"
             echo "- build/EI_ESP32_CAM_SERVER.xiaoesp32s3.merged.bin"
             echo "- build/EI_ESP32_CAM_SERVER.aithinkercam.merged.bin"
             echo "- build/EI_ESP32_CAM_SERVER.espeye.merged.bin"
+            echo ""
+            echo "### LittleFS FileSys binaries"
+            echo "- build/filesystem.littlefs.xiaoesp32s3.bin"
+            echo "- build/filesystem.littlefs.aithinkercam.bin"
+            echo "- build/filesystem.littlefs.espeye.bin"
+            echo ""
           } > release_notes.md
           pwd
           ls -la
@@ -285,8 +328,11 @@ jobs:
           files: |
             firmwares.zip
             build/EI_ESP32_CAM_SERVER.xiaoesp32s3.merged_${{ github.ref_name }}.bin
+            build/filesystem.littlefs.xiaoesp32s3_${{ github.ref_name }}.bin
             build/EI_ESP32_CAM_SERVER.aithinkercam.merged_${{ github.ref_name }}.bin
+            build/filesystem.littlefs.aithinkercam_${{ github.ref_name }}.bin
             build/EI_ESP32_CAM_SERVER.espeye.merged_${{ github.ref_name }}.bin
+            build/filesystem.littlefs.espeye_${{ github.ref_name }}.bin
           body_path: release_notes.md
           draft: false
           prerelease: ${{ contains(github.ref_name, '-') }}
