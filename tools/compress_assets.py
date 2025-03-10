@@ -23,8 +23,6 @@ def generate_header_file(input_dir, output_file):
         ("wifi_portal.html", "text/html"),
         ("wifi_portal.css", "text/css"),
         ("wifi_portal.js", "application/javascript"),
-        ("ei_config.json", "application/json"),
-        ("ei_config.template.json", "application/json"),
     ]
 
     # Start writing the header file
@@ -120,7 +118,7 @@ if __name__ == "__main__":
         project_root = script_dir
 
     # Define paths relative to the project root
-    data_dir = os.path.join(project_root, "data")
+    data_dir = os.path.join(project_root, "dashboard")
     output_file = os.path.join(project_root, "gzipped_assets.h")
 
     print(f"Project root: {project_root}")

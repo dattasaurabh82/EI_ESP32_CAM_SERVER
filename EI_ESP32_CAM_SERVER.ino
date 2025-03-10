@@ -17,8 +17,8 @@
 
 #include "wifi_manager.h"
 #include "camera_init.h"
-
-
+#include "gzipped_assets.h"      // Include the generated header with compressed frontend assets
+#include "gzip_direct_routes.h"  // Include the GZIP serving handler
 
 
 
@@ -34,7 +34,6 @@ String lastConnectionPassword = "";
 // FreeRTOS task Used for Resetting over serial
 // ** (This happens completely independently of your main loop)
 TaskHandle_t serialMonitorTaskHandle;
-
 
 
 
@@ -177,52 +176,92 @@ void initLittleFS() {
   Serial.println("\t* Mounting LittleFS... ");
 
   if (LittleFS.begin(false)) {
-    Serial.println("\t✓ Mounted successfully (No formatting needed)");
+    Serial.println("\t✓ Mounted successfully");
+
+    // Check for configuration files
+    if (!LittleFS.exists("/ei_config.json")) {
+      Serial.println("\t⚠ No Edge Impulse configuration file found");
+      Serial.println("\t⚠ You would need to save one from the dashboard");
+    }
+    if (!LittleFS.exists("/wifi_credentials.json")) {
+      Serial.println("\t⚠ No WiFi credentials file found");
+      Serial.println("\t⚠ You would need to conect to one and it will be saved");
+    }
+    // Make sure LittleFS contains no old web files
+    Serial.println("\n\tFiles in LittleFS:");
+    Serial.println("\t---------------");
+    int filesRemoved = 0;
+    for (const char *oldFile : { "/index.html", "/styles.css", "/script.js",
+                                 "/wifi_portal.html", "/wifi_portal.css", "/wifi_portal.js" }) {
+      if (LittleFS.exists(oldFile)) {
+        Serial.printf("\t- Removing old file: %s\n", oldFile);
+        LittleFS.remove(oldFile);
+        filesRemoved++;
+      }
+    }
+    if (filesRemoved == 0) {
+      Serial.println("\t✓ No old web files found.");
+    } else {
+      Serial.printf("\t✓ Cleaned %d old web files from filesystem\n", filesRemoved);
+    }
+    Serial.println("\t---------------");
+    // List all files
+    Serial.println("\n\tFiles in LittleFS:");
+    Serial.println("\t---------------");
+    File root = LittleFS.open("/");
+    if (!root) {
+      Serial.println("\t❌ Failed to open directory");
+    } else if (!root.isDirectory()) {
+      Serial.println("\t❌ Not a directory");
+    } else {
+      File file = root.openNextFile();
+      if (!file) {
+        Serial.println("\t(no files)");
+      }
+      int fileCount = 0;
+      size_t totalSize = 0;
+
+      while (file) {
+        String fileName = file.name();
+        size_t fileSize = file.size();
+        Serial.printf("\t• %-20s %8u bytes\n", fileName.c_str(), fileSize);
+        totalSize += fileSize;
+        fileCount++;
+        file = root.openNextFile();
+      }
+
+      if (fileCount > 0) {
+        Serial.printf("\n\tTotal: %d files, %u bytes\n", fileCount, totalSize);
+      }
+    }
   } else {
     Serial.println("\t✗ Mount failed");
-    Serial.print("Attempting to format... ");
+    Serial.print("\tAttempting to format... ");
 
     if (LittleFS.format()) {
       Serial.println("\t✓ Format successful");
-      Serial.print("Trying to mount again... ");
+      Serial.print("\tTrying to mount again... ");
 
       if (LittleFS.begin()) {
         Serial.println("\t✓ Mounted successfully");
-        Serial.println("\t⚠ WARNING: File system is empty!");
-        Serial.println("⚠ Please upload files using ESP32 LittleFS Data Upload");
-        Serial.println("⚠ Do not forget to close the serail monitor before");
-        Serial.println("⚠ Then reset the device.");
       } else {
-        Serial.println("✗ Mount failed after format");
+        Serial.println("\t✗ Mount failed after format");
         Serial.println("\t❌ Fatal Error: Storage unavailable");
         return;
       }
     } else {
-      Serial.println("✗ Format failed");
+      Serial.println("\t✗ Format failed");
       Serial.println("\t❌ Fatal Error: Unable to initialize storage");
       return;
     }
   }
-  // Print LittleFS info for ESP32
+
+  // Print storage information
   Serial.println("\n\tStorage Info:");
   Serial.println("\t------------");
   Serial.printf("\tTotal space: %u KB\n", LittleFS.totalBytes() / 1024);
   Serial.printf("\tUsed space: %u KB\n", LittleFS.usedBytes() / 1024);
   Serial.printf("\tFree space: %u KB\n", (LittleFS.totalBytes() - LittleFS.usedBytes()) / 1024);
-
-  // List all files
-  Serial.println("\n\tFiles in storage:");
-  Serial.println("\t---------------");
-  File root = LittleFS.open("/");
-  File file = root.openNextFile();
-  while (file) {
-    String fileName = file.name();
-    size_t fileSize = file.size();
-    Serial.printf("\t• %-20s %8u bytes\n", fileName.c_str(), fileSize);
-    file = root.openNextFile();
-  }
-
-  Serial.println();
 }
 
 
@@ -236,6 +275,17 @@ void setupWIFIstn() {
     wifiManager.startAPMode();
   }
 }
+
+
+// Function to print memory stats [monitoring]
+void printMemoryStats() {
+  Serial.println("\n=== MEMORY STATS ===");
+  Serial.printf("Free heap: %lu bytes\n", ESP.getFreeHeap());
+  Serial.printf("Free PSRAM: %lu bytes\n", ESP.getFreePsram());
+  Serial.printf("Minimum free heap: %lu bytes\n", ESP.getMinFreeHeap());
+  Serial.println("===================\n");
+}
+
 
 
 void setup() {
@@ -256,6 +306,25 @@ void setup() {
   // Some small delay to wait for serial to begin
   Serial.println("\nWaiting 5 secs ...\n");
   delay(5000);
+
+  /*
+  // ==== Debug Print GZIP Assets ==== //
+  Serial.println("\n====== GZIP Assets Debug ======");
+  Serial.printf("GZIP_ASSETS_COUNT: %d\n", GZIP_ASSETS_COUNT);
+  if (GZIP_ASSETS_COUNT > 0) {
+    Serial.println("Available assets:");
+    for (int i = 0; i < GZIP_ASSETS_COUNT; i++) {
+      Serial.printf("  %s (%s, %u bytes)\n",
+                    GZIP_ASSETS[i].path,
+                    GZIP_ASSETS[i].content_type,
+                    GZIP_ASSETS[i].length);
+    }
+  } else {
+    Serial.println("ERROR: No GZIP assets available!");
+  }
+  // Make sure LittleFS contains no old web files
+  // ** Note: Moved into initLittleFS(){} 
+  */
 
   // Model-specific welcome message
 #ifdef CAMERA_MODEL_XIAO_ESP32S3
@@ -311,34 +380,10 @@ void setup() {
   // 3. Connect to Wi Fi
   setupWIFIstn();
 
-  // 4. Configure AsyncWebServer Routes
-  // Static files
-  server.on("/", HTTP_GET, [](AsyncWebServerRequest *request) {
-    request->send(LittleFS, "/index.html", "text/html");
-    Serial.println("\tClient has tried to access ...");
-  });
+  // 4. gzip handler as the first handler for static files
+  setupGzipRoutes(server);
 
-  server.on("/styles.css", HTTP_GET, [](AsyncWebServerRequest *request) {
-    request->send(LittleFS, "/styles.css", "text/css");
-  });
-  server.on("/script.js", HTTP_GET, [](AsyncWebServerRequest *request) {
-    request->send(LittleFS, "/script.js", "application/javascript");
-  });
-
-  // WiFi Portal files
-  server.on("/wifi_portal.html", HTTP_GET, [](AsyncWebServerRequest *request) {
-    request->send(LittleFS, "/wifi_portal.html", "text/html");
-  });
-
-  server.on("/wifi_portal.css", HTTP_GET, [](AsyncWebServerRequest *request) {
-    request->send(LittleFS, "/wifi_portal.css", "text/css");
-  });
-
-  server.on("/wifi_portal.js", HTTP_GET, [](AsyncWebServerRequest *request) {
-    request->send(LittleFS, "/wifi_portal.js", "application/javascript");
-  });
-
-  // Stream endpoints
+  // 5. Stream endpoints
   server.on("/toggleStream", HTTP_POST, [](AsyncWebServerRequest *request) {
     isStreamActive = !isStreamActive;
     Serial.printf("\tStream state: %s\n", isStreamActive ? "Active" : "Paused");
@@ -347,10 +392,11 @@ void setup() {
 
   server.on("/stream", HTTP_GET, handleMjpeg);
 
-  // Capture endpoint
+  // 6. Othr API end points
+  // 6.1. Capture endpoint
   server.on("/capture", HTTP_GET, handleCapture);
 
-  // Clear endpoint: Both GET & POST
+  // 6.2. Clear endpoint: Both GET & POST
   server.on("/clear", HTTP_GET, [](AsyncWebServerRequest *request) {
     Serial.println("\tReceived Clear all GET request ...");
     request->send(200, "text/plain", "Images cleared (GET)");
@@ -360,6 +406,7 @@ void setup() {
     request->send(200, "text/plain", "Images cleared (POST)");
   });
 
+  // 6.3. Save config endpoint
   server.on("/saveConfig", HTTP_POST, [](AsyncWebServerRequest *request) {
     if (request->hasParam("config", true)) {
       String config = request->getParam("config", true)->value();
@@ -378,6 +425,7 @@ void setup() {
     }
   });
 
+  // 6.4. Load config endpoint
   server.on("/loadConfig", HTTP_GET, [](AsyncWebServerRequest *request) {
     if (LittleFS.exists("/ei_config.json")) {
       request->send(LittleFS, "/ei_config.json", "application/json");
@@ -388,7 +436,7 @@ void setup() {
     }
   });
 
-  // WiFi Manager API endpoints
+  // 7. WiFi Manager API endpoints
   server.on("/wifi/mode", HTTP_GET, [](AsyncWebServerRequest *request) {
     JsonDocument doc;
     doc["apMode"] = wifiManager.isAPMode();
@@ -451,6 +499,11 @@ void setup() {
                   WiFi.SSID().c_str());
   });
 
+  // Add a catch-all handler for debugging
+  server.onNotFound([](AsyncWebServerRequest *request) {
+    Serial.printf("❌ 404 Not Found: %s\n", request->url().c_str());
+    request->send(404, "text/plain", "Not found - Path: " + request->url());
+  });
 
   delay(1000);
   server.begin();
@@ -465,6 +518,8 @@ void setup() {
                   WiFi.localIP().toString().c_str(),
                   WiFi.SSID().c_str());
   }
+
+  printMemoryStats();
 }
 
 
@@ -479,9 +534,18 @@ void loop() {
     - Can operate with lower thresholds due to more available PSRAM
     - ESP32-S3 has improved memory management over the original ESP32
   */
+
+  // Server Load/CPU Usage monitor
+  static unsigned long lastMemCheck = 0;
+  if (millis() - lastMemCheck > monitorMEMafter) {
+    lastMemCheck = millis();
+    printMemoryStats();
+  }
+
 #ifdef CAMERA_MODEL_XIAO_ESP32S3
   // Thresholds for XIAO with 8MB PSRAM
   if (ESP.getFreeHeap() < 20000 || ESP.getFreePsram() < 10000) {
+    Serial.println("🏮 Hit memory utilization ceiling...");
     Serial.printf("\tFree PSRAM: %lu bytes\n", ESP.getFreePsram());
     Serial.printf("\tFree Heap: %lu bytes\n\n", ESP.getFreeHeap());
     Serial.println("\tLow memory: Restarting\n");
@@ -490,6 +554,7 @@ void loop() {
 #elif defined(CAMERA_MODEL_AI_THINKER)
   // More conservative thresholds for AI-Thinker with 4MB PSRAM
   if (ESP.getFreeHeap() < 15000 || ESP.getFreePsram() < 10000) {
+    Serial.println("🏮 Hit memory utilization ceiling...");
     Serial.printf("\tFree PSRAM: %lu bytes\n", ESP.getFreePsram());
     Serial.printf("\tFree Heap: %lu bytes\n\n", ESP.getFreeHeap());
     Serial.println("\tLow memory: Restarting\n");
@@ -498,6 +563,7 @@ void loop() {
 #elif defined(CAMERA_MODEL_ESP_EYE)
   // ESP-EYE has 8MB PSRAM (same as XIAO)
   if (ESP.getFreeHeap() < 20000 || ESP.getFreePsram() < 10000) {
+    Serial.println("🏮 Hit memory utilization ceiling...");
     Serial.printf("\tFree PSRAM: %lu bytes\n", ESP.getFreePsram());
     Serial.printf("\tFree Heap: %lu bytes\n\n", ESP.getFreeHeap());
     Serial.println("\tLow memory: Restarting\n");
@@ -543,7 +609,7 @@ void loop() {
     wifiManager.processDNS();
   }
 
-  delay(100);
+  delay(50);
 }
 
 

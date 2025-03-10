@@ -128,7 +128,7 @@
         </div>
     </div>
 
-    <script src="script.js"></script>
+    <script src="script.js" async></script>
 
     <footer class="footer">
         <div class="footer-content">
@@ -175,6 +175,27 @@
             .catch(error => {
                 console.error('Error setting up WiFi portal:', error);
             });
+    </script>
+    <script>
+        // Print load time to console
+        window.addEventListener('load', function () {
+            console.log('Page loaded in:', performance.now(), 'ms');
+        });
+    </script>
+    <script>
+        // At the start of the page - track load time
+        window.performanceData = { start: performance.now() };
+        // When page is loaded
+        window.addEventListener('load', function () {
+            const timing = {
+                total: performance.now() - window.performanceData.start,
+                navigation: performance.getEntriesByType('navigation')[0]?.duration || 0,
+                resources: performance.getEntriesByType('resource')
+            };
+            console.log('Page load time:', timing.total, 'ms');
+            console.log('Navigation time:', timing.navigation, 'ms');
+            console.log('Resource timing:', timing.resources);
+        });
     </script>
 </body>
 

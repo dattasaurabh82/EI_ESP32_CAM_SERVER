@@ -34,7 +34,8 @@
 // OTHER CONFIGURATION PARAMETERS
 // -----------------------------------------------------------------
 // Add any other global configuration parameters will go here
-// 
-// Note: nothing for now
+
+// Period after whihc we should print mem status 
+#define monitorMEMafter 30000 // 30 sec
 
 #endif // CONFIG_H

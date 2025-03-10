@@ -57,10 +57,6 @@ def extract_assets_from_header(header_file, output_dir):
                     file_name = "wifi_portal.css"
                 elif "wifi_portal_js" in var_name:
                     file_name = "wifi_portal.js"
-                elif "ei_config_json" in var_name:
-                    file_name = "ei_config.json"
-                elif "ei_config_template_json" in var_name:
-                    file_name = "ei_config.template.json"
                 else:
                     # Create a generic name based on the variable
                     file_name = var_name.replace("gzip_", "").replace("_", ".")
