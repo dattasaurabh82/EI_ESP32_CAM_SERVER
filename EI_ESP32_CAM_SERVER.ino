@@ -39,6 +39,36 @@ TaskHandle_t serialMonitorTaskHandle;
 
 
 // ======== Non-blocking MJPEG Stream ========
+// OLD - Working
+// void handleMjpeg(AsyncWebServerRequest *request) {
+//   AsyncWebServerResponse *response = request->beginChunkedResponse(
+//     "multipart/x-mixed-replace; boundary=frame",
+//     [](uint8_t *buffer, size_t maxLen, size_t index) -> size_t {
+//       if (!isStreamActive) {
+//         return 0;  // Return 0 to stop streaming
+//       }
+
+//       camera_fb_t *fb = esp_camera_fb_get();
+//       if (!fb) return 0;
+
+//       size_t jpgLen = snprintf((char *)buffer, 100,
+//                                "--frame\r\nContent-Type: image/jpeg\r\nContent-Length: %d\r\n\r\n",
+//                                fb->len);
+
+//       if (jpgLen + fb->len > maxLen) {
+//         esp_camera_fb_return(fb);
+//         return 0;
+//       }
+
+//       memcpy(buffer + jpgLen, fb->buf, fb->len);
+//       esp_camera_fb_return(fb);
+//       return jpgLen + fb->len;
+//     });
+//   response->addHeader("Access-Control-Allow-Origin", "*");
+//   request->send(response);
+// }
+
+// NEW - A tiny bit better (maybe)
 void handleMjpeg(AsyncWebServerRequest *request) {
   AsyncWebServerResponse *response = request->beginChunkedResponse(
     "multipart/x-mixed-replace; boundary=frame",
@@ -50,23 +80,33 @@ void handleMjpeg(AsyncWebServerRequest *request) {
       camera_fb_t *fb = esp_camera_fb_get();
       if (!fb) return 0;
 
-      size_t jpgLen = snprintf((char *)buffer, 100,
-                               "--frame\r\nContent-Type: image/jpeg\r\nContent-Length: %d\r\n\r\n",
-                               fb->len);
+      // Pre-calculate header length for efficiency
+      char header[64];
+      size_t headerLen = snprintf(header, sizeof(header),
+                                  "--frame\r\nContent-Type: image/jpeg\r\nContent-Length: %u\r\n\r\n",
+                                  fb->len);
 
-      if (jpgLen + fb->len > maxLen) {
+      if (headerLen + fb->len > maxLen) {
         esp_camera_fb_return(fb);
         return 0;
       }
 
-      memcpy(buffer + jpgLen, fb->buf, fb->len);
+      // Copy header and image data in one step
+      memcpy(buffer, header, headerLen);
+      memcpy(buffer + headerLen, fb->buf, fb->len);
+
+      size_t totalLen = headerLen + fb->len;
       esp_camera_fb_return(fb);
-      return jpgLen + fb->len;
+      return totalLen;
     });
+
+  // Add proper cache and CORS headers
+  response->addHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+  response->addHeader("Pragma", "no-cache");
   response->addHeader("Access-Control-Allow-Origin", "*");
+
   request->send(response);
 }
-
 
 // Image saving
 void handleCapture(AsyncWebServerRequest *request) {
@@ -393,16 +433,69 @@ void setup() {
   server.on("/stream", HTTP_GET, handleMjpeg);
 
   // 6. Othr API end points
+
+  // 6.0. Camera control
+  server.on("/camera/flip", HTTP_POST, [](AsyncWebServerRequest *request) {
+    bool flip = (request->hasParam("value", true)) ? (request->getParam("value", true)->value() == "1") : false;
+
+    sensor_t *s = esp_camera_sensor_get();
+    if (s) {
+      s->set_vflip(s, flip ? 1 : 0);
+      request->send(200, "text/plain", "Camera flip updated");
+      Serial.printf("vflip: %s, hmirror: %s\n",
+                    s->status.vflip ? "Yes" : "No",
+                    s->status.hmirror ? "Yes" : "No");
+    } else {
+      request->send(500, "text/plain", "Camera sensor not available");
+      Serial.println("❌Camera sensor not available");
+    }
+  });
+
+  server.on("/camera/mirror", HTTP_POST, [](AsyncWebServerRequest *request) {
+    bool mirror = (request->hasParam("value", true)) ? (request->getParam("value", true)->value() == "1") : false;
+
+    sensor_t *s = esp_camera_sensor_get();
+    if (s) {
+      s->set_hmirror(s, mirror ? 1 : 0);
+      request->send(200, "text/plain", "Camera mirror updated");
+      Serial.printf("vflip: %s, hmirror: %s\n",
+                    s->status.vflip ? "Yes" : "No",
+                    s->status.hmirror ? "Yes" : "No");
+    } else {
+      request->send(500, "text/plain", "Camera sensor not available");
+      Serial.println("❌Camera sensor not available");
+    }
+  });
+
+  // Get current camera settings
+  server.on("/camera/settings", HTTP_GET, [](AsyncWebServerRequest *request) {
+    sensor_t *s = esp_camera_sensor_get();
+    if (s) {
+      JsonDocument doc;
+      doc["vflip"] = s->status.vflip;
+      doc["hmirror"] = s->status.hmirror;
+      String output;
+      serializeJson(doc, output);
+      request->send(200, "application/json", output);
+      Serial.printf("vflip: %s, hmirror: %s\n",
+                    s->status.vflip ? "Yes" : "No",
+                    s->status.hmirror ? "Yes" : "No");
+    } else {
+      request->send(500, "text/plain", "Camera sensor not available");
+      Serial.println("❌Camera sensor not available");
+    }
+  });
+
   // 6.1. Capture endpoint
   server.on("/capture", HTTP_GET, handleCapture);
 
   // 6.2. Clear endpoint: Both GET & POST
   server.on("/clear", HTTP_GET, [](AsyncWebServerRequest *request) {
-    Serial.println("\tReceived Clear all GET request ...");
+    Serial.println("Received Clear all GET request ...");
     request->send(200, "text/plain", "Images cleared (GET)");
   });
   server.on("/clear", HTTP_POST, [](AsyncWebServerRequest *request) {
-    Serial.println("\tReceived Clear all POST request ...");
+    Serial.println("Received Clear all POST request ...");
     request->send(200, "text/plain", "Images cleared (POST)");
   });
 
@@ -414,10 +507,10 @@ void setup() {
       if (file) {
         file.print(config);
         file.close();
-        Serial.println("\tConfiguration saved to LittleFS ...");
+        Serial.println("Configuration saved to LittleFS ...");
         request->send(200, "text/plain", "Configuration saved");
       } else {
-        Serial.println("\tFailed to save configuration to LittleFS ...");
+        Serial.println("Failed to save configuration to LittleFS ...");
         request->send(500, "text/plain", "Failed to save configuration");
       }
     } else {
@@ -429,9 +522,9 @@ void setup() {
   server.on("/loadConfig", HTTP_GET, [](AsyncWebServerRequest *request) {
     if (LittleFS.exists("/ei_config.json")) {
       request->send(LittleFS, "/ei_config.json", "application/json");
-      Serial.println("  Configuration loaded from LittleFS ...");
+      Serial.println("Configuration loaded from LittleFS ...");
     } else {
-      Serial.println("\tNo configuration found in LittleFS ...");
+      Serial.println("No configuration found in LittleFS ...");
       request->send(404, "text/plain", "No configuration found");
     }
   });
@@ -489,7 +582,7 @@ void setup() {
   server.on("/wifi/stopAP", HTTP_POST, [](AsyncWebServerRequest *request) {
     // Respond first, then stop AP mode
     request->send(200, "text/plain", "Stopping AP mode");
-    Serial.println("  Exiting AP MODE ...");
+    Serial.println("Exiting AP MODE ...");
     // Schedule AP mode stop after response is sent
     WiFi.softAPdisconnect(true);
     wifiManager.setAPMode(false);

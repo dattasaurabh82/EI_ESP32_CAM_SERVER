@@ -54,6 +54,19 @@
             </div>
         </div>
 
+        <div class="camera-controls">
+            <h3>Camera Settings</h3>
+            <div class="control-group">
+                <label>
+                    <input type="checkbox" id="camera-flip"> Flip Vertically
+                </label>
+                <label>
+                    <input type="checkbox" id="camera-mirror"> Mirror Horizontally
+                </label>
+                <!-- <button id="save-camera-settings" class="btn">Apply</button> -->
+            </div>
+        </div>
+
         <div class="button-container">
             <button id="clearAll" style="display: none;">
                 <i class="fas fa-trash"></i> Clear All </button>
@@ -128,7 +141,8 @@
         </div>
     </div>
 
-    <script src="script.js" async></script>
+    <script src="script.js"></script>
+    <!-- <script src="script.js" async></script> -->
 
     <footer class="footer">
         <div class="footer-content">
@@ -180,21 +194,6 @@
         // Print load time to console
         window.addEventListener('load', function () {
             console.log('Page loaded in:', performance.now(), 'ms');
-        });
-    </script>
-    <script>
-        // At the start of the page - track load time
-        window.performanceData = { start: performance.now() };
-        // When page is loaded
-        window.addEventListener('load', function () {
-            const timing = {
-                total: performance.now() - window.performanceData.start,
-                navigation: performance.getEntriesByType('navigation')[0]?.duration || 0,
-                resources: performance.getEntriesByType('resource')
-            };
-            console.log('Page load time:', timing.total, 'ms');
-            console.log('Navigation time:', timing.navigation, 'ms');
-            console.log('Resource timing:', timing.resources);
         });
     </script>
 </body>

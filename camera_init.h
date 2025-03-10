@@ -49,17 +49,18 @@ bool setupCamera() {
     Serial.printf("\t[camera_init.h] PSRAM enabled: %s\n", psramFound() ? "YES" : "NO");
     Serial.printf("\t[camera_init.h] Free PSRAM: %lu bytes\n", ESP.getFreePsram());
 
-    config.frame_size = FRAMESIZE_QQVGA;  // 160x120
+    // config.frame_size = FRAMESIZE_QQVGA;  // 160x120
+    config.frame_size = FRAMESIZE_QVGA;  // 320x240 (higher quality)
+
 #ifdef CAMERA_MODEL_XIAO_ESP32S3
-    config.jpeg_quality = 15;  // 0-63: lower means higher quality
-    config.fb_count = 1;       // TBT: Double buffering for smoother streaming. But sngle is stable
+    config.jpeg_quality = 10;  // 0-63: lower means higher quality
+    config.fb_count = 2;       // TBT: Double buffering for smoother streaming.
 #elif defined(CAMERA_MODEL_AI_THINKER)
-    config.jpeg_quality = 25;  // 0-63: lower means higher quality
-    config.fb_count = 1;       // TBT: Double buffering for smoother streaming
+    config.jpeg_quality = 15;  // 0-63: lower means higher quality
+    config.fb_count = 2;       // TBT: Double buffering for smoother streaming
 #elif defined(CAMERA_MODEL_ESP_EYE)
-    config.frame_size = FRAMESIZE_QQVGA;  // 160x120
-    config.jpeg_quality = 15;             // 0-63: lower means higher quality
-    config.fb_count = 2;                  // TBT: Double buffering for smoother
+    config.jpeg_quality = 10;  // 0-63: lower means higher quality
+    config.fb_count = 2;       // TBT: Double buffering for smoother
 #endif
   } else {
 #ifdef CAMERA_MODEL_XIAO_ESP32S3
@@ -84,7 +85,8 @@ bool setupCamera() {
   sensor_t* s = esp_camera_sensor_get();
   if (s) {
     // Set frame size to desired resolution
-    s->set_framesize(s, FRAMESIZE_QQVGA);  // 160x120
+    // s->set_framesize(s, FRAMESIZE_QQVGA);  // 160x120
+    s->set_framesize(s, FRAMESIZE_QVGA);  // 320x240 (higher quality)
 
     // Model-specific camera orientation settings
 #ifdef CAMERA_MODEL_XIAO_ESP32S3
@@ -94,8 +96,8 @@ bool setupCamera() {
     s->set_vflip(s, 1);        // Flip camera vertically for AI-Thinker
     s->set_hmirror(s, 1);      // Horizontal mirror typically needed
 #elif defined(CAMERA_MODEL_ESP_EYE)
-    s->set_vflip(s, 1);                   // Flip camera vertically - may need adjustment
-    s->set_hmirror(s, 1);                 // Horizontal mirror - may need adjustment
+    s->set_vflip(s, 0);        // Flip camera vertically - may need adjustment
+    s->set_hmirror(s, 0);      // Horizontal mirror - may need adjustment
 #endif
 
     // Image clarity enhancements
@@ -116,10 +118,11 @@ bool setupCamera() {
     s->set_whitebal(s, 1);  // Disable white balance (0=disable, 1=enable)
     s->set_awb_gain(s, 1);  // Disable auto white balance gain (0=disable,
 #elif defined(CAMERA_MODEL_ESP_EYE)
-    s->set_whitebal(s, 1);  // Enable white balance
-    s->set_awb_gain(s, 1);  // Enable auto white balance gain
+    s->set_whitebal(s, 1);     // Enable white balance
+    s->set_awb_gain(s, 1);     // Enable auto white balance gain
 #endif
-      // --- //
+
+    // --- //
 
     s->set_gainceiling(s, GAINCEILING_2X);  // Normal gain
   }

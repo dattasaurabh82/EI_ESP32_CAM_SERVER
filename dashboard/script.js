@@ -1,3 +1,23 @@
+function loadCameraSettings() {
+    fetch('/camera/settings')
+        .then(response => response.json())
+        .then(settings => {
+            document.getElementById('camera-flip').checked = settings.vflip;
+            document.getElementById('camera-mirror').checked = settings.hmirror;
+        })
+        .catch(error => console.error('Error loading camera settings:', error));
+}
+
+function updateCameraSetting(setting, value) {
+    fetch(`/camera/${setting}`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: `value=${value ? 1 : 0}`
+    });
+}
+
 class EdgeImpulseIntegration {
     constructor() {
         this.apiKey = '';
@@ -166,7 +186,7 @@ class EdgeImpulseIntegration {
                 // return;
                 const shouldUpdate = confirm('This project is not configured for "One Label Per Data Item". Would you like to update it automatically?');
                 if (shouldUpdate) {
-                    
+
                     const updateResponse = await fetch(`https://studio.edgeimpulse.com/v1/api/${this.projectId}`, {
                         method: 'POST',
                         headers: {
@@ -415,8 +435,6 @@ class CameraInterface {
         }
     }
 
-
-
     async captureFrame() {
         const response = await fetch('/capture');
         const blob = await response.blob();
@@ -632,4 +650,23 @@ function updateThemeIcon(theme) {
 document.addEventListener('DOMContentLoaded', () => {
     new CameraInterface();
     setupThemeToggle();
+
+    // Camera controls initialization
+    loadCameraSettings();
+
+    // Set up camera control event listeners
+    const flipControl = document.getElementById('camera-flip');
+    const mirrorControl = document.getElementById('camera-mirror');
+
+    if (flipControl) {
+        flipControl.addEventListener('change', function (e) {
+            updateCameraSetting('flip', e.target.checked);
+        });
+    }
+
+    if (mirrorControl) {
+        mirrorControl.addEventListener('change', function (e) {
+            updateCameraSetting('mirror', e.target.checked);
+        });
+    }
 });
