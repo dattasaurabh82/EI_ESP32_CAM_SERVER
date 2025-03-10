@@ -53,24 +53,24 @@ bool setupCamera() {
                                           // config.frame_size = FRAMESIZE_QVGA;  // 320x240 (higher quality)
 
 #ifdef CAMERA_MODEL_XIAO_ESP32S3
-    config.jpeg_quality = 25;  // 0-63: lower means higher quality
+    config.jpeg_quality = 12;  // 0-63: lower means higher quality
     config.fb_count = 2;       // Double buffering for smoother
 #elif defined(CAMERA_MODEL_AI_THINKER)
-    config.jpeg_quality = 30;  // 0-63: lower means higher quality
-    config.fb_count = 1;       // Single buffering for less mem overload
+    config.jpeg_quality = 15;  // 0-63: lower means higher quality
+    config.fb_count = 2;       // Single buffering for less mem overload
 #elif defined(CAMERA_MODEL_ESP_EYE)
     config.jpeg_quality = 10;  // 0-63: lower means higher quality
     config.fb_count = 2;       // Double buffering for smoother
 #endif
   } else {
 #ifdef CAMERA_MODEL_XIAO_ESP32S3
-    config.jpeg_quality = 35;  // 0-63: lower means higher quality
+    config.jpeg_quality = 25;  // 0-63: lower means higher quality
     config.fb_count = 1;       // Single buffering for less mem overload
 #elif defined(CAMERA_MODEL_AI_THINKER)
-    config.jpeg_quality = 40;  // 0-63: lower means higher quality
+    config.jpeg_quality = 32;  // 0-63: lower means higher quality
     config.fb_count = 1;       // Single buffering for less mem overload
 #elif defined(CAMERA_MODEL_ESP_EYE)
-    config.jpeg_quality = 35;  // 0-63: lower means higher quality
+    config.jpeg_quality = 25;  // 0-63: lower means higher quality
     config.fb_count = 1;       // Single buffering for less mem overload
 #endif
   }
