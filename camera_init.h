@@ -53,22 +53,25 @@ bool setupCamera() {
     config.frame_size = FRAMESIZE_QVGA;  // 320x240 (higher quality)
 
 #ifdef CAMERA_MODEL_XIAO_ESP32S3
-    config.jpeg_quality = 10;  // 0-63: lower means higher quality
-    config.fb_count = 2;       // TBT: Double buffering for smoother streaming.
+    config.jpeg_quality = 24;  // 0-63: lower means higher quality
+    config.fb_count = 2;       // Double buffering for smoother
 #elif defined(CAMERA_MODEL_AI_THINKER)
-    config.jpeg_quality = 15;  // 0-63: lower means higher quality
-    config.fb_count = 2;       // TBT: Double buffering for smoother streaming
+    config.jpeg_quality = 30;  // 0-63: lower means higher quality
+    config.fb_count = 1;       // Single buffering for less mem overload
 #elif defined(CAMERA_MODEL_ESP_EYE)
     config.jpeg_quality = 10;  // 0-63: lower means higher quality
-    config.fb_count = 2;       // TBT: Double buffering for smoother
+    config.fb_count = 2;       // Double buffering for smoother
 #endif
   } else {
 #ifdef CAMERA_MODEL_XIAO_ESP32S3
     config.jpeg_quality = 35;  // 0-63: lower means higher quality
-    config.fb_count = 1;       // TBT: Double buffering for smoother streaming. But sngle is stable
+    config.fb_count = 1;       // Single buffering for less mem overload
 #elif defined(CAMERA_MODEL_AI_THINKER)
-    config.jpeg_quality = 45;  // 0-63: lower means higher quality
-    config.fb_count = 1;       // TBT: Double buffering for smoother streaming
+    config.jpeg_quality = 40;  // 0-63: lower means higher quality
+    config.fb_count = 1;       // Single buffering for less mem overload
+#elif defined(CAMERA_MODEL_ESP_EYE)
+    config.jpeg_quality = 35;  // 0-63: lower means higher quality
+    config.fb_count = 1;       // Single buffering for less mem overload
 #endif
   }
 
@@ -84,11 +87,10 @@ bool setupCamera() {
   // Additional camera settings after initialization
   sensor_t* s = esp_camera_sensor_get();
   if (s) {
-    // Set frame size to desired resolution
-    // s->set_framesize(s, FRAMESIZE_QQVGA);  // 160x120
-    s->set_framesize(s, FRAMESIZE_QVGA);  // 320x240 (higher quality)
+    s->set_framesize(s, FRAMESIZE_QQVGA);  // 160x120
+    s->set_framesize(s, FRAMESIZE_QVGA);   // 320x240 (higher quality)
 
-    // Model-specific camera orientation settings
+    // Model-specific Initial camera orientation settings
 #ifdef CAMERA_MODEL_XIAO_ESP32S3
     s->set_vflip(s, 1);    // Flip camera vertically for XIAO
     s->set_hmirror(s, 0);  // No horizontal mirror for XIAO
@@ -96,8 +98,8 @@ bool setupCamera() {
     s->set_vflip(s, 1);        // Flip camera vertically for AI-Thinker
     s->set_hmirror(s, 1);      // Horizontal mirror typically needed
 #elif defined(CAMERA_MODEL_ESP_EYE)
-    s->set_vflip(s, 0);        // Flip camera vertically - may need adjustment
-    s->set_hmirror(s, 0);      // Horizontal mirror - may need adjustment
+    s->set_vflip(s, 0);        // No Flipping of camera vertically
+    s->set_hmirror(s, 0);      // No Horizontal mirror
 #endif
 
     // Image clarity enhancements
