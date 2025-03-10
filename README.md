@@ -220,28 +220,9 @@ Arduino IDE version: `2.3.4`
 
 ### File upload - for frontend
 
-We need to upload our files (html, css. js, etc. for the frontend) to esp-32 via [arduino-littlefs-upload](https://github.com/earlephilhower/arduino-littlefs-upload)
-
-1. Go to the [releases](https://github.com/earlephilhower/arduino-littlefs-upload/releases) page and click the `.vsix` file to download.
-2. Move the file to Plugins Directory
-
    ```bash
-   # Find the .arduinoIDE directory
-   cd ~/.arduinoIDE/
-   pwd
-   # Create plugins dir, if it's not there
-   mkdir plugins
-   # Copt the files, in my case it was downloaded in Downloads dir
-   cd \
-   cd Downloads
-   cp arduino-littlefs-upload-x.x.x.vsix ~/.arduinoIDE/plugins/
+   
    ```
-
-3. Quit & reopen Arduino IDE. **Note:** Sometimes you might have to restart the mac
-4. Pressing `CMD` + `SHIFT` + `P`, will open commands palette of Arduino IDE
-5. Type in `Upload LittleFS` and the full command (`Upload LittleFS to Pico/ESP8266/ESP32`) will show up. Hit `ENTER`
-6. All the contents from [`data/`](data/) will now be transferred to the fs of ESP32
-   > Make sure Serial Monitor is closed
 
 ### Camera Settings
 
@@ -251,50 +232,26 @@ Pick a esp32 camera module in the [config.h](config.h) and use only one pre_proc
 // -----------------------------------------------------------------
 // CAMERA MODEL SELECTION - UNCOMMENT ONLY ONE MODEL
 // -----------------------------------------------------------------
-#define CAMERA_MODEL_XIAO_ESP32S3 1
+// #define CAMERA_MODEL_XIAO_ESP32S3 1
 // #define CAMERA_MODEL_AI_THINKER 1
+#define CAMERA_MODEL_ESP_EYE 1
 ```
 
-Most of the camera settings doesn't need to be changed but sometimes you may need to flip the camera frame vertically or horizontally. In that case [camera_init.h](camera_init.h) find the section
+Most of the camera settings doesn't need to be changed but sometimes you may want to play with stream and image quality (if you know what you are doing 😉) even though they have been battle tested. In that case [camera_init.h](camera_init.h) look for these
 
 ```c++
-// Additional camera settings after initialization
-  sensor_t* s = esp_camera_sensor_get();
-  if (s) {
-    // Set frame size to desired resolution
-    s->set_framesize(s, FRAMESIZE_QQVGA);  // 160x120
+config.frame_size = FRAMESIZE_QVGA;  // 320x240 (higher quality)
+s->set_framesize(s, FRAMESIZE_QVGA); // 320x240 (higher quality)
 
-    // Model-specific camera orientation settings
-#ifdef CAMERA_MODEL_XIAO_ESP32S3
-    s->set_vflip(s, 1);    // Flip camera vertically for XIAO
-    s->set_hmirror(s, 0);  // No horizontal mirror for XIAO
-#elif defined(CAMERA_MODEL_AI_THINKER)
-    s->set_vflip(s, 1);        // Flip camera vertically for AI-Thinker
-    s->set_hmirror(s, 1);      // Horizontal mirror typically needed
-#endif
+config.jpeg_quality = 24;            // 0-63: lower means higher quality
+config.fb_count = 2;                 // Double buffering for smoother
 
-    // Image clarity enhancements
-    s->set_brightness(s, 1);  // Normal brightness (-2 to 2)
-    s->set_contrast(s, 1);    // Normal contrast (-2 to 2)
-    s->set_saturation(s, 1);  // Normal saturation (-2 to 2)
+s->set_brightness(s, 2);             // Normal brightness (-2 to 2)
+s->set_contrast(s, 1);               // Normal contrast (-2 to 2)
+s->set_saturation(s, 1);             // Normal saturation (-2 to 2)
 
-    // --- //
-    /*
-     * NOTE [TBT]
-     * White balance implementation varies by camera sensor. The XIAO ESP32S3 * * uses an OV sensor that might handle white balance differently than the * * ESP32 camera library expects. And so, the status.wb_mode field sometimes * doesn't accurately reflect the actual * camera state.
-    */
-#ifdef CAMERA_MODEL_XIAO_ESP32S3
-    s->set_whitebal(s, 0);  // Disable white balance (0=disable, 1=enable)
-    s->set_awb_gain(s, 0);  // Disable auto white balance gain (0=disable,
-#elif defined(CAMERA_MODEL_AI_THINKER)
-    // Note: Some color correction needed (noticed) 
-    s->set_whitebal(s, 1);     // Disable white balance (0=disable, 1=enable)
-    s->set_awb_gain(s, 1);     // Disable auto white balance gain (0=disable,
-#endif
-    // --- //
-
-    s->set_gainceiling(s, GAINCEILING_2X);  // Normal gain
- }
+s->set_whitebal(s, 1);  // Disable white balance (0=disable, 1=enable)
+s->set_awb_gain(s, 1);  // Disable auto white balance gain (0=disable,
 ```
 
 > More info here: [esp32-cam-ov2640-camera-settings](https://randomnerdtutorials.com/esp32-cam-ov2640-camera-settings/)
@@ -322,66 +279,76 @@ Our default web server is on port `80` defined in `WebServer server(80);` in our
 After successful upload, you should see something like this
 
 ```txt
+   Files in LittleFS:
+   ---------------
+   ✓ No old web files found.
+   ---------------
 
-   [camera_init.h] Frame buffer count set to: 1
-   ✓ Success
+   Files in LittleFS:
+   ---------------
+   • ei_config.json             63 bytes
+   • ei_config.template.json       63 bytes
+   • wifi_credentials.json       47 bytes
 
-   Camera Details:
-   --------------
-   Resolution: 1x1
-   JPEG Quality: 15
-   Buffer Size: 1438 bytes
-   Buffer Width: 160 px
-   Buffer Height: 120 px
-   Brightness: 1
-   Contrast: 1
-   Saturation: 1
-   Special Effect: 0
-   White Balance Enabled (human readable): No
-   AWB Gain Enabled: No
-   Gain Ceiling Value: 0
-   Gain Ceiling: 2X
-   Vertical Flip: Yes
-   Horizontal Mirror: No
-
-   Memory Info:
-   -----------
-   PSRAM: Available ✓
-   Free PSRAM: 8381220 bytes
-   Total PSRAM: 8388608 bytes
-
-
-2. Checking LittleFS Status:
-   * Mounting LittleFS... 
-   ✓ Mounted successfully (No formatting needed)
+   Total: 3 files, 173 bytes
 
    Storage Info:
    ------------
    Total space: 1536 KB
-   Used space: 84 KB
-   Free space: 1452 KB
-
-   Files in storage:
-   ---------------
-   • ei_config.json            157 bytes
-   • ei_config.template.json       63 bytes
-   • index.html               7400 bytes
-   • script.js               23188 bytes
-   • styles.css               8816 bytes
-   • wifi_portal.css          5264 bytes
-   • wifi_portal.html         2934 bytes
-   • wifi_portal.js          14857 bytes
-
+   Used space: 8 KB
+   Free space: 1528 KB
 
 3. WiFi Manager Initialization:
-   ⚠ No WiFi credentials file found
-   ⚠ No saved WiFi networks found
-   Starting AP Mode for configuration
-   ✓ AP started with SSID: XIAO_ESP32_CAM
-   ✓ IP Address: 192.168.4.1
+   ✓ Loaded 1 WiFi networks from storage
+   * Attempting connection to: :) (1/1)
+   ..
+   ✓ Connected!
+
+   Network Info:
+   ------------
+   ⤷ IP Address: 192.168.1.208
+   ⤷ Subnet Mask: 255.255.255.0
+   ⤷ Gateway: 192.168.1.1
+   ⤷ DNS: 192.168.1.1
+   ⤷ MAC Address: DC:DA:0C:13:9A:28
+
+   Signal Info:
+   -----------
+   ⤷ RSSI: -60 dBm
+   ⤷ Channel: 1
+
+   Connection Info:
+   ---------------
+   ⤷ SSID: :)
+✅ Registered route for: /styles.css
+✅ Registered route for: /script.js
+✅ Registered route for: /wifi_portal.html
+✅ Registered route for: /wifi_portal.css
+✅ Registered route for: /wifi_portal.js
+✅ All GZIP routes registered
 Async HTTP server started on port 80
 
-👉🏼 Open http://192.168.4.1:80 from a browser of a computer connected to WiFi SSID: XIAO_ESP32_CAM
+👉🏼 Open http://192.168.1.208:80 from a browser of a computer connected to WiFi SSID: :)
+
+=== MEMORY STATS ===
+Free heap: 229236 bytes
+Free PSRAM: 8337580 bytes
+Minimum free heap: 229124 bytes
+===================
+
+📄 Serving root path (/)
+✅ Served gzipped root index.html (2094 bytes)
+Served root in 0 ms
+📄 Serving asset: /styles.css
+✅ Served gzipped asset: /styles.css (2264 bytes)
+📄 Serving asset: /wifi_portal.css
+✅ Served gzipped asset: /wifi_portal.css (1346 bytes)
+📄 Serving asset: /script.js
+✅ Served gzipped asset: /script.js (5739 bytes)
+📄 Serving asset: /wifi_portal.html
+✅ Served gzipped asset: /wifi_portal.html (832 bytes)
+Configuration loaded from LittleFS ...
+vflip: Yes, hmirror: No
 ```
 
 # cmdline compile and upload methods
@@ -416,65 +383,7 @@ If that is the case, below are your compilation and update options.
    arduino-cli core update-index
    ```
 
-4. Install `mklittlefs`. This is used to produce a packed binary of all the front-end files that can be flashed later. __Note__: if using the Arduino IDE, then we use a IDE plugin. Check it our 👉🏼 [file upload instructions](#file-upload---for-frontend) for more details.
-   <br><br>
-
-   > Prerequisite for this step: Make sure you have cmake, build essentials etc. ready and configured.
-   >
-   > 🔔 Don't worry as if and when the build command for `mklittlefs` fails, you will know what to install.
-   > <br><br>
-
-   ```bash
-   git clone --recursive https://github.com/earlephilhower/mklittlefs.git
-   cd mklittlefs
-   make dist
-   sudo cp mklittlefs /usr/local/bin/
-
-   # source your env if needed
-
-   mklittlefs --help
-   ```
-
-5. Create an empty `ei_config.json`. It will be filled with your credentials and edgeimpulse project details later, from frontend and will be saved to be used persistently till next update.
-
-   ```bash
-   cp data/ei_config.template.json data/ei_config.json
-   ```
-
-   Your data folder should now have these files
-
-   ```txt
-   data/
-   ├── ei_config.json
-   ├── ei_config.template.json
-   ├── index.html
-   ├── script.js
-   ├── styles.css
-   ├── wifi_portal.css
-   ├── wifi_portal.html
-   └── wifi_portal.js
-   ```
-
-6. Create a packed binary of all the front-end files of `data/`
-
-   ```bash
-   mkdir -p build
-
-   # Create
-   # For XiaoESP32-S3
-   mklittlefs -c data -p 256 -b 4096 -s 1572864 build/filesystem.littlefs.xiaoesp32s3.bin
-   # For AI_thinker_cam
-   mklittlefs -c data -p 256 -b 4096 -s 917504 build/filesystem.littlefs.aithinkercam.bin
-   # ESP-EYE V2.1
-   mklittlefs -c data -p 256 -b 4096 -s 917504 build/filesystem.littlefs.espeye.bin
-
-   # Verify the frontend binaries
-   mklittlefs -l -d 5 build/filesystem.littlefs.xiaoesp32s3.bin
-   mklittlefs -l -d 5 build/filesystem.littlefs.aithinkercam.bin
-   mklittlefs -l -d 5 build/filesystem.littlefs.espeye.bin
-   ```
-
-7. Compile the firmware - __For xiao esp32s3 sense__
+4. Compile the firmware - __For xiao esp32s3 sense__
 
    ```bash
    # From inside the project directory, run:
@@ -484,7 +393,7 @@ If that is the case, below are your compilation and update options.
       --output-dir build . -v
    ```
 
-8. Upload the firmware and packed frontend binaries (multiple options) - __For xiao esp32s3 sense__
+5. Upload the firmware and packed frontend binaries (multiple options) - __For xiao esp32s3 sense__
 
    ```bash
    # Option 1.1: Using arduino-cli - Compile & write the compiled firmware to target
@@ -500,7 +409,7 @@ If that is the case, below are your compilation and update options.
       --fqbn "esp32:esp32:XIAO_ESP32S3:USBMode=hwcdc,CDCOnBoot=default,MSCOnBoot=default,DFUOnBoot=default,UploadMode=default,CPUFreq=240,FlashMode=qio, FlashSize=8M,PartitionScheme=default_8MB,DebugLevel=none,PSRAM=opi,LoopCore=1,EventsCore=1,UploadSpeed=921600,JTAGAdapter=default" \
       --input-file build/EI_ESP32_CAM_SERVER.ino.merged.bin .
 
-   # Using esptools.py - Write ONLY the pre-compiled firmware to target
+   # Using esptools.py - Write the pre-compiled firmware to target
    esptool.py \
       --chip esp32s3 \
       --port [YOUR_SERIAL_PORT_TO_WHICH_ESP32_IS_ATTACHED] --baud 921600 \
@@ -508,18 +417,9 @@ If that is the case, below are your compilation and update options.
       --after hard_reset write_flash \
       -z --flash_mode dio --flash_freq 80m --flash_size detect \
       0x0 build/EI_ESP32_CAM_SERVER.ino.merged.bin
-
-   # Using esptools.py - Write the packed frontend binary to the target's correct location
-   esptool.py \
-      --chip esp32s3 \
-      --port [YOUR_SERIAL_PORT_TO_WHICH_ESP32_IS_ATTACHED] \
-      --baud 921600 write_flash -z \
-      --flash_mode dio \
-      --flash_freq 80m 0x670000 \
-      build/filesystem.littlefs.xiaoesp32s3.bin
    ```
 
-9. Compile the firmware - __For AI_Thinker_cam_esp32__
+6. Compile the firmware - __For AI_Thinker_cam_esp32__
 
    ```bash
    # From inside the project directory, run:
@@ -529,7 +429,7 @@ If that is the case, below are your compilation and update options.
       --output-dir build . -v
    ```
 
-10. Upload the firmware and packed frontend binaries (multiple options) - __For AI_Thinker_cam_esp32__
+7. Upload the firmware and packed frontend binaries (multiple options) - __For AI_Thinker_cam_esp32__
 
    ```bash
    # Option 1.1: Using arduino-cli - Compile & write the compiled firmware to target
@@ -544,7 +444,7 @@ If that is the case, below are your compilation and update options.
       --fqbn "esp32:esp32:esp32:CPUFreq=240,FlashMode=qio,FlashFreq=80,FlashSize=4M,PartitionScheme=huge_app,PSRAM=enabled,DebugLevel=none,LoopCore=1,EventsCore=1,EraseFlash=none,JTAGAdapter=default,ZigbeeMode=default,UploadSpeed=460800" \
       . -v
 
-   # Using esptools.py - Write ONLY the pre-compiled firmware to target
+   # Using esptools.py - Write the pre-compiled firmware to target
    esptool.py \
       --chip esp32 \
       --port [YOUR_SERIAL_PORT_TO_WHICH_ESP32_IS_ATTACHED] --baud 460800 \
@@ -552,15 +452,9 @@ If that is the case, below are your compilation and update options.
       --after hard_reset write_flash \
       -z --flash_mode dio --flash_freq 80m --flash_size detect \
       0x0 build/EI_ESP32_CAM_SERVER.ino.merged.bin
-
-   # Using esptools.py - Write the packed frontend binary to the target's correct location
-   esptool.py --chip esp32 --port [YOUR_SERIAL_PORT_TO_WHICH_ESP32_IS_ATTACHED] --baud 460800 \
-      --before default_reset --after hard_reset write_flash -z \
-      --flash_mode dio --flash_freq 80m --flash_size detect \
-      0x310000 build/filesystem.littlefs.aithinkercam.bin
    ```
 
-11. Compile the firmware - __For ESP_EYE__
+8. Compile the firmware - __For ESP_EYE__
 
    ```bash
    # From inside the project directory, run:
@@ -570,7 +464,7 @@ If that is the case, below are your compilation and update options.
       --output-dir build . -v
    ```
 
-12. Upload the firmware and packed frontend binaries (multiple options) - __For ESP_EYE__
+9. Upload the firmware and packed frontend binaries (multiple options) - __For ESP_EYE__
 
    ```bash
    # Option 1.1: Using arduino-cli - Compile & write the compiled firmware to target
@@ -585,7 +479,7 @@ If that is the case, below are your compilation and update options.
       --fqbn "esp32:esp32:esp32wrover:FlashMode=dio,FlashFreq=80,PartitionScheme=huge_app,DebugLevel=none,EraseFlash=none,UploadSpeed=921600" \
       . -v
    
-   # Using esptools.py - Write ONLY the pre-compiled firmware to target
+   # Using esptools.py - Write the pre-compiled firmware to target
    esptool.py \
       --chip esp32 \
       --port [YOUR_SERIAL_PORT_TO_WHICH_ESP32_IS_ATTACHED] --baud 921600 \
@@ -593,30 +487,8 @@ If that is the case, below are your compilation and update options.
       --after hard_reset write_flash \
       -z --flash_mode dio --flash_freq 80m --flash_size detect \
       0x0 build/EI_ESP32_CAM_SERVER.ino.merged.bin
-
-   # Using esptools.py - Write the packed frontend binary to the target's correct location
-   esptool.py --chip esp32 --port [YOUR_SERIAL_PORT_TO_WHICH_ESP32_IS_ATTACHED] --baud 921600 \
-      --before default_reset --after hard_reset write_flash -z \
-      --flash_mode dio --flash_freq 80m --flash_size detect \
-      0x310000 build/filesystem.littlefs.espeye.bin
    ```
 
-> Notes
->
-> How do we know the **exact location** in flash (`0x670000` for xiao and for ai thinker cam that is `0x290000`) where the front end code goes?
-> Well, we know it from the Arduino IDE. When we used the IDE plugin, we saw the output ...
->
-> ![Xiao esp32 s3 sense -> Arduino IDE LittleFS Upload Process Output](<assets/Screenshot 2025-02-25 at 14.17.52.png>)
-> _Xiao esp32 s3 sense -> Arduino IDE LittleFS Upload Process Output_
->
-> <br>
->
-> ![AI thinker cam -> Arduino IDE LittleFS Upload Process Output](<assets/Screenshot 2025-03-05 at 20.20.34.png>)
-> _AI thinker cam -> Arduino IDE LittleFS Upload Process Output_
->
-> ![ESP_EYE-> Arduino IDE LittleFS Upload Process Output](<assets/Screenshot 2025-03-07 at 21.05.06.png>)
-> _ESP-EYE -> Arduino IDE LittleFS Upload Process Output_
-> 
 </details>
 
 ---

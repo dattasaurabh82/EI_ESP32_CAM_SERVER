@@ -53,7 +53,7 @@ bool setupCamera() {
     config.frame_size = FRAMESIZE_QVGA;  // 320x240 (higher quality)
 
 #ifdef CAMERA_MODEL_XIAO_ESP32S3
-    config.jpeg_quality = 24;  // 0-63: lower means higher quality
+    config.jpeg_quality = 25;  // 0-63: lower means higher quality
     config.fb_count = 2;       // Double buffering for smoother
 #elif defined(CAMERA_MODEL_AI_THINKER)
     config.jpeg_quality = 30;  // 0-63: lower means higher quality
@@ -87,7 +87,6 @@ bool setupCamera() {
   // Additional camera settings after initialization
   sensor_t* s = esp_camera_sensor_get();
   if (s) {
-    s->set_framesize(s, FRAMESIZE_QQVGA);  // 160x120
     s->set_framesize(s, FRAMESIZE_QVGA);   // 320x240 (higher quality)
 
     // Model-specific Initial camera orientation settings
