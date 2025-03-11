@@ -210,7 +210,7 @@ jobs:
             fi
           done
           cp EI_ESP32_CAM_SERVER.espeye.merged.bin "EI_ESP32_CAM_SERVER.espeye.merged_${GITHUB_REF_NAME}.bin"
-          echo "Created a copy of the binary with version: ${GITHUB_REF_NAME}
+          echo "Created a copy of the binary with version: ${GITHUB_REF_NAME}"
           ls -la
           cd ..
 
