@@ -119,8 +119,6 @@ jobs:
           done
           cp EI_ESP32_CAM_SERVER.xiaoesp32s3.merged.bin "EI_ESP32_CAM_SERVER.xiaoesp32s3.merged_${GITHUB_REF_NAME}.bin"
           echo "Created a copy of the binary with version: ${GITHUB_REF_NAME}"
-          cp filesystem.littlefs.xiaoesp32s3.bin "filesystem.littlefs.xiaoesp32s3_${GITHUB_REF_NAME}.bin"
-          echo "Created a copy of the LittleFS file sys binary with version: ${GITHUB_REF_NAME}"
           ls -la
           cd ..
       
@@ -167,8 +165,6 @@ jobs:
           done
           cp EI_ESP32_CAM_SERVER.aithinkercam.merged.bin "EI_ESP32_CAM_SERVER.aithinkercam.merged_${GITHUB_REF_NAME}.bin"
           echo "Created a copy of the binary with version: ${GITHUB_REF_NAME}"
-          cp filesystem.littlefs.aithinkercam.bin "filesystem.littlefs.aithinkercam_${GITHUB_REF_NAME}.bin"
-          echo "Created a copy of the LittleFS file sys binary with version: ${GITHUB_REF_NAME}"
           ls -la
           cd ..
       
@@ -214,9 +210,7 @@ jobs:
             fi
           done
           cp EI_ESP32_CAM_SERVER.espeye.merged.bin "EI_ESP32_CAM_SERVER.espeye.merged_${GITHUB_REF_NAME}.bin"
-          echo "Created a copy of the binary with version: ${GITHUB_REF_NAME}"
-          cp filesystem.littlefs.espeye.bin "filesystem.littlefs.espeye_${GITHUB_REF_NAME}.bin"
-          echo "Created a copy of the LittleFS file sys binary with version: ${GITHUB_REF_NAME}"
+          echo "Created a copy of the binary with version: ${GITHUB_REF_NAME}
           ls -la
           cd ..
 
